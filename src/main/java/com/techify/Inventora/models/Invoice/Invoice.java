@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 import com.techify.Inventora.models.CustomerOrder.CustomerOrder;
+import com.techify.Inventora.models.Transaction.Transaction;
 import com.techify.Inventora.models.User.User;
 
 @Entity
@@ -28,6 +29,13 @@ public class Invoice {
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
   private InvoiceStatus status;
+
+  @Column(name="due_date", nullable = false)
+  private LocalDateTime dueDate;
+
+  @OneToOne
+  @JoinColumn(name = "transaction_id", updatable = false)
+  private Transaction transaction;
 
   @Column(name = "created_at", updatable = false)
   private LocalDateTime createdAt;
@@ -67,6 +75,14 @@ public class Invoice {
     return status;
   }
 
+  public LocalDateTime getDueDate() {
+    return dueDate;
+  }
+
+  public Transaction getTransaction() {
+    return transaction;
+  }
+
   public LocalDateTime getCreatedAt() {
     return createdAt;
   }
@@ -85,6 +101,14 @@ public class Invoice {
 
   public void setAmountDue(Double amountDue) {
     this.amountDue = amountDue;
+  }
+
+  public void setDueDate(LocalDateTime dueDate) {
+    this.dueDate = dueDate;
+  }
+
+  public void setTransaction(Transaction transaction) {
+    this.transaction = transaction;
   }
 
   public void setStatus(InvoiceStatus status) {
