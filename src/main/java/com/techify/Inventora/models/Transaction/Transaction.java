@@ -47,8 +47,6 @@ public class Transaction {
     transactionDate = LocalDateTime.now();
   }
 
-  // Getters and Setters
-
   public Long getId() {
     return id;
   }

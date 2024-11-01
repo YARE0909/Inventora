@@ -49,11 +49,6 @@ public class User {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    // Default constructor
-    public User() {}
-
-    // Getters and Setters
-
     public Long getId() {
         return id;
     }
