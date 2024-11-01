@@ -1,4 +1,4 @@
-package com.techify.Inventora.services;
+package com.techify.Inventora.services.User;
 
 import com.techify.Inventora.models.User.User;
 import com.techify.Inventora.repositories.UserRepository;

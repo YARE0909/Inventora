@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.techify.Inventora.exceptions.CustomException;
 import com.techify.Inventora.models.User.User;
 import com.techify.Inventora.models.User.UserRoles;
-import com.techify.Inventora.services.UserService;
+import com.techify.Inventora.services.User.UserService;
 
 @Controller
 @RequestMapping("/api/user")
