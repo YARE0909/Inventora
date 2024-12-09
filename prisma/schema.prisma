@@ -15,7 +15,7 @@ datasource db {
 
 model Orders {
   id                    String   @id @default(auto()) @map("_id") @db.ObjectId
-  orderNumber           String
+  orderNumber           String   @unique
   orderDate             DateTime
   customerName          String
   contactPerson         String
