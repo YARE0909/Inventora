@@ -33,12 +33,12 @@ const Tabs = ({
   return (
     <div className="w-full flex flex-col items-center">
       {/* Tab Switcher */}
-      <div className="w-fit flex items-center justify-center gap-3 bg-foreground p-1 rounded-md mb-4">
+      <div className="w-fit flex items-center justify-center md:gap-3 bg-foreground p-1 md:p-4 rounded-md mb-4">
         {tabs.map((tab, index) => (
           <button
             key={tab.label}
             onClick={() => handleTabChange(index, tab.label)}
-            className={`px-4 py-1 text-sm font-semibold ${
+            className={`px-4 py-1 text-xs md:text-sm font-semibold ${
               activeTab === index
                 ? "bg-background rounded-md border-white text-white"
                 : "text-textAlt hover:text-white"
