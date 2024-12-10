@@ -14,66 +14,74 @@ datasource db {
 }
 
 model Orders {
-  id                    String   @id @default(auto()) @map("_id") @db.ObjectId
-  orderNumber           String   @unique
-  orderDate             DateTime
-  customerName          String
-  contactPerson         String
-  proformaInvoice       String
-  proformaInvoiceDate   DateTime
-  orderValue            Float
-  orderCount            Int
-  orderDeliveryDate     DateTime
-  orderStatus           String
-  orderComments         String
-  createdBy             Int
-  createdOn             DateTime
-  modifiedBy            Int?
-  modifiedOn            DateTime?
+  id                  String      @id @default(auto()) @map("_id") @db.ObjectId
+  orderNumber         String      @unique
+  orderDate           DateTime
+  customerName        String
+  contactPerson       String
+  proformaInvoice     String
+  proformaInvoiceDate DateTime
+  orderValue          Float
+  orderCount          Int
+  orderDeliveryDate   DateTime
+  orderStatus         OrderStatus @default(Active) // Use enum with default
+  orderComments       String
+  createdBy           Int
+  createdOn           DateTime
+  modifiedBy          Int?
+  modifiedOn          DateTime?
+}
+
+// Enum for orderStatus
+enum OrderStatus {
+  Active
+  OnHold
+  Completed
+  Cancelled
 }
 
 model OrderAdvanceDetails {
-  id                       String   @id @default(auto()) @map("_id") @db.ObjectId
-  orderId                  String   @db.ObjectId
-  orderAdvanceAmount       Float
-  orderAdvanceDate         DateTime
+  id                         String    @id @default(auto()) @map("_id") @db.ObjectId
+  orderId                    String    @db.ObjectId
+  orderAdvanceAmount         Float
+  orderAdvanceDate           DateTime
   orderAdvancePaymentDetails String
-  orderAdvanceStatus       String
-  orderAdvanceComments     String
-  createdBy                Int
-  createdOn                DateTime
-  modifiedBy               Int?
-  modifiedOn               DateTime?
+  orderAdvanceStatus         String
+  orderAdvanceComments       String
+  createdBy                  Int
+  createdOn                  DateTime
+  modifiedBy                 Int?
+  modifiedOn                 DateTime?
 }
 
 model Invoice {
-  id                        String   @id @default(auto()) @map("_id") @db.ObjectId
-  orderId                   String   @db.ObjectId
-  invoiceNumber             String
-  invoiceDate               DateTime
-  invoiceAmount             Float
-  adjustedInvoiceAmount     Float
-  reconciledInvoiceAmount   Float
-  packagingChargesAmount    Float
-  shippingChargesAmount     Float
-  discountAmount            Float
-  customerGst               String
-  invoiceComments           String
-  createdBy                 Int
-  createdOn                 DateTime
-  modifiedBy                Int?
-  modifiedOn                DateTime?
+  id                      String    @id @default(auto()) @map("_id") @db.ObjectId
+  orderId                 String    @db.ObjectId
+  invoiceNumber           String
+  invoiceDate             DateTime
+  invoiceAmount           Float
+  adjustedInvoiceAmount   Float
+  reconciledInvoiceAmount Float
+  packagingChargesAmount  Float
+  shippingChargesAmount   Float
+  discountAmount          Float
+  customerGst             String
+  invoiceComments         String
+  createdBy               Int
+  createdOn               DateTime
+  modifiedBy              Int?
+  modifiedOn              DateTime?
 }
 
 model InvoiceDetails {
-  id               String   @id @default(auto()) @map("_id") @db.ObjectId
-  invoiceId        String   @db.ObjectId
-  billingServiceId String   @db.ObjectId
+  id               String    @id @default(auto()) @map("_id") @db.ObjectId
+  invoiceId        String    @db.ObjectId
+  billingServiceId String    @db.ObjectId
   itemCode         String
   itemQuantity     Int
   itemRate         Float
   invoiceAmount    Float
-  itemGstId        String   @db.ObjectId
+  itemGstId        String    @db.ObjectId
   itemGstValue     Float
   createdBy        Int
   createdOn        DateTime
@@ -82,40 +90,40 @@ model InvoiceDetails {
 }
 
 model Payments {
-  id                String   @id @default(auto()) @map("_id") @db.ObjectId
-  invoiceId         String   @db.ObjectId
-  paymentMode       String
-  paymentDate       DateTime
-  paymentAmount     Float
+  id                 String    @id @default(auto()) @map("_id") @db.ObjectId
+  invoiceId          String    @db.ObjectId
+  paymentMode        String
+  paymentDate        DateTime
+  paymentAmount      Float
   paymentReferenceId String
-  paymentDetails    String
-  paymentComments   String
+  paymentDetails     String
+  paymentComments    String
+  createdBy          Int
+  createdOn          DateTime
+  modifiedBy         Int?
+  modifiedOn         DateTime?
+}
+
+model Delivery {
+  id                String    @id @default(auto()) @map("_id") @db.ObjectId
+  orderId           String    @db.ObjectId
+  invoiceId         String    @db.ObjectId
+  deliveredCount    Int
+  deliveryComments  String
+  wastageCount      Int
+  wastageComments   String
+  rejectionCount    Int
+  rejectionComments String
+  returnsCount      Int
+  returnsComments   String
   createdBy         Int
   createdOn         DateTime
   modifiedBy        Int?
   modifiedOn        DateTime?
 }
 
-model Delivery {
-  id               String   @id @default(auto()) @map("_id") @db.ObjectId
-  orderId          String   @db.ObjectId
-  invoiceId        String   @db.ObjectId
-  deliveredCount   Int
-  deliveryComments String
-  wastageCount     Int
-  wastageComments  String
-  rejectionCount   Int
-  rejectionComments String
-  returnsCount     Int
-  returnsComments  String
-  createdBy        Int
-  createdOn        DateTime
-  modifiedBy       Int?
-  modifiedOn       DateTime?
-}
-
 model Users {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
   userName   String
   role       String
   isActive   Boolean
@@ -126,28 +134,28 @@ model Users {
 }
 
 model Investment {
-  id                          String   @id @default(auto()) @map("_id") @db.ObjectId
-  customerName                String
-  investerId                  String   @db.ObjectId
-  investmentType              String
-  investmentAmount            Float
-  investmentStartDate         DateTime
-  investmentInterestRate      Float
-  investmentPaymentMode       String
-  investmentPaymentPaidByName String
-  investmentPaymentDetails    String
+  id                            String    @id @default(auto()) @map("_id") @db.ObjectId
+  customerName                  String
+  investerId                    String    @db.ObjectId
+  investmentType                String
+  investmentAmount              Float
+  investmentStartDate           DateTime
+  investmentInterestRate        Float
+  investmentPaymentMode         String
+  investmentPaymentPaidByName   String
+  investmentPaymentDetails      String
   investmentMonthlyIncomeAmount Float
-  investmentComments          String
-  status                      Boolean
-  createdBy                   Int
-  createdOn                   DateTime
-  modifiedBy                  Int?
-  modifiedOn                  DateTime?
+  investmentComments            String
+  status                        Boolean
+  createdBy                     Int
+  createdOn                     DateTime
+  modifiedBy                    Int?
+  modifiedOn                    DateTime?
 }
 
 model InvestmentReturns {
-  id                       String   @id @default(auto()) @map("_id") @db.ObjectId
-  investmentId             String   @db.ObjectId
+  id                       String    @id @default(auto()) @map("_id") @db.ObjectId
+  investmentId             String    @db.ObjectId
   investmentReturnDate     DateTime
   investmentReturnAmount   Float
   investmentReturnComments String
@@ -159,22 +167,22 @@ model InvestmentReturns {
 }
 
 model InvestmentIncome {
-  id                   String   @id @default(auto()) @map("_id") @db.ObjectId
-  investmentId         String   @db.ObjectId
-  amountDue            Float
-  amountDueMonth       DateTime
-  amountReceived       Float
-  amountReceivedDate   DateTime
-  paymentDetails       String
-  comments             String
-  createdBy            Int
-  createdOn            DateTime
-  modifiedBy           Int?
-  modifiedOn           DateTime?
+  id                 String    @id @default(auto()) @map("_id") @db.ObjectId
+  investmentId       String    @db.ObjectId
+  amountDue          Float
+  amountDueMonth     DateTime
+  amountReceived     Float
+  amountReceivedDate DateTime
+  paymentDetails     String
+  comments           String
+  createdBy          Int
+  createdOn          DateTime
+  modifiedBy         Int?
+  modifiedOn         DateTime?
 }
 
 model Invester {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
   name       String
   isActive   Boolean
   createdBy  Int
@@ -184,58 +192,58 @@ model Invester {
 }
 
 model Earnings {
-  id                       String   @id @default(auto()) @map("_id") @db.ObjectId
-  investmentId             String   @db.ObjectId
-  customerId               String   @db.ObjectId
-  earningType              String
-  earningDueDate           DateTime
-  grossEarningAmount       Float
-  earningTdsAmount         Float
-  netEarningAmount         Float
-  earningAmountPaid        Float
-  earningAmountPaidDate    DateTime
-  earningPaymentDetails    String
-  earningPaymentComments   String
-  createdBy                Int
-  createdOn                DateTime
-  modifiedBy               Int?
-  modifiedOn               DateTime?
+  id                     String    @id @default(auto()) @map("_id") @db.ObjectId
+  investmentId           String    @db.ObjectId
+  customerId             String    @db.ObjectId
+  earningType            String
+  earningDueDate         DateTime
+  grossEarningAmount     Float
+  earningTdsAmount       Float
+  netEarningAmount       Float
+  earningAmountPaid      Float
+  earningAmountPaidDate  DateTime
+  earningPaymentDetails  String
+  earningPaymentComments String
+  createdBy              Int
+  createdOn              DateTime
+  modifiedBy             Int?
+  modifiedOn             DateTime?
 }
 
 model Gst {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  code       String
-  name       String
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  code          String
+  name          String
   taxPercentage Float
-  isActive   Boolean
-  createdBy  Int
-  createdOn  DateTime
-  modifiedBy Int?
-  modifiedOn DateTime?
+  isActive      Boolean
+  createdBy     Int
+  createdOn     DateTime
+  modifiedBy    Int?
+  modifiedOn    DateTime?
 }
 
 model GstCodes {
-  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
-  name                String
-  gstId               String   @db.ObjectId
-  effectiveStartDate  DateTime
-  effectiveEndDate    DateTime
-  isActive            Boolean
-  createdBy           Int
-  createdOn           DateTime
-  modifiedBy          Int?
-  modifiedOn          DateTime?
+  id                 String    @id @default(auto()) @map("_id") @db.ObjectId
+  name               String
+  gstId              String    @db.ObjectId
+  effectiveStartDate DateTime
+  effectiveEndDate   DateTime
+  isActive           Boolean
+  createdBy          Int
+  createdOn          DateTime
+  modifiedBy         Int?
+  modifiedOn         DateTime?
 }
 
 model BillingServices {
-  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
-  name                String
-  gstId               String   @db.ObjectId
-  effectiveStartDate  DateTime
-  effectiveEndDate    DateTime
-  isActive            Boolean
-  createdBy           Int
-  createdOn           DateTime
-  modifiedBy          Int?
-  modifiedOn          DateTime?
+  id                 String    @id @default(auto()) @map("_id") @db.ObjectId
+  name               String
+  gstId              String    @db.ObjectId
+  effectiveStartDate DateTime
+  effectiveEndDate   DateTime
+  isActive           Boolean
+  createdBy          Int
+  createdOn          DateTime
+  modifiedBy         Int?
+  modifiedOn         DateTime?
 }

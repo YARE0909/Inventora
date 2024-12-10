@@ -10,12 +10,17 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
-    --foreground: #ededed;
+    --foreground: #19191c;
+    --default-text: #ffffff;
+    --border-color: #262629;
+    --alt-text: #b3b3ab;
+    --highlight: #262629
   }
 }
 
 body {
-  color: var(--foreground);
+  color: var(--default-text);
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
+  @apply font-Montserrat
 }

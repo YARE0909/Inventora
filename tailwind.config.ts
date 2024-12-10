@@ -11,7 +11,13 @@ export default {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        border: "var(--border-color)",
+        textAlt: "var(--alt-text)",
+        highlight: "var(--highlight)",
       },
+      fontFamily: {
+        Montserrat: ["Montserrat", "sans-serif"],
+      }
     },
   },
   plugins: [],

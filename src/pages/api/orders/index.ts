@@ -1,26 +1,42 @@
 import prisma from "@/utils/prismaClient";
 import generateRandomString from "@/utils/randomStringGenerator";
 import type { NextApiRequest, NextApiResponse } from "next";
+import { Prisma } from "@prisma/client";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   const { method } = req;
 
   try {
     switch (method) {
       case "GET":
-        if (req.query.id) {
-          const order = await prisma.orders.findUnique({
-            where: { id: String(req.query.id) },
-          });
-          if (!order) {
-            return res.status(404).json({ error: "Order not found" });
-          }
-          return res.status(200).json(order);
-        } else {
-          const orders = await prisma.orders.findMany({
-          });
-          return res.status(200).json(orders);
+        // Get the 'status' and 'clientName' query parameters
+        const { status, clientName } = req.query;
+
+        // Build the filter object based on provided query parameters
+        const filter: {
+          orderStatus: string;
+          customerName?: { contains: string; mode: Prisma.QueryMode };
+        } = {
+          orderStatus: String(status), // The 'status' is always required
+        };
+
+        // If 'clientName' is provided, add it to the filter
+        if (clientName) {
+          filter.customerName = {
+            contains: String(clientName), // Use 'contains' for a case-insensitive search
+            mode: Prisma.QueryMode.insensitive, // Use the correct QueryMode enum value
+          };
         }
+
+        // Fetch orders based on the filter
+        const orders = await prisma.orders.findMany({
+          where: filter,
+        });
+
+        return res.status(200).json(orders);
 
       case "POST":
         const {
