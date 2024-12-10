@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 import prisma from "@/utils/prismaClient";
 import generateRandomString from "@/utils/randomStringGenerator";
 import { Prisma, OrderStatus } from "@prisma/client";

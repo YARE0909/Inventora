@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { json2csv } from "json-2-csv";
 
 // Define a generic type for the data objects
