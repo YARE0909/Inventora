@@ -47,7 +47,7 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
               {columns.map((column, index) => (
                 <th
                   key={index}
-                  className="px-4 py-2 text-left text-textAlt text-xs uppercase"
+                  className="px-4 py-2 text-left text-textAlt text-xs uppercase whitespace-nowrap"
                 >
                   {column}
                 </th>
