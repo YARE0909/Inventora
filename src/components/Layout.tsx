@@ -104,7 +104,7 @@ const Header = ({
   children: React.ReactNode;
 }) => {
   return (
-    <div className="w-full max-w-screen-sm md:max-w-screen-lg lg:max-w-screen-xl h-14 border-b border-b-border p-4 fixed top-0 z-10 bg-background flex justify-between items-center gap-5 lg:gap-0 lg:pr-9">
+    <div className="w-full h-14 border-b border-b-border p-4 z-10 bg-background flex justify-between items-center gap-5 lg:gap-0">
       <div className="flex items-center gap-1">
         <button
           className="lg:hidden"
@@ -137,14 +137,12 @@ const Layout = ({
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       {/* Main Content */}
-      <div className="w-full lg:w-5/6 ml-auto bg-background flex flex-col relative z-0">
+      <div className="w-full h-screen lg:w-5/6 ml-auto bg-background flex flex-col relative z-0 overflow-hidden">
         {/* Header */}
-        <div className="w-full overflow-auto">
-          <Header onMenuClick={() => setSidebarOpen(true)}>{header}</Header>
-        </div>
+        <Header onMenuClick={() => setSidebarOpen(true)}>{header}</Header>
 
         {/* Body */}
-        <div className="w-full h-full overflow-auto p-4 mt-14 relative">
+        <div className="w-full h-full overflow-auto p-4 relative">
           {children}
         </div>
       </div>
