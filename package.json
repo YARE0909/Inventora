@@ -12,6 +12,7 @@
     "@prisma/client": "^6.0.1",
     "axios": "^1.7.9",
     "date-fns": "^4.1.0",
+    "json-2-csv": "^5.5.7",
     "lucide-react": "^0.468.0",
     "next": "15.0.4",
     "prisma": "^6.0.1",

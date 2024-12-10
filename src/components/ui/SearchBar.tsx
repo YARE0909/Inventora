@@ -50,7 +50,7 @@ const SearchBar = ({
 
   return (
     <div className="flex flex-col min-w-64 max-w-96 w-full">
-      <div className="flex items-center border border-border rounded-lg bg-background focus-within:ring-2 focus-within:ring-blue-500">
+      <div className="flex items-center border border-border rounded-lg bg-background focus-within:ring-2 focus-within:ring-highlight">
         <div className="pl-3">
           <Search className="h-5 w-5 text-textAlt" />
         </div>

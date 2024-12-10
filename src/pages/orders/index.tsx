@@ -5,6 +5,8 @@ import SearchBar from "@/components/ui/SearchBar";
 import Tabs from "@/components/ui/Tabs";
 import axios from "axios";
 import { format } from "date-fns";
+import { FileSpreadsheet } from "lucide-react";
+import { exportToCSV } from "@/utils/jsonToCsv";
 
 // Define a type for the data structure
 type OrderData = {
@@ -86,12 +88,29 @@ const OrderTable = ({
         <div className="hidden md:block">
           <h1 className="font-semibold text-textAlt text-lg">{header}</h1>
         </div>
-        <SearchBar
-          type="text"
-          placeholder="Search here..."
-          onEnter={handleSearch}
-          onChange={(value) => console.log("Input Changed:", value)}
-        />
+        <div className="w-full md:w-fit flex flex-row items-center gap-1">
+          <SearchBar
+            type="text"
+            placeholder="Search here..."
+            onEnter={handleSearch}
+            onChange={(value) => console.log("Input Changed:", value)}
+          />
+          <button
+            className="bg-background border border-border rounded-md p-2 text-xs font-bold text-textAlt whitespace-nowrap flex items-center gap-1"
+            onClick={() =>
+              exportToCSV(data, [
+                "id",
+                "createdBy",
+                "createdOn",
+                "modifiedBy",
+                "modifiedOn",
+              ])
+            }
+          >
+            <FileSpreadsheet className="w-5 h-5" />
+            <span className="hidden md:block">Export Data</span>
+          </button>
+        </div>
       </div>
       <PaginatedTable columns={columns} loadingState={loading}>
         {data.map((row, index) => (
