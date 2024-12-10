@@ -1,12 +1,9 @@
 import prisma from "@/utils/prismaClient";
 import generateRandomString from "@/utils/randomStringGenerator";
-import type { NextApiRequest, NextApiResponse } from "next";
-import { Prisma } from "@prisma/client";
+import { Prisma, OrderStatus } from "@prisma/client";
+import { NextApiRequest, NextApiResponse } from "next";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
 
   try {
@@ -17,10 +14,10 @@ export default async function handler(
 
         // Build the filter object based on provided query parameters
         const filter: {
-          orderStatus: string;
+          orderStatus: OrderStatus; // Enum value instead of string
           customerName?: { contains: string; mode: Prisma.QueryMode };
         } = {
-          orderStatus: String(status), // The 'status' is always required
+          orderStatus: OrderStatus[status as keyof typeof OrderStatus], // Use the enum value
         };
 
         // If 'clientName' is provided, add it to the filter
@@ -64,7 +61,7 @@ export default async function handler(
             orderValue: parseFloat(orderValue),
             orderCount: parseInt(orderCount, 10),
             orderDeliveryDate: new Date(orderDeliveryDate),
-            orderStatus,
+            orderStatus, // Make sure orderStatus matches the enum type
             orderComments,
             createdBy,
             createdOn: new Date(),
