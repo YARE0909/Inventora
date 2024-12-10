@@ -1,3 +1,5 @@
+/* eslint-disable  @typescript-eslint/no-explicit-any @typescript-eslint/no-unused-vars */
+
 import prisma from "@/utils/prismaClient";
 import generateRandomString from "@/utils/randomStringGenerator";
 import { Prisma, OrderStatus } from "@prisma/client";

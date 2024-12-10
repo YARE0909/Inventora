@@ -55,7 +55,7 @@ const OrderTable = ({
 
       const isOrderId = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z0-9]{6}$/.test(value);
 
-      let queryParams: Record<string, string> = { status: activeTab };
+      const queryParams: Record<string, string> = { status: activeTab };
 
       if (isOrderId) {
         queryParams.orderNumber = value;
