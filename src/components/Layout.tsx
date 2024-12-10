@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import ThemeToggler from "./ThemeToggler";
 
 const sideBarLinks = [
   {
@@ -49,9 +50,9 @@ const Sidebar = ({
 
   return (
     <div
-      className={`w-3/4 lg:w-1/6 h-screen bg-foreground p-4 flex flex-col gap-7 fixed top-0 bottom-0 border-r border-border transition-transform duration-300 z-20 
+      className={`w-3/4 md:w-1/4 lg:w-1/6 h-screen bg-foreground p-4 flex flex-col gap-7 fixed top-0 bottom-0 border-r border-border transition-transform duration-300 z-20 
       ${isOpen ? "translate-x-0" : "-translate-x-full"} 
-      md:translate-x-0`}
+      lg:translate-x-0`}
     >
       <div className="w-full flex gap-2 items-center justify-between">
         <div className="flex items-center gap-2">
@@ -59,7 +60,7 @@ const Sidebar = ({
           <h1 className="text-xl font-extrabold">Inventora</h1>
         </div>
         <button
-          className="md:hidden"
+          className="lg:hidden"
           onClick={onClose}
           aria-label="Close Sidebar"
         >
@@ -103,15 +104,20 @@ const Header = ({
   children: React.ReactNode;
 }) => {
   return (
-    <div className="w-full h-14 border-b border-b-border p-4 fixed top-0 z-10 bg-background flex items-center gap-5 lg:gap-0">
-      <button
-        className="md:hidden"
-        onClick={onMenuClick}
-        aria-label="Open Sidebar"
-      >
-        <Menu className="h-6 w-6" />
-      </button>
-      <h1 className="font-bold text-xl">{children}</h1>
+    <div className="w-full max-w-screen-sm md:max-w-screen-lg lg:max-w-screen-xl h-14 border-b border-b-border p-4 fixed top-0 z-10 bg-background flex justify-between items-center gap-5 lg:gap-0 lg:pr-9">
+      <div className="flex items-center gap-1">
+        <button
+          className="lg:hidden"
+          onClick={onMenuClick}
+          aria-label="Open Sidebar"
+        >
+          <Menu className="h-6 w-6" />
+        </button>
+        <h1 className="font-bold text-xl">{children}</h1>
+      </div>
+      <div>
+        <ThemeToggler />
+      </div>
     </div>
   );
 };
@@ -131,9 +137,11 @@ const Layout = ({
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       {/* Main Content */}
-      <div className="w-full md:w-5/6 ml-auto bg-background flex flex-col relative z-0">
+      <div className="w-full lg:w-5/6 ml-auto bg-background flex flex-col relative z-0">
         {/* Header */}
-        <Header onMenuClick={() => setSidebarOpen(true)}>{header}</Header>
+        <div className="w-full overflow-auto">
+          <Header onMenuClick={() => setSidebarOpen(true)}>{header}</Header>
+        </div>
 
         {/* Body */}
         <div className="w-full h-full overflow-auto p-4 mt-14 relative">
