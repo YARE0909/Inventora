@@ -1,22 +1,31 @@
 import { json2csv } from "json-2-csv";
 
+// Define a generic type for the data objects
+type DataItem = { [key: string]: any };
+
 // Function to remove specified fields from the data
-export const removeFields = (data: any[], fieldsToRemove: string[]) => {
+export const removeFields = <T extends DataItem>(
+  data: T[],
+  fieldsToRemove: string[]
+): T[] => {
   return data.map((item) => {
-    let filteredItem = { ...item };
+    const filteredItem = { ...item };
     fieldsToRemove.forEach((field) => delete filteredItem[field]);
     return filteredItem;
   });
 };
 
 // Function to convert data to CSV with specific fields removed
-export const exportToCSV = async (data: any[], fieldsToRemove: string[]) => {
+export const exportToCSV = async <T extends DataItem>(
+  data: T[],
+  fieldsToRemove: string[]
+): Promise<void> => {
   try {
     // Remove unwanted fields from the data
     const filteredData = removeFields(data, fieldsToRemove);
 
     // Convert filtered data to CSV format using json2csv
-    const csv = json2csv(filteredData);
+    const csv = await json2csv(filteredData);
 
     // Create a Blob with the CSV data and trigger the download
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
