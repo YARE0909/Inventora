@@ -79,8 +79,8 @@ const Sidebar = ({
                   href={link.href}
                   className={`text-sm p-1 pl-2 mt-[2px] rounded-lg cursor-pointer duration-500 flex items-center gap-1 ${
                     router.pathname === link.href
-                      ? "bg-highlight text-white"
-                      : "text-gray-300 hover:bg-highlight"
+                      ? "bg-highlight"
+                      : "text-text hover:bg-highlight"
                   }`}
                 >
                   {link.icon}

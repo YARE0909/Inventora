@@ -84,7 +84,7 @@ const OrderTable = ({
     <div className="w-full flex flex-col gap-3">
       <div className="w-full flex justify-between items-center">
         <div className="hidden md:block">
-          <h1 className="font-semibold text-gray-300 text-lg">{header}</h1>
+          <h1 className="font-semibold text-textAlt text-lg">{header}</h1>
         </div>
         <SearchBar
           type="text"
