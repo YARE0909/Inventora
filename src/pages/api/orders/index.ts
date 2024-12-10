@@ -3,28 +3,61 @@ import generateRandomString from "@/utils/randomStringGenerator";
 import { Prisma, OrderStatus } from "@prisma/client";
 import { NextApiRequest, NextApiResponse } from "next";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   const { method } = req;
 
   try {
     switch (method) {
       case "GET":
-        // Get the 'status' and 'clientName' query parameters
-        const { status, clientName } = req.query;
+        // Get the query parameters
+        const { status, clientName, orderNumber, startDate, endDate } =
+          req.query;
 
         // Build the filter object based on provided query parameters
         const filter: {
-          orderStatus: OrderStatus; // Enum value instead of string
+          orderStatus?: OrderStatus; // Enum value instead of string
           customerName?: { contains: string; mode: Prisma.QueryMode };
-        } = {
-          orderStatus: OrderStatus[status as keyof typeof OrderStatus], // Use the enum value
-        };
+          orderNumber?: { contains: string; mode: Prisma.QueryMode };
+          orderDate?: { gte?: Date; lte?: Date }; // Date range filter
+        } = {};
+
+        // If 'status' is provided, add it to the filter
+        if (status) {
+          filter.orderStatus = OrderStatus[status as keyof typeof OrderStatus]; // Use the enum value
+        }
 
         // If 'clientName' is provided, add it to the filter
         if (clientName) {
           filter.customerName = {
             contains: String(clientName), // Use 'contains' for a case-insensitive search
             mode: Prisma.QueryMode.insensitive, // Use the correct QueryMode enum value
+          };
+        }
+
+        // If 'orderNumber' is provided, add it to the filter
+        if (orderNumber) {
+          filter.orderNumber = {
+            contains: String(orderNumber), // Use 'contains' for case-insensitive search
+            mode: Prisma.QueryMode.insensitive,
+          };
+        }
+
+        // If a date range is provided, add the 'orderDate' filter
+        if (startDate && endDate) {
+          filter.orderDate = {
+            gte: new Date(startDate as string), // Greater than or equal to startDate
+            lte: new Date(endDate as string), // Less than or equal to endDate
+          };
+        } else if (startDate) {
+          filter.orderDate = {
+            gte: new Date(startDate as string), // Only start date pr Fovided
+          };
+        } else if (endDate) {
+          filter.orderDate = {
+            lte: new Date(endDate as string), // Only end date provided
           };
         }
 
@@ -63,7 +96,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             orderDeliveryDate: new Date(orderDeliveryDate),
             orderStatus, // Make sure orderStatus matches the enum type
             orderComments,
-            createdBy,
+            createdBy, // TODO: Update this with the actual user ID
             createdOn: new Date(),
           },
         });
@@ -99,7 +132,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(405).end(`Method ${method} Not Allowed`);
     }
   } catch (error) {
-    console.error("Error handling orders API:", error);
+    console.log("Error handling orders API:", error);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 }

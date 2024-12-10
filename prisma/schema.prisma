@@ -14,8 +14,8 @@ datasource db {
 }
 
 model Orders {
-  id                  String      @id @default(auto()) @map("_id") @db.ObjectId
-  orderNumber         String      @unique
+  id                  String       @id @default(auto()) @map("_id") @db.ObjectId
+  orderNumber         String       @unique
   orderDate           DateTime
   customerName        String
   contactPerson       String
@@ -24,39 +24,53 @@ model Orders {
   orderValue          Float
   orderCount          Int
   orderDeliveryDate   DateTime
-  orderStatus         OrderStatus @default(Active) // Use enum with default
-  orderComments       String
+  orderStatus         OrderStatus  @default(Active)
+  orderComments       String?
   createdBy           Int
   createdOn           DateTime
-  modifiedBy          Int?
-  modifiedOn          DateTime?
+  orderItems          OrderItems[]
+  invoices            Invoices[]
 }
 
-// Enum for orderStatus
-enum OrderStatus {
-  Active
-  OnHold
-  Completed
-  Cancelled
+model Products {
+  id           String         @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  description  String
+  price        Float
+  gstId        String         @db.ObjectId
+  createdBy    Int
+  createdOn    DateTime
+  gst          Gst            @relation(fields: [gstId], references: [id])
+  orderItems   OrderItems[]
+  invoiceItems InvoiceItems[]
 }
 
-model OrderAdvanceDetails {
-  id                         String    @id @default(auto()) @map("_id") @db.ObjectId
-  orderId                    String    @db.ObjectId
-  orderAdvanceAmount         Float
-  orderAdvanceDate           DateTime
-  orderAdvancePaymentDetails String
-  orderAdvanceStatus         String
-  orderAdvanceComments       String
-  createdBy                  Int
-  createdOn                  DateTime
-  modifiedBy                 Int?
-  modifiedOn                 DateTime?
+model Gst {
+  id           String         @id @default(auto()) @map("_id") @db.ObjectId
+  gstRate      Float
+  gstType      String
+  createdBy    Int
+  createdOn    DateTime
+  products     Products[]
+  invoiceItems InvoiceItems[]
 }
 
-model Invoice {
-  id                      String    @id @default(auto()) @map("_id") @db.ObjectId
-  orderId                 String    @db.ObjectId
+model OrderItems {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  orderId     String   @db.ObjectId
+  productId   String   @db.ObjectId
+  quantity    Int
+  unitPrice   Float
+  totalAmount Float
+  createdBy   Int
+  createdOn   DateTime
+  order       Orders   @relation(fields: [orderId], references: [id])
+  product     Products @relation(fields: [productId], references: [id])
+}
+
+model Invoices {
+  id                      String         @id @default(auto()) @map("_id") @db.ObjectId
+  orderId                 String         @db.ObjectId
   invoiceNumber           String
   invoiceDate             DateTime
   invoiceAmount           Float
@@ -66,184 +80,55 @@ model Invoice {
   shippingChargesAmount   Float
   discountAmount          Float
   customerGst             String
-  invoiceComments         String
+  invoiceComments         String?
   createdBy               Int
   createdOn               DateTime
-  modifiedBy              Int?
-  modifiedOn              DateTime?
+  order                   Orders         @relation(fields: [orderId], references: [id])
+  invoiceItems            InvoiceItems[]
+  payments                Payments[]
 }
 
-model InvoiceDetails {
-  id               String    @id @default(auto()) @map("_id") @db.ObjectId
-  invoiceId        String    @db.ObjectId
-  billingServiceId String    @db.ObjectId
-  itemCode         String
-  itemQuantity     Int
-  itemRate         Float
-  invoiceAmount    Float
-  itemGstId        String    @db.ObjectId
-  itemGstValue     Float
-  createdBy        Int
-  createdOn        DateTime
-  modifiedBy       Int?
-  modifiedOn       DateTime?
+model InvoiceItems {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  invoiceId     String   @db.ObjectId
+  productId     String   @db.ObjectId
+  itemCode      String
+  itemQuantity  Int
+  itemRate      Float
+  invoiceAmount Float
+  itemGstId     String   @db.ObjectId
+  itemGstValue  Float
+  createdBy     Int
+  createdOn     DateTime
+  invoice       Invoices @relation(fields: [invoiceId], references: [id])
+  product       Products @relation(fields: [productId], references: [id])
+  gst           Gst      @relation(fields: [itemGstId], references: [id])
 }
 
 model Payments {
-  id                 String    @id @default(auto()) @map("_id") @db.ObjectId
-  invoiceId          String    @db.ObjectId
+  id                 String        @id @default(auto()) @map("_id") @db.ObjectId
+  invoiceId          String        @db.ObjectId
   paymentMode        String
   paymentDate        DateTime
   paymentAmount      Float
   paymentReferenceId String
-  paymentDetails     String
-  paymentComments    String
+  paymentDetails     String?
+  paymentComments    String?
+  paymentStatus      PaymentStatus @default(Pending)
   createdBy          Int
   createdOn          DateTime
-  modifiedBy         Int?
-  modifiedOn         DateTime?
+  invoice            Invoices      @relation(fields: [invoiceId], references: [id])
 }
 
-model Delivery {
-  id                String    @id @default(auto()) @map("_id") @db.ObjectId
-  orderId           String    @db.ObjectId
-  invoiceId         String    @db.ObjectId
-  deliveredCount    Int
-  deliveryComments  String
-  wastageCount      Int
-  wastageComments   String
-  rejectionCount    Int
-  rejectionComments String
-  returnsCount      Int
-  returnsComments   String
-  createdBy         Int
-  createdOn         DateTime
-  modifiedBy        Int?
-  modifiedOn        DateTime?
+enum OrderStatus {
+  Active
+  OnHold
+  Completed
+  Cancelled
 }
 
-model Users {
-  id         String    @id @default(auto()) @map("_id") @db.ObjectId
-  userName   String
-  role       String
-  isActive   Boolean
-  createdBy  Int
-  createdOn  DateTime
-  modifiedBy Int?
-  modifiedOn DateTime?
-}
-
-model Investment {
-  id                            String    @id @default(auto()) @map("_id") @db.ObjectId
-  customerName                  String
-  investerId                    String    @db.ObjectId
-  investmentType                String
-  investmentAmount              Float
-  investmentStartDate           DateTime
-  investmentInterestRate        Float
-  investmentPaymentMode         String
-  investmentPaymentPaidByName   String
-  investmentPaymentDetails      String
-  investmentMonthlyIncomeAmount Float
-  investmentComments            String
-  status                        Boolean
-  createdBy                     Int
-  createdOn                     DateTime
-  modifiedBy                    Int?
-  modifiedOn                    DateTime?
-}
-
-model InvestmentReturns {
-  id                       String    @id @default(auto()) @map("_id") @db.ObjectId
-  investmentId             String    @db.ObjectId
-  investmentReturnDate     DateTime
-  investmentReturnAmount   Float
-  investmentReturnComments String
-  status                   Boolean
-  createdBy                Int
-  createdOn                DateTime
-  modifiedBy               Int?
-  modifiedOn               DateTime?
-}
-
-model InvestmentIncome {
-  id                 String    @id @default(auto()) @map("_id") @db.ObjectId
-  investmentId       String    @db.ObjectId
-  amountDue          Float
-  amountDueMonth     DateTime
-  amountReceived     Float
-  amountReceivedDate DateTime
-  paymentDetails     String
-  comments           String
-  createdBy          Int
-  createdOn          DateTime
-  modifiedBy         Int?
-  modifiedOn         DateTime?
-}
-
-model Invester {
-  id         String    @id @default(auto()) @map("_id") @db.ObjectId
-  name       String
-  isActive   Boolean
-  createdBy  Int
-  createdOn  DateTime
-  modifiedBy Int?
-  modifiedOn DateTime?
-}
-
-model Earnings {
-  id                     String    @id @default(auto()) @map("_id") @db.ObjectId
-  investmentId           String    @db.ObjectId
-  customerId             String    @db.ObjectId
-  earningType            String
-  earningDueDate         DateTime
-  grossEarningAmount     Float
-  earningTdsAmount       Float
-  netEarningAmount       Float
-  earningAmountPaid      Float
-  earningAmountPaidDate  DateTime
-  earningPaymentDetails  String
-  earningPaymentComments String
-  createdBy              Int
-  createdOn              DateTime
-  modifiedBy             Int?
-  modifiedOn             DateTime?
-}
-
-model Gst {
-  id            String    @id @default(auto()) @map("_id") @db.ObjectId
-  code          String
-  name          String
-  taxPercentage Float
-  isActive      Boolean
-  createdBy     Int
-  createdOn     DateTime
-  modifiedBy    Int?
-  modifiedOn    DateTime?
-}
-
-model GstCodes {
-  id                 String    @id @default(auto()) @map("_id") @db.ObjectId
-  name               String
-  gstId              String    @db.ObjectId
-  effectiveStartDate DateTime
-  effectiveEndDate   DateTime
-  isActive           Boolean
-  createdBy          Int
-  createdOn          DateTime
-  modifiedBy         Int?
-  modifiedOn         DateTime?
-}
-
-model BillingServices {
-  id                 String    @id @default(auto()) @map("_id") @db.ObjectId
-  name               String
-  gstId              String    @db.ObjectId
-  effectiveStartDate DateTime
-  effectiveEndDate   DateTime
-  isActive           Boolean
-  createdBy          Int
-  createdOn          DateTime
-  modifiedBy         Int?
-  modifiedOn         DateTime?
+enum PaymentStatus {
+  Pending
+  Paid
+  PartiallyPaid
 }

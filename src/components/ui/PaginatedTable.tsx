@@ -39,7 +39,7 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
   );
 
   return (
-    <div className="w-full bg-background shadow-md rounded-lg overflow-hidden">
+    <div className="w-full bg-background border border-border rounded-md overflow-hidden">
       <div className="p-4 overflow-x-auto">
         <table className="w-full table-auto">
           <thead>
@@ -101,7 +101,7 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
 
         <div className="flex items-center">
           <button
-            className="p-1"
+            className="p-1 disabled:cursor-not-allowed"
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
           >
@@ -111,7 +111,7 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
             Page {currentPage} of {totalPages}
           </span>
           <button
-            className="p-1"
+            className="p-1 disabled:cursor-not-allowed"
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
           >

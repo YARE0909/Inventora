@@ -3,12 +3,12 @@
 @tailwind utilities;
 
 :root {
-  --background: #f5f5f5;
-  --foreground: #e6e6e3;
+  --background: #ffffff;
+  --foreground: #fafafa;
   --default-text: #000000;
   --border-color: #d9d9d6;
   --alt-text: #4c4c54;
-  --highlight: #d9d9d6;
+  --highlight: #f5f5f5;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -26,5 +26,5 @@ body {
   color: var(--default-text);
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
-  @apply font-Montserrat
+  @apply font-Montserrat;
 }

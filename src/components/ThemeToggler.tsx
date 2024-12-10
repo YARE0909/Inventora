@@ -1,5 +1,6 @@
 import { Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
+import Tooltip from "./ui/ToolTip";
 
 const ThemeToggler: React.FC = () => {
   const [theme, setTheme] = useState<"light" | "dark">(() => {
@@ -13,12 +14,12 @@ const ThemeToggler: React.FC = () => {
     const root = document.documentElement;
 
     const lightTheme = {
-      "--background": "#f5f5f5",
-      "--foreground": "#e6e6e3",
+      "--background": "#ffffff",
+      "--foreground": "#fafafa",
       "--default-text": "#000000",
       "--border-color": "#d9d9d6",
       "--alt-text": "#4c4c54",
-      "--highlight": "#d9d9d6",
+      "--highlight": "#f5f5f5",
     };
 
     const darkTheme = {
@@ -46,13 +47,22 @@ const ThemeToggler: React.FC = () => {
   return (
     <div
       onClick={toggleTheme}
-      className="flex items-center justify-between w-20 h-10 p-1 rounded-full cursor-pointer bg-foreground"
+      className="flex items-center justify-between w-fit h-fit p-1 rounded-full cursor-pointer bg-foreground"
       style={{
         boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
         transition: "background-color 0.5s",
       }}
     >
-      <div
+      {theme === "light" ? (
+        <Tooltip tooltip="Switch to Dark Mode" position="left">
+          <Sun className="w-6 h-6 text-textAlt" />
+        </Tooltip>
+      ) : (
+        <Tooltip tooltip="Switch to Light Mode" position="left">
+          <Moon className="w-6 h-6 text-textAlt" />
+        </Tooltip>
+      )}
+      {/* <div
         className={`flex items-center justify-center w-8 h-8 rounded-full ${
           theme === "light" ? "bg-highlight text-default-text" : "text-alt-text"
         }`}
@@ -65,7 +75,7 @@ const ThemeToggler: React.FC = () => {
         }`}
       >
         <Moon className="w-5 h-5" />
-      </div>
+      </div> */}
     </div>
   );
 };

@@ -78,7 +78,7 @@ const Sidebar = ({
               <div key={link.name} className="flex flex-col">
                 <Link
                   href={link.href}
-                  className={`text-sm p-1 pl-2 mt-[2px] rounded-lg cursor-pointer duration-500 flex items-center gap-1 ${
+                  className={`text-sm p-1 pl-2 mt-[2px] rounded-md cursor-pointer duration-500 flex items-center gap-1 ${
                     router.pathname === link.href
                       ? "bg-highlight"
                       : "text-text hover:bg-highlight"
@@ -142,7 +142,7 @@ const Layout = ({
         <Header onMenuClick={() => setSidebarOpen(true)}>{header}</Header>
 
         {/* Body */}
-        <div className="w-full h-full overflow-auto p-4 relative">
+        <div className="w-full h-full overflow-x-hidden overflow-auto p-4 relative">
           {children}
         </div>
       </div>

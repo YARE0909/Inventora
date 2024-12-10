@@ -5,8 +5,11 @@ import SearchBar from "@/components/ui/SearchBar";
 import Tabs from "@/components/ui/Tabs";
 import axios from "axios";
 import { format } from "date-fns";
-import { FileSpreadsheet } from "lucide-react";
+import { FileSpreadsheet, FilterX } from "lucide-react";
 import { exportToCSV } from "@/utils/jsonToCsv";
+import Button from "@/components/ui/Button";
+import Tooltip from "@/components/ui/ToolTip";
+import { useToast } from "@/components/ui/Toast/ToastProvider";
 
 // Define a type for the data structure
 type OrderData = {
@@ -43,16 +46,48 @@ const OrderTable = ({
   loading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
+  // TODO: Implement filter by date
+  const { toast } = useToast();
+
   const handleSearch = async (value: string) => {
     try {
       setLoading(true);
+
+      const isOrderId = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z0-9]{6}$/.test(value);
+
+      let queryParams: Record<string, string> = { status: activeTab };
+
+      if (isOrderId) {
+        queryParams.orderNumber = value;
+      } else {
+        queryParams.clientName = value;
+      }
+
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/orders?status=${activeTab}&clientName=${value}`
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/orders`,
+        { params: queryParams }
       );
+
       setData(response.data);
       setLoading(false);
     } catch (error) {
-      console.error("Error fetching data:", error);
+      toast("Something went wrong.", "top-right", "error");
+      setLoading(false);
+    }
+  };
+
+  const clearFilters = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/orders?status=${activeTab}`
+      );
+      setData(response.data);
+      setLoading(false);
+      toast("Filters cleared successfully!", "top-right", "success");
+    } catch (error) {
+      toast("Something went wrong.", "top-right", "error");
+      setLoading(false);
     }
   };
 
@@ -61,8 +96,17 @@ const OrderTable = ({
     // TODO: Implement drawer opening logic
   };
 
+  const handleExportToCSV = (data: any, filters: string[]) => {
+    try {
+      exportToCSV(data, filters);
+      toast("Exported to CSV successfully!", "top-right", "success");
+    } catch (error) {
+      toast("Something went wrong.", "top-right", "error");
+    }
+  };
+
   const columns = [
-    "#",
+    "Order #",
     "Customer",
     "Delivery Date",
     "Total Amount",
@@ -70,7 +114,7 @@ const OrderTable = ({
   ];
 
   const columnMappings: { [key: string]: keyof OrderData } = {
-    "#": "orderNumber",
+    "Order #": "orderNumber",
     Customer: "customerName",
     "Delivery Date": "orderDeliveryDate",
     "Total Amount": "orderValue",
@@ -95,21 +139,26 @@ const OrderTable = ({
             onEnter={handleSearch}
             onChange={(value) => console.log("Input Changed:", value)}
           />
-          <button
-            className="bg-background border border-border rounded-md p-2 text-xs font-bold text-textAlt whitespace-nowrap flex items-center gap-1"
-            onClick={() =>
-              exportToCSV(data, [
-                "id",
-                "createdBy",
-                "createdOn",
-                "modifiedBy",
-                "modifiedOn",
-              ])
-            }
-          >
-            <FileSpreadsheet className="w-5 h-5" />
-            <span className="hidden md:block">Export Data</span>
-          </button>
+          <Tooltip tooltip="Clear Filters">
+            <Button onClick={clearFilters}>
+              <FilterX className="w-5 h-5" />
+            </Button>
+          </Tooltip>
+          <Tooltip tooltip="Export To CSV">
+            <Button
+              onClick={() =>
+                handleExportToCSV(data, [
+                  "id",
+                  "createdBy",
+                  "createdOn",
+                  "modifiedBy",
+                  "modifiedOn",
+                ])
+              }
+            >
+              <FileSpreadsheet className="w-5 h-5" />
+            </Button>
+          </Tooltip>
         </div>
       </div>
       <PaginatedTable columns={columns} loadingState={loading}>
@@ -141,6 +190,7 @@ export default function Home() {
     "Active" | "OnHold" | "Completed" | "Cancelled"
   >("Active");
   const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -152,7 +202,7 @@ export default function Home() {
         setData(response.data);
         setLoading(false);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        toast("Something went wrong.", "top-right", "error");
       }
     };
 
