@@ -1,55 +1,38 @@
 import React from "react";
-import { Menu, ArrowLeft } from "lucide-react";
-import { BringToFront } from "lucide-react";
+import {
+  Menu,
+  ArrowLeft,
+  LayoutDashboard,
+  BringToFront,
+  ShoppingCart,
+  PackagePlus,
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
 const sideBarLinks = [
   {
+    category: "DASHBOARD",
+    links: [
+      {
+        name: "Dashboard",
+        icon: <LayoutDashboard className="w-4 h-4" />,
+        href: "/",
+      },
+    ],
+  },
+  {
     category: "ORDERS",
     links: [
       {
         name: "Orders",
+        icon: <ShoppingCart className="w-4 h-4" />,
         href: "/orders",
       },
       {
         name: "Create Order",
+        icon: <PackagePlus className="w-4 h-4" />,
         href: "/create-order",
-      },
-    ],
-  },
-  {
-    category: "PRODUCTS",
-    links: [
-      {
-        name: "Products",
-        href: "/products",
-      },
-      {
-        name: "Create Product",
-        href: "/create-product",
-      },
-    ],
-  },
-  {
-    category: "CUSTOMERS",
-    links: [
-      {
-        name: "Customers",
-        href: "/customers",
-      },
-      {
-        name: "Create Customer",
-        href: "/create-customer",
-      },
-    ],
-  },
-  {
-    category: "SETTINGS",
-    links: [
-      {
-        name: "Settings",
-        href: "/settings",
       },
     ],
   },
@@ -94,12 +77,13 @@ const Sidebar = ({
               <div key={link.name} className="flex flex-col">
                 <Link
                   href={link.href}
-                  className={`text-sm p-1 mt-[2px] rounded-lg cursor-pointer duration-500 ${
+                  className={`text-sm p-1 pl-2 mt-[2px] rounded-lg cursor-pointer duration-500 flex items-center gap-1 ${
                     router.pathname === link.href
                       ? "bg-highlight text-white"
                       : "text-gray-300 hover:bg-highlight"
                   }`}
                 >
+                  {link.icon}
                   {link.name}
                 </Link>
               </div>
