@@ -1,14 +1,17 @@
 import React, { useState, ReactNode } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import { LoaderCircle } from "lucide-react";
 
 interface PaginatedTableProps {
   children: ReactNode; // Accept rows as children
   columns: string[]; // Columns for the table
+  loadingState: boolean; // Loading state for the table
 }
 
 const PaginatedTable: React.FC<PaginatedTableProps> = ({
   children,
   columns,
+  loadingState,
 }) => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
@@ -52,9 +55,19 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
             </tr>
           </thead>
           <tbody>
-            {paginatedRows.length > 0 ? (
+            {loadingState ? (
+              <tr>
+                <td
+                  colSpan={columns.length}
+                  className="p-4 font-semibold text-sm text-center text-textAlt"
+                >
+                  <LoaderCircle className="animate-spin h-5 w-5 mx-auto" />
+                </td>
+              </tr>
+            ) : null}
+            {!loadingState && paginatedRows.length > 0 ? (
               paginatedRows
-            ) : (
+            ) : paginatedRows.length === 0 ? (
               <tr>
                 <td
                   colSpan={columns.length}
@@ -63,7 +76,7 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
                   No data available
                 </td>
               </tr>
-            )}
+            ) : null}
           </tbody>
         </table>
       </div>

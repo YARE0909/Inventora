@@ -4,7 +4,7 @@ import PaginatedTable from "@/components/ui/PaginatedTable";
 import SearchBar from "@/components/ui/SearchBar";
 import Tabs from "@/components/ui/Tabs";
 import axios from "axios";
-import { format } from "date-fns"; // Import date-fns format function
+import { format } from "date-fns";
 
 // Define a type for the data structure
 type OrderData = {
@@ -31,18 +31,24 @@ const OrderTable = ({
   data,
   activeTab,
   setData,
+  loading,
+  setLoading,
 }: {
   header: string;
   data: OrderData[];
   activeTab: "Active" | "OnHold" | "Completed" | "Cancelled";
   setData: React.Dispatch<React.SetStateAction<OrderData[]>>;
+  loading: boolean;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const handleSearch = async (value: string) => {
     try {
+      setLoading(true);
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/orders?status=${activeTab}&clientName=${value}`
       );
       setData(response.data);
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -87,7 +93,7 @@ const OrderTable = ({
           onChange={(value) => console.log("Input Changed:", value)}
         />
       </div>
-      <PaginatedTable columns={columns}>
+      <PaginatedTable columns={columns} loadingState={loading}>
         {data.map((row, index) => (
           <tr
             key={index}
@@ -115,14 +121,17 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState<
     "Active" | "OnHold" | "Completed" | "Cancelled"
   >("Active");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true);
         const response = await axios.get(
           `${process.env.NEXT_PUBLIC_BASE_URL}/api/orders?status=${activeTab}`
         );
         setData(response.data);
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -140,6 +149,8 @@ export default function Home() {
           data={data}
           activeTab={activeTab}
           setData={setData}
+          loading={loading}
+          setLoading={setLoading}
         />
       ),
     },
@@ -151,6 +162,8 @@ export default function Home() {
           data={data}
           activeTab={activeTab}
           setData={setData}
+          loading={loading}
+          setLoading={setLoading}
         />
       ),
     },
@@ -162,6 +175,8 @@ export default function Home() {
           data={data}
           activeTab={activeTab}
           setData={setData}
+          loading={loading}
+          setLoading={setLoading}
         />
       ),
     },
@@ -173,6 +188,8 @@ export default function Home() {
           data={data}
           activeTab={activeTab}
           setData={setData}
+          loading={loading}
+          setLoading={setLoading}
         />
       ),
     },
