@@ -3,14 +3,16 @@ import { useEffect, useState } from "react";
 import Tooltip from "./ui/ToolTip";
 
 const ThemeToggler: React.FC = () => {
-  const [theme, setTheme] = useState<"light" | "dark">(() => {
-    if (typeof window !== "undefined") {
-      return (localStorage.getItem("theme") as "light" | "dark") || "dark";
-    }
-    return "light";
-  });
+  const [theme, setTheme] = useState<"light" | "dark">("dark"); // Default to dark during SSR
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true); // Ensure component is mounted before applying theme logic
+
+    const savedTheme =
+      (localStorage.getItem("theme") as "light" | "dark") || "dark";
+    setTheme(savedTheme);
+
     const root = document.documentElement;
 
     const lightTheme = {
@@ -31,18 +33,49 @@ const ThemeToggler: React.FC = () => {
       "--highlight": "#262629",
     };
 
-    const themeVariables = theme === "light" ? lightTheme : darkTheme;
+    const themeVariables = savedTheme === "light" ? lightTheme : darkTheme;
 
     for (const [key, value] of Object.entries(themeVariables)) {
       root.style.setProperty(key, value);
     }
 
-    localStorage.setItem("theme", theme);
-  }, [theme]);
+    localStorage.setItem("theme", savedTheme);
+  }, []);
 
   const toggleTheme = () => {
-    setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
+    const newTheme = theme === "light" ? "dark" : "light";
+    setTheme(newTheme);
+    localStorage.setItem("theme", newTheme);
+
+    const root = document.documentElement;
+    const themeVariables =
+      newTheme === "light"
+        ? {
+            "--background": "#ffffff",
+            "--foreground": "#fafafa",
+            "--default-text": "#000000",
+            "--border-color": "#d9d9d6",
+            "--alt-text": "#4c4c54",
+            "--highlight": "#f5f5f5",
+          }
+        : {
+            "--background": "#0a0a0a",
+            "--foreground": "#19191c",
+            "--default-text": "#ffffff",
+            "--border-color": "#262629",
+            "--alt-text": "#b3b3ab",
+            "--highlight": "#262629",
+          };
+
+    for (const [key, value] of Object.entries(themeVariables)) {
+      root.style.setProperty(key, value);
+    }
   };
+
+  if (!mounted) {
+    // Avoid mismatched rendering during SSR
+    return null;
+  }
 
   return (
     <div
@@ -62,20 +95,6 @@ const ThemeToggler: React.FC = () => {
           <Moon className="w-6 h-6 text-textAlt" />
         </Tooltip>
       )}
-      {/* <div
-        className={`flex items-center justify-center w-8 h-8 rounded-full ${
-          theme === "light" ? "bg-highlight text-default-text" : "text-alt-text"
-        }`}
-      >
-        <Sun className="w-5 h-5" />
-      </div>
-      <div
-        className={`flex items-center justify-center w-8 h-8 rounded-full ${
-          theme === "dark" ? "bg-highlight text-default-text" : "text-alt-text"
-        }`}
-      >
-        <Moon className="w-5 h-5" />
-      </div> */}
     </div>
   );
 };
