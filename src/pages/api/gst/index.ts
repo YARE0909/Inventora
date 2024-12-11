@@ -14,11 +14,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       // Create a new GST record
       case "POST": {
-        const { gstRate, gstType, createdBy } = req.body;
+        const { gstRate, gstType } = req.body;
 
-        if (!gstRate || !gstType || !createdBy) {
+        if (!gstRate || !gstType) {
           return res.status(400).json({
-            error: "Missing required fields: gstRate, gstType, createdBy",
+            error: "Missing required fields: gstRate, gstType",
           });
         }
 
@@ -26,7 +26,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           data: {
             gstRate,
             gstType,
-            createdBy,
             createdOn: new Date(),
           },
         });

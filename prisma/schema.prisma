@@ -21,7 +21,6 @@ model Customers {
   phone           String
   billingAddress  String
   shippingAddress String
-  createdBy       Int
   createdOn       DateTime
   orders          Orders[]
   invoices        Invoices[]
@@ -38,7 +37,6 @@ model Orders {
   orderDeliveryDate   DateTime
   orderStatus         OrderStatus  @default(Active)
   orderComments       String?
-  createdBy           Int
   createdOn           DateTime
   customerId          String       @db.ObjectId
   customer            Customers    @relation(fields: [customerId], references: [id])
@@ -52,7 +50,6 @@ model Products {
   description  String
   price        Float
   gstId        String         @db.ObjectId
-  createdBy    Int
   createdOn    DateTime
   gst          Gst            @relation(fields: [gstId], references: [id])
   orderItems   OrderItems[]
@@ -63,7 +60,6 @@ model Gst {
   id           String         @id @default(auto()) @map("_id") @db.ObjectId
   gstRate      Float
   gstType      String
-  createdBy    Int
   createdOn    DateTime
   products     Products[]
   invoiceItems InvoiceItems[]
@@ -76,7 +72,6 @@ model OrderItems {
   quantity    Int
   unitPrice   Float
   totalAmount Float
-  createdBy   Int
   createdOn   DateTime
   order       Orders   @relation(fields: [orderId], references: [id])
   product     Products @relation(fields: [productId], references: [id])
@@ -96,7 +91,6 @@ model Invoices {
   discountAmount          Float
   customerGst             String
   invoiceComments         String?
-  createdBy               Int
   createdOn               DateTime
   order                   Orders         @relation(fields: [orderId], references: [id])
   customer                Customers      @relation(fields: [customerId], references: [id])
@@ -114,7 +108,6 @@ model InvoiceItems {
   invoiceAmount Float
   itemGstId     String   @db.ObjectId
   itemGstValue  Float
-  createdBy     Int
   createdOn     DateTime
   invoice       Invoices @relation(fields: [invoiceId], references: [id])
   product       Products @relation(fields: [productId], references: [id])
@@ -131,7 +124,6 @@ model Payments {
   paymentDetails     String?
   paymentComments    String?
   paymentStatus      PaymentStatus @default(Pending)
-  createdBy          Int
   createdOn          DateTime
   invoice            Invoices      @relation(fields: [invoiceId], references: [id])
 }

@@ -11,13 +11,32 @@ import Button from "@/components/ui/Button";
 import Tooltip from "@/components/ui/ToolTip";
 import { useToast } from "@/components/ui/Toast/ToastProvider";
 
+type Customer = {
+  id: string;
+  name: string;
+  contactPerson: string;
+  email: string;
+  phone: string;
+  billingAddress: string;
+  shippingAddress: string;
+  createdOn: string;
+};
+
+type OrderItem = {
+  id: string;
+  orderId: string;
+  productId: string;
+  quantity: number;
+  unitPrice: number;
+  totalAmount: number;
+  createdOn: string;
+};
+
 // Define a type for the data structure
 type OrderData = {
   id: string;
   orderNumber: string;
   orderDate: string;
-  customerName: string;
-  contactPerson: string;
   proformaInvoice: string;
   proformaInvoiceDate: string;
   orderValue: number;
@@ -25,10 +44,9 @@ type OrderData = {
   orderDeliveryDate: string;
   orderStatus: "Active" | "OnHold" | "Completed" | "Cancelled";
   orderComments: string;
-  createdBy: number;
   createdOn: string;
-  modifiedBy: number | null;
-  modifiedOn: string | null;
+  customer: Customer;
+  orderItems: OrderItem[];
 };
 
 const OrderTable = ({
@@ -115,7 +133,7 @@ const OrderTable = ({
 
   const columnMappings: { [key: string]: keyof OrderData } = {
     "Order #": "orderNumber",
-    Customer: "customerName",
+    Customer: "customer",
     "Delivery Date": "orderDeliveryDate",
     "Total Amount": "orderValue",
     Comments: "orderComments",
@@ -149,10 +167,7 @@ const OrderTable = ({
               onClick={() =>
                 handleExportToCSV(data, [
                   "id",
-                  "createdBy",
                   "createdOn",
-                  "modifiedBy",
-                  "modifiedOn",
                 ])
               }
             >
@@ -174,7 +189,11 @@ const OrderTable = ({
                   ? formatDate(
                       row[columnMappings[column] as keyof OrderData] as string
                     )
-                  : row[columnMappings[column] as keyof OrderData]}{" "}
+                  : column === "Customer"
+                  ? row.customer.name
+                  : row[
+                      columnMappings[column] as keyof OrderData
+                    ]?.toString()}{" "}
               </td>
             ))}
           </tr>

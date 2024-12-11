@@ -50,12 +50,11 @@ export default async function handler(
           phone,
           billingAddress,
           shippingAddress,
-          createdBy,
         } = req.body;
 
-        if (!name || !email || !createdBy) {
+        if (!name || !email) {
           return res.status(400).json({
-            error: "Missing required fields: name, email, createdBy",
+            error: "Missing required fields: name, email",
           });
         }
 
@@ -67,7 +66,6 @@ export default async function handler(
             phone,
             billingAddress,
             shippingAddress,
-            createdBy,
             createdOn: new Date(),
           },
         });

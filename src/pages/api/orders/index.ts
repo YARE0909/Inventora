@@ -63,16 +63,15 @@ export default async function handler(
           orderDeliveryDate,
           orderStatus,
           orderComments,
-          createdBy,
           orderItems,
         } = req.body;
 
-        if (!customerId || !orderDate || !orderValue || !createdBy) {
+        if (!customerId || !orderDate || !orderValue) {
           return res
             .status(400)
             .json({
               error:
-                "Missing required fields: customerId, orderDate, orderValue, createdBy",
+                "Missing required fields: customerId, orderDate, orderValue",
             });
         }
 
@@ -92,7 +91,6 @@ export default async function handler(
               : orderDeliveryDate,
             orderStatus: orderStatus || "Active",
             orderComments,
-            createdBy,
             createdOn: new Date(),
             orderItems: {
               create: orderItems?.map((item: any) => ({
@@ -100,7 +98,6 @@ export default async function handler(
                 quantity: item.quantity,
                 unitPrice: item.unitPrice,
                 totalAmount: item.totalAmount,
-                createdBy,
                 createdOn: new Date(),
               })),
             },

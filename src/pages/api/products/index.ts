@@ -38,12 +38,12 @@ export default async function handler(
 
       // Create a new product
       case "POST": {
-        const { name, description, price, gstId, createdBy } = req.body;
+        const { name, description, price, gstId } = req.body;
 
-        if (!name || !description || !price || !gstId || !createdBy) {
+        if (!name || !description || !price || !gstId) {
           return res.status(400).json({
             error:
-              "Missing required fields: name, description, price, gstId, createdBy",
+              "Missing required fields: name, description, price, gstId",
           });
         }
 
@@ -53,7 +53,6 @@ export default async function handler(
             description,
             price: parseFloat(price),
             gstId,
-            createdBy,
             createdOn: new Date(),
           },
         });
