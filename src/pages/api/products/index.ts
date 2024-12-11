@@ -29,7 +29,7 @@ export default async function handler(
         const products = await prisma.products.findMany({
           ...filter,
           include: {
-            gst: true, // Include GST details
+            gstCode: true, // Include GST details
           },
         });
 
@@ -38,12 +38,12 @@ export default async function handler(
 
       // Create a new product
       case "POST": {
-        const { name, description, price, gstId } = req.body;
+        const { name, description, price, gstCodeId } = req.body;
 
-        if (!name || !description || !price || !gstId) {
+        if (!name || !description || !price || !gstCodeId) {
           return res.status(400).json({
             error:
-              "Missing required fields: name, description, price, gstId",
+              "Missing required fields: name, description, price, gstCodeId",
           });
         }
 
@@ -52,7 +52,7 @@ export default async function handler(
             name,
             description,
             price: parseFloat(price),
-            gstId,
+            gstCodeId,
             createdOn: new Date(),
           },
         });

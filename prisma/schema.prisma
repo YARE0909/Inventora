@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,7 +8,7 @@ datasource db {
 }
 
 model Customers {
-  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  id              String     @id @default(auto()) @map("_id") @db.ObjectId
   name            String
   contactPerson   String
   email           String
@@ -49,20 +43,33 @@ model Products {
   name         String
   description  String
   price        Float
-  gstId        String         @db.ObjectId
+  gstCodeId    String         @db.ObjectId
   createdOn    DateTime
-  gst          Gst            @relation(fields: [gstId], references: [id])
+  gstCode      GstCodes       @relation(fields: [gstCodeId], references: [id])
   orderItems   OrderItems[]
   invoiceItems InvoiceItems[]
 }
 
 model Gst {
-  id           String         @id @default(auto()) @map("_id") @db.ObjectId
-  gstRate      Float
-  gstType      String
-  createdOn    DateTime
-  products     Products[]
-  invoiceItems InvoiceItems[]
+  id            String     @id @default(auto()) @map("_id") @db.ObjectId
+  taxPercentage Float
+  isActive      Boolean
+  createdOn     DateTime
+  gstCodes      GstCodes[] // One-to-many relationship with GstCodes
+}
+
+model GstCodes {
+  id                 String         @id @default(auto()) @map("_id") @db.ObjectId
+  code               String
+  name               String
+  effectiveStartDate DateTime
+  effectiveEndDate   DateTime?
+  isActive           Boolean
+  createdOn          DateTime
+  gstId              String         @db.ObjectId
+  gst                Gst            @relation(fields: [gstId], references: [id])
+  products           Products[]
+  invoiceItems       InvoiceItems[]
 }
 
 model OrderItems {
@@ -106,12 +113,11 @@ model InvoiceItems {
   itemQuantity  Int
   itemRate      Float
   invoiceAmount Float
-  itemGstId     String   @db.ObjectId
-  itemGstValue  Float
+  gstCodeId     String   @db.ObjectId
+  gstCode       GstCodes @relation(fields: [gstCodeId], references: [id])
   createdOn     DateTime
   invoice       Invoices @relation(fields: [invoiceId], references: [id])
   product       Products @relation(fields: [productId], references: [id])
-  gst           Gst      @relation(fields: [itemGstId], references: [id])
 }
 
 model Payments {
