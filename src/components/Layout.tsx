@@ -81,7 +81,7 @@ const Sidebar = ({
                   className={`text-sm p-1 pl-2 mt-[2px] rounded-md cursor-pointer duration-500 flex items-center gap-1 ${
                     router.pathname === link.href
                       ? "bg-highlight border border-border"
-                      : "text-text hover:bg-highlight border border-transparent hover:border hover:border-border"
+                      : "hover:bg-highlight border border-transparent hover:border hover:border-border"
                   }`}
                 >
                   {link.icon}

@@ -17,7 +17,7 @@ export default {
         text: "var(--default-text)",
       },
       fontFamily: {
-        Montserrat: ["Montserrat", "sans-serif"],
+        NunitoSans: ["Nunito Sans", "sans-serif"],
       },
     },
   },

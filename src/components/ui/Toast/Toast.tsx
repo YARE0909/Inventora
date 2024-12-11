@@ -37,10 +37,10 @@ const Toast: React.FC<ToastProps> = ({
 
   // Tailwind classes for each variant
   const variantClasses = {
-    success: "border border-green-600 bg-green-600/10 text-text",
-    info: "border border-blue-600 bg-blue-600/10 text-text",
-    warning: "border border-yellow-600 bg-yellow-600/10 text-text",
-    error: "border border-red-600 bg-red-600/10 text-text",
+    success: "border border-green-600 bg-green-600/10",
+    info: "border border-blue-600 bg-blue-600/10",
+    warning: "border border-yellow-600 bg-yellow-600/10",
+    error: "border border-red-600 bg-red-600/10",
   };
 
   const variantIcons = {

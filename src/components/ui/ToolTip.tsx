@@ -32,7 +32,7 @@ const Tooltip: React.FC<TooltipProps> = ({
 
         {/* Tooltip */}
         <div
-          className={`absolute z-10 px-2 py-1 text-xs text-text bg-background border border-border rounded-md ${
+          className={`absolute z-10 px-2 py-1 text-xs bg-background border border-border rounded-md ${
             positionClasses[position]
           } transition-opacity duration-500 ease-in-out ${
             isVisible ? "opacity-100" : "opacity-0"

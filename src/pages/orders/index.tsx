@@ -164,12 +164,7 @@ const OrderTable = ({
           </Tooltip>
           <Tooltip tooltip="Export To CSV">
             <Button
-              onClick={() =>
-                handleExportToCSV(data, [
-                  "id",
-                  "createdOn",
-                ])
-              }
+              onClick={() => handleExportToCSV(data, ["id", "createdOn"])}
             >
               <FileSpreadsheet className="w-5 h-5" />
             </Button>
@@ -180,7 +175,7 @@ const OrderTable = ({
         {data.map((row, index) => (
           <tr
             key={index}
-            className="hover:bg-foreground duration-500 cursor-pointer"
+            className="hover:bg-foreground duration-500 cursor-pointer border-b border-b-border"
             onClick={() => handleDrawerOpen(row.id)}
           >
             {columns.map((column) => (

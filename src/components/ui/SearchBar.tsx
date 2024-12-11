@@ -60,7 +60,7 @@ const SearchBar = ({
           placeholder={placeholder}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
-          className="flex-1 p-2 bg-transparent focus:outline-none text-sm text-text"
+          className="flex-1 p-2 bg-transparent focus:outline-none text-sm"
         />
       </div>
       {/* Display error if validation fails */}

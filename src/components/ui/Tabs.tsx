@@ -40,7 +40,7 @@ const Tabs = ({
             onClick={() => handleTabChange(index, tab.label)}
             className={`px-4 py-1 text-xs md:text-sm font-semibold ${
               activeTab === index
-                ? "bg-background rounded-md text-text border border-border"
+                ? "bg-background rounded-md border border-border"
                 : "text-textAlt hover:text-text"
             } transition duration-300`}
           >
