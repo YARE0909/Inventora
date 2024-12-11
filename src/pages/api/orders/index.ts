@@ -11,68 +11,51 @@ export default async function handler(
 
   try {
     switch (method) {
-      case "GET":
-        // Get the query parameters
+      case "GET": {
         const { status, clientName, orderNumber, startDate, endDate } =
           req.query;
 
-        // Build the filter object based on provided query parameters
-        const filter: {
-          orderStatus?: OrderStatus; // Enum value instead of string
-          customerName?: { contains: string; mode: Prisma.QueryMode };
-          orderNumber?: { contains: string; mode: Prisma.QueryMode };
-          orderDate?: { gte?: Date; lte?: Date }; // Date range filter
-        } = {};
+        const filter: Prisma.OrdersWhereInput = {};
 
-        // If 'status' is provided, add it to the filter
-        if (status) {
-          filter.orderStatus = OrderStatus[status as keyof typeof OrderStatus]; // Use the enum value
+        if (status && typeof status === "string") {
+          filter.orderStatus = OrderStatus[status as keyof typeof OrderStatus];
         }
 
-        // If 'clientName' is provided, add it to the filter
-        if (clientName) {
-          filter.customerName = {
-            contains: String(clientName), // Use 'contains' for a case-insensitive search
-            mode: Prisma.QueryMode.insensitive, // Use the correct QueryMode enum value
+        if (clientName && typeof clientName === "string") {
+          filter.customer = {
+            name: { contains: clientName, mode: "insensitive" },
           };
         }
 
-        // If 'orderNumber' is provided, add it to the filter
-        if (orderNumber) {
-          filter.orderNumber = {
-            contains: String(orderNumber), // Use 'contains' for case-insensitive search
-            mode: Prisma.QueryMode.insensitive,
-          };
+        if (orderNumber && typeof orderNumber === "string") {
+          filter.orderNumber = { contains: orderNumber, mode: "insensitive" };
         }
 
-        // If a date range is provided, add the 'orderDate' filter
-        if (startDate && endDate) {
-          filter.orderDate = {
-            gte: new Date(startDate as string), // Greater than or equal to startDate
-            lte: new Date(endDate as string), // Less than or equal to endDate
-          };
-        } else if (startDate) {
-          filter.orderDate = {
-            gte: new Date(startDate as string), // Only start date pr Fovided
-          };
-        } else if (endDate) {
-          filter.orderDate = {
-            lte: new Date(endDate as string), // Only end date provided
-          };
+        if (startDate || endDate) {
+          filter.orderDate = {};
+          if (startDate && typeof startDate === "string") {
+            filter.orderDate.gte = new Date(startDate);
+          }
+          if (endDate && typeof endDate === "string") {
+            filter.orderDate.lte = new Date(endDate);
+          }
         }
 
-        // Fetch orders based on the filter
         const orders = await prisma.orders.findMany({
           where: filter,
+          include: {
+            customer: true,
+            orderItems: true,
+          },
         });
 
         return res.status(200).json(orders);
+      }
 
-      case "POST":
+      case "POST": {
         const {
+          customerId,
           orderDate,
-          customerName,
-          contactPerson,
           proformaInvoice,
           proformaInvoiceDate,
           orderValue,
@@ -81,30 +64,72 @@ export default async function handler(
           orderStatus,
           orderComments,
           createdBy,
+          orderItems,
         } = req.body;
+
+        if (!customerId || !orderDate || !orderValue || !createdBy) {
+          return res
+            .status(400)
+            .json({
+              error:
+                "Missing required fields: customerId, orderDate, orderValue, createdBy",
+            });
+        }
 
         const newOrder = await prisma.orders.create({
           data: {
             orderNumber: generateRandomString(6),
+            customerId,
             orderDate: new Date(orderDate),
-            customerName,
-            contactPerson,
             proformaInvoice,
-            proformaInvoiceDate: new Date(proformaInvoiceDate),
+            proformaInvoiceDate: !proformaInvoiceDate
+              ? new Date(proformaInvoiceDate)
+              : proformaInvoiceDate,
             orderValue: parseFloat(orderValue),
             orderCount: parseInt(orderCount, 10),
-            orderDeliveryDate: new Date(orderDeliveryDate),
-            orderStatus, // Make sure orderStatus matches the enum type
+            orderDeliveryDate: !orderDeliveryDate
+              ? new Date(orderDeliveryDate)
+              : orderDeliveryDate,
+            orderStatus: orderStatus || "Active",
             orderComments,
-            createdBy, // TODO: Update this with the actual user ID
+            createdBy,
             createdOn: new Date(),
+            orderItems: {
+              create: orderItems?.map((item: any) => ({
+                productId: item.productId,
+                quantity: item.quantity,
+                unitPrice: item.unitPrice,
+                totalAmount: item.totalAmount,
+                createdBy,
+                createdOn: new Date(),
+              })),
+            },
           },
         });
 
         return res.status(201).json(newOrder);
+      }
 
-      case "PUT":
+      case "PUT": {
         const { id, ...updateData } = req.body;
+
+        if (!id) {
+          return res
+            .status(400)
+            .json({ error: "ID is required for updating an order" });
+        }
+
+        if (updateData.orderDate) {
+          updateData.orderDate = new Date(updateData.orderDate);
+        }
+        if (updateData.proformaInvoiceDate) {
+          updateData.proformaInvoiceDate = new Date(
+            updateData.proformaInvoiceDate
+          );
+        }
+        if (updateData.orderDeliveryDate) {
+          updateData.orderDeliveryDate = new Date(updateData.orderDeliveryDate);
+        }
 
         const updatedOrder = await prisma.orders.update({
           where: { id },
@@ -115,24 +140,29 @@ export default async function handler(
         });
 
         return res.status(200).json(updatedOrder);
+      }
 
-      case "DELETE":
-        if (!req.query.id) {
+      case "DELETE": {
+        const { id } = req.query;
+
+        if (!id || typeof id !== "string") {
           return res.status(400).json({ error: "ID is required for deletion" });
         }
 
         await prisma.orders.delete({
-          where: { id: String(req.query.id) },
+          where: { id },
         });
 
         return res.status(204).end();
+      }
 
-      default:
+      default: {
         res.setHeader("Allow", ["GET", "POST", "PUT", "DELETE"]);
         return res.status(405).end(`Method ${method} Not Allowed`);
+      }
     }
   } catch (error) {
-    console.log("Error handling orders API:", error);
+    console.error("Error handling orders API:", error);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 }

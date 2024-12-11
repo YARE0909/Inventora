@@ -13,12 +13,24 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Customers {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  name            String
+  contactPerson   String
+  email           String
+  phone           String
+  billingAddress  String
+  shippingAddress String
+  createdBy       Int
+  createdOn       DateTime
+  orders          Orders[]
+  invoices        Invoices[]
+}
+
 model Orders {
   id                  String       @id @default(auto()) @map("_id") @db.ObjectId
   orderNumber         String       @unique
   orderDate           DateTime
-  customerName        String
-  contactPerson       String
   proformaInvoice     String
   proformaInvoiceDate DateTime
   orderValue          Float
@@ -28,6 +40,8 @@ model Orders {
   orderComments       String?
   createdBy           Int
   createdOn           DateTime
+  customerId          String       @db.ObjectId
+  customer            Customers    @relation(fields: [customerId], references: [id])
   orderItems          OrderItems[]
   invoices            Invoices[]
 }
@@ -71,6 +85,7 @@ model OrderItems {
 model Invoices {
   id                      String         @id @default(auto()) @map("_id") @db.ObjectId
   orderId                 String         @db.ObjectId
+  customerId              String         @db.ObjectId
   invoiceNumber           String
   invoiceDate             DateTime
   invoiceAmount           Float
@@ -84,6 +99,7 @@ model Invoices {
   createdBy               Int
   createdOn               DateTime
   order                   Orders         @relation(fields: [orderId], references: [id])
+  customer                Customers      @relation(fields: [customerId], references: [id])
   invoiceItems            InvoiceItems[]
   payments                Payments[]
 }
