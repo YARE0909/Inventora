@@ -10,44 +10,7 @@ import { exportToCSV } from "@/utils/jsonToCsv";
 import Button from "@/components/ui/Button";
 import Tooltip from "@/components/ui/ToolTip";
 import { useToast } from "@/components/ui/Toast/ToastProvider";
-
-type Customer = {
-  id: string;
-  name: string;
-  contactPerson: string;
-  email: string;
-  phone: string;
-  billingAddress: string;
-  shippingAddress: string;
-  createdOn: string;
-};
-
-type OrderItem = {
-  id: string;
-  orderId: string;
-  productId: string;
-  quantity: number;
-  unitPrice: number;
-  totalAmount: number;
-  createdOn: string;
-};
-
-// Define a type for the data structure
-type OrderData = {
-  id: string;
-  orderNumber: string;
-  orderDate: string;
-  proformaInvoice: string;
-  proformaInvoiceDate: string;
-  orderValue: number;
-  orderCount: number;
-  orderDeliveryDate: string;
-  orderStatus: "Active" | "OnHold" | "Completed" | "Cancelled";
-  orderComments: string;
-  createdOn: string;
-  customer: Customer;
-  orderItems: OrderItem[];
-};
+import { Order } from "@/utils/types/types";
 
 const OrderTable = ({
   header,
@@ -58,9 +21,9 @@ const OrderTable = ({
   setLoading,
 }: {
   header: string;
-  data: OrderData[];
+  data: Order[];
   activeTab: "Active" | "OnHold" | "Completed" | "Cancelled";
-  setData: React.Dispatch<React.SetStateAction<OrderData[]>>;
+  setData: React.Dispatch<React.SetStateAction<Order[]>>;
   loading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
@@ -88,7 +51,7 @@ const OrderTable = ({
 
       setData(response.data);
       setLoading(false);
-    } catch (error) {
+    } catch {
       toast("Something went wrong.", "top-right", "error");
       setLoading(false);
     }
@@ -103,7 +66,7 @@ const OrderTable = ({
       setData(response.data);
       setLoading(false);
       toast("Filters cleared successfully!", "top-right", "success");
-    } catch (error) {
+    } catch {
       toast("Something went wrong.", "top-right", "error");
       setLoading(false);
     }
@@ -114,11 +77,16 @@ const OrderTable = ({
     // TODO: Implement drawer opening logic
   };
 
-  const handleExportToCSV = (data: any, filters: string[]) => {
+  const handleExportToCSV = (
+    // eslint-disable-next-line
+    data: any,
+    filters: string[],
+    fileName: string
+  ) => {
     try {
-      exportToCSV(data, filters);
+      exportToCSV(data, filters, fileName);
       toast("Exported to CSV successfully!", "top-right", "success");
-    } catch (error) {
+    } catch {
       toast("Something went wrong.", "top-right", "error");
     }
   };
@@ -131,7 +99,7 @@ const OrderTable = ({
     "Comments",
   ];
 
-  const columnMappings: { [key: string]: keyof OrderData } = {
+  const columnMappings: { [key: string]: keyof Order } = {
     "Order #": "orderNumber",
     Customer: "customer",
     "Delivery Date": "orderDeliveryDate",
@@ -146,7 +114,7 @@ const OrderTable = ({
 
   return (
     <div className="w-full flex flex-col gap-3">
-      <div className="w-full flex justify-between items-center">
+      <div className="w-full flex flex-row-reverse justify-between items-center">
         <div className="hidden md:block">
           <h1 className="font-semibold text-textAlt text-lg">{header}</h1>
         </div>
@@ -164,7 +132,9 @@ const OrderTable = ({
           </Tooltip>
           <Tooltip tooltip="Export To CSV">
             <Button
-              onClick={() => handleExportToCSV(data, ["id", "createdOn"])}
+              onClick={() =>
+                handleExportToCSV(data, ["id", "createdOn"], "orders.csv")
+              }
             >
               <FileSpreadsheet className="w-5 h-5" />
             </Button>
@@ -182,13 +152,11 @@ const OrderTable = ({
               <td key={column} className="px-4 py-2">
                 {column === "Delivery Date"
                   ? formatDate(
-                      row[columnMappings[column] as keyof OrderData] as string
+                      row[columnMappings[column] as keyof Order] as string
                     )
                   : column === "Customer"
                   ? row.customer.name
-                  : row[
-                      columnMappings[column] as keyof OrderData
-                    ]?.toString()}{" "}
+                  : row[columnMappings[column] as keyof Order]?.toString()}{" "}
               </td>
             ))}
           </tr>
@@ -199,7 +167,7 @@ const OrderTable = ({
 };
 
 export default function Home() {
-  const [data, setData] = useState<OrderData[]>([]);
+  const [data, setData] = useState<Order[]>([]);
   const [activeTab, setActiveTab] = useState<
     "Active" | "OnHold" | "Completed" | "Cancelled"
   >("Active");
@@ -215,7 +183,7 @@ export default function Home() {
         );
         setData(response.data);
         setLoading(false);
-      } catch (error) {
+      } catch {
         toast("Something went wrong.", "top-right", "error");
       }
     };

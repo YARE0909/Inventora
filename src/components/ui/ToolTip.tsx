@@ -22,7 +22,7 @@ const Tooltip: React.FC<TooltipProps> = ({
   };
 
   return (
-    <div className="relative inline-block">
+    <div className="relative">
       <div
         className="group"
         onMouseEnter={() => setIsVisible(true)}

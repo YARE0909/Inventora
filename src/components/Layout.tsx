@@ -6,6 +6,7 @@ import {
   BringToFront,
   ShoppingCart,
   PackagePlus,
+  UsersRound,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -37,6 +38,16 @@ const sideBarLinks = [
       },
     ],
   },
+  {
+    category: "CUSTOMERS",
+    links: [
+      {
+        name: "Customers",
+        icon: <UsersRound className="w-4 h-4" />,
+        href: "/customers",
+      },
+    ],
+  },
 ];
 
 const Sidebar = ({
@@ -50,7 +61,7 @@ const Sidebar = ({
 
   return (
     <div
-      className={`w-3/4 md:w-1/4 lg:w-1/6 h-screen bg-foreground p-4 flex flex-col gap-7 fixed top-0 bottom-0 border-r border-border transition-transform duration-300 z-20 
+      className={`w-3/4 md:w-1/4 lg:w-1/6 h-screen bg-foreground p-4 flex flex-col gap-7 fixed top-0 bottom-0 border-r border-border transition-transform duration-300 z-10 
       ${isOpen ? "translate-x-0" : "-translate-x-full"} 
       lg:translate-x-0`}
     >

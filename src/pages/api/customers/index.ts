@@ -11,35 +11,35 @@ export default async function handler(
   try {
     switch (method) {
       case "GET": {
-        const { name, contactPerson, email, phone } = req.query;
+        const { filter } = req.query;
 
-        const filter: Prisma.CustomersWhereInput = {};
+        const prismaFilter: Prisma.CustomersWhereInput | undefined =
+          filter && typeof filter === "string"
+            ? {
+                OR: [
+                  { name: { contains: filter, mode: "insensitive" } },
+                  { contactPerson: { contains: filter, mode: "insensitive" } },
+                  { email: { contains: filter, mode: "insensitive" } },
+                  { phone: { contains: filter, mode: "insensitive" } },
+                ],
+              }
+            : undefined;
 
-        if (name && typeof name === "string") {
-          filter.name = { contains: name, mode: "insensitive" };
+        try {
+          const customers = await prisma.customers.findMany({
+            where: prismaFilter,
+            include: {
+              orders: true,
+              invoices: true,
+            },
+          });
+
+          return res.status(200).json(customers);
+        } catch (error) {
+          return res
+            .status(500)
+            .json({ message: "Something went wrong", error });
         }
-
-        if (contactPerson && typeof contactPerson === "string") {
-          filter.contactPerson = { contains: contactPerson, mode: "insensitive" };
-        }
-
-        if (email && typeof email === "string") {
-          filter.email = { contains: email, mode: "insensitive" };
-        }
-
-        if (phone && typeof phone === "string") {
-          filter.phone = { contains: phone, mode: "insensitive" };
-        }
-
-        const customers = await prisma.customers.findMany({
-          where: filter,
-          include: {
-            orders: true,
-            invoices: true,
-          },
-        });
-
-        return res.status(200).json(customers);
       }
 
       case "POST": {
@@ -77,7 +77,9 @@ export default async function handler(
         const { id, ...updateData } = req.body;
 
         if (!id) {
-          return res.status(400).json({ error: "ID is required for updating a customer" });
+          return res
+            .status(400)
+            .json({ error: "ID is required for updating a customer" });
         }
 
         const updatedCustomer = await prisma.customers.update({

@@ -93,7 +93,7 @@ export default async function handler(
             orderComments,
             createdOn: new Date(),
             orderItems: {
-              create: orderItems?.map((item: any) => ({
+              create: orderItems?.map((item: { productId: string; quantity: number; unitPrice: number; totalAmount: number }) => ({
                 productId: item.productId,
                 quantity: item.quantity,
                 unitPrice: item.unitPrice,
