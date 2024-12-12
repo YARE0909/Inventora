@@ -18,7 +18,7 @@ const sideBarLinks = [
     links: [
       {
         name: "Dashboard",
-        icon: <LayoutDashboard className="w-4 h-4" />,
+        icon: <LayoutDashboard className="w-5 h-5" />,
         href: "/",
       },
     ],
@@ -28,12 +28,12 @@ const sideBarLinks = [
     links: [
       {
         name: "Orders",
-        icon: <ShoppingCart className="w-4 h-4" />,
+        icon: <ShoppingCart className="w-5 h-5" />,
         href: "/orders",
       },
       {
         name: "Create Order",
-        icon: <PackagePlus className="w-4 h-4" />,
+        icon: <PackagePlus className="w-5 h-5" />,
         href: "/create-order",
       },
     ],
@@ -43,7 +43,7 @@ const sideBarLinks = [
     links: [
       {
         name: "Customers",
-        icon: <UsersRound className="w-4 h-4" />,
+        icon: <UsersRound className="w-5 h-5" />,
         href: "/customers",
       },
     ],

@@ -5,12 +5,12 @@ import Tooltip from "./ToolTip";
 
 interface ClickToCopyProps {
   children: React.ReactNode; // The content to be copied
-  className?: string; // Optional className for additional styling
+  toolTipPosition?: "top" | "bottom" | "left" | "right";
 }
 
 const ClickToCopy: React.FC<ClickToCopyProps> = ({
   children,
-  className = "",
+  toolTipPosition = "top",
 }) => {
   const { toast } = useToast();
   // Function to extract text from the children
@@ -43,11 +43,9 @@ const ClickToCopy: React.FC<ClickToCopyProps> = ({
   };
 
   return (
-    <Tooltip tooltip="Click to copy" position="top">
-      <div className={`relative ${className}`} onClick={handleClick}>
-        <span className="cursor-pointer">
-          {children}
-        </span>
+    <Tooltip tooltip="Click to copy" position={toolTipPosition}>
+      <div className="relative truncate" onClick={handleClick}>
+        <span className="cursor-pointer">{children}</span>
       </div>
     </Tooltip>
   );

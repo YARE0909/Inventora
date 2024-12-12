@@ -9,7 +9,7 @@ import Tooltip from "@/components/ui/ToolTip";
 import { exportToCSV } from "@/utils/jsonToCsv";
 import { Customer } from "@/utils/types/types";
 import axios from "axios";
-import { FileSpreadsheet, FilterX } from "lucide-react";
+import { FileSpreadsheet, FilterX, Plus } from "lucide-react";
 import Input from "@/components/ui/Input";
 import ClickToCopy from "@/components/ui/ClickToCopy";
 
@@ -150,7 +150,10 @@ const Index = () => {
             </Tooltip>
           </div>
           <div className="w-full md:w-fit">
-            <Button onClick={handleOpenModal}>Add Customer</Button>
+            <Button onClick={handleOpenModal}>
+              <Plus className="w-5 h-5" />
+              Customer
+            </Button>
           </div>
         </div>
         <PaginatedTable columns={columns} loadingState={loading}>
@@ -161,13 +164,19 @@ const Index = () => {
               onClick={() => handleDrawerOpen(row.id)}
             >
               {columns.map((column) => (
-                <td key={column} className={`px-4 py-2 ${
-                column === "Billing Address" || column === "Shipping Address" ? "max-w-28" : ""
-                }`}>
+                <td
+                  key={column}
+                  className={`px-4 py-2 ${
+                    column === "Billing Address" ||
+                    column === "Shipping Address"
+                      ? "max-w-28"
+                      : ""
+                  }`}
+                >
                   {column === "Billing Address" ||
                   column === "Shipping Address" ? (
                     // truncate the address if it's too long
-                    <ClickToCopy className="truncate">
+                    <ClickToCopy toolTipPosition="top">
                       {row[columnMappings[column] as keyof Customer] as string}
                     </ClickToCopy>
                   ) : (
