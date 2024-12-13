@@ -47,7 +47,7 @@ export default async function handler(
 
       // Update an existing GST record
       case "PUT": {
-        const { id, taxPercentage, isActive, gstCode } = req.body;
+        const { id, taxPercentage, isActive } = req.body;
 
         if (!id) {
           return res

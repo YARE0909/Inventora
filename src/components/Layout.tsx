@@ -7,6 +7,8 @@ import {
   ShoppingCart,
   PackagePlus,
   UsersRound,
+  Percent,
+  ArrowDownAZ,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -45,6 +47,21 @@ const sideBarLinks = [
         name: "Customers",
         icon: <UsersRound className="w-5 h-5" />,
         href: "/customers",
+      },
+    ],
+  },
+  {
+    category: "GST & GST CODES",
+    links: [
+      {
+        name: "GST",
+        icon: <Percent className="w-5 h-5" />,
+        href: "/gst",
+      },
+      {
+        name: "GST Codes",
+        icon: <ArrowDownAZ className="w-5 h-5" />,
+        href: "/gstCodes",
       },
     ],
   },

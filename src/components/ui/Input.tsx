@@ -1,17 +1,17 @@
 // components/Input.tsx
 import React from "react";
 
-interface CustomTextInputProps {
+type CustomTextInputProps = {
   id?: string;
   label: string;
   name: string;
-  type?: string;
+  type?: "text" | "number" | "checkbox" | "email" | "tel" | "date";
   placeholder?: string;
-  value: string;
+  value: string | number | boolean | Date | undefined;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   error?: string;
   required?: boolean;
-}
+};
 
 const Input: React.FC<CustomTextInputProps> = ({
   id,
@@ -21,26 +21,100 @@ const Input: React.FC<CustomTextInputProps> = ({
   placeholder,
   value,
   onChange,
+  error,
   required = false,
 }) => {
+  const renderInput = () => {
+    switch (type) {
+      case "checkbox":
+        return (
+          <input
+            id={id || name}
+            type="checkbox"
+            name={name}
+            checked={!!value}
+            onChange={onChange}
+            className="h-5 w-5 border border-border rounded-md bg-background cursor-pointer"
+          />
+        );
+      case "number":
+        return (
+          <input
+            id={id || name}
+            type="number"
+            name={name}
+            value={value as number | ""}
+            onChange={onChange}
+            placeholder={placeholder}
+            required={required}
+            className="w-full p-2 bg-background rounded-md border border-border outline-none focus:outline-none text-sm"
+          />
+        );
+      case "email":
+        return (
+          <input
+            id={id || name}
+            type="email"
+            name={name}
+            value={value as string}
+            onChange={onChange}
+            placeholder={placeholder}
+            required={required}
+            className="w-full p-2 bg-background rounded-md border border-border outline-none focus:outline-none text-sm"
+          />
+        );
+      case "tel":
+        return (
+          <input
+            id={id || name}
+            type="tel"
+            name={name}
+            value={value as string}
+            onChange={onChange}
+            placeholder={placeholder}
+            required={required}
+            className="w-full p-2 bg-background rounded-md border border-border outline-none focus:outline-none text-sm"
+          />
+        );
+      case "date":
+        return (
+          <input
+            id={id || name}
+            type="date"
+            name={name}
+            value={value as string}
+            onChange={onChange}
+            placeholder={placeholder}
+            required={required}
+            className="w-full p-2 bg-background rounded-md border border-border outline-none focus:outline-none text-sm"
+          />
+        );
+      default:
+        return (
+          <input
+            id={id || name}
+            type="text"
+            name={name}
+            value={value as string}
+            onChange={onChange}
+            placeholder={placeholder}
+            required={required}
+            className="w-full p-2 bg-background rounded-md border border-border outline-none focus:outline-none text-sm"
+          />
+        );
+    }
+  };
+
   return (
-    <div className="relative">
+    <div className="w-full relative">
       <label
-        htmlFor={name}
-        className="block text-sm text-textAlt font-semibold"
+        htmlFor={id || name}
+        className="block text-sm text-textAlt font-semibold mb-1"
       >
         {label}
       </label>
-      <input
-        id={id}
-        type={type}
-        name={name}
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-        required={required}
-        className="w-full flex-1 p-2 bg-background rounded-md border border-border outline-none focus:outline-none text-sm"
-      />
+      {renderInput()}
+      {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
     </div>
   );
 };

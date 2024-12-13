@@ -42,25 +42,25 @@ export interface Product {
 }
 
 export interface Gst {
-  id: string;
+  id?: string;
   taxPercentage: number;
   isActive: boolean;
-  createdOn: Date;
-  gstCodes: GstCode[];
+  createdOn?: Date;
+  gstCodes?: GstCode[];
 }
 
 export interface GstCode {
-  id: string;
+  id?: string;
   code: string;
   name: string;
   effectiveStartDate: Date;
   effectiveEndDate?: Date;
   isActive: boolean;
-  createdOn: Date;
+  createdOn?: Date;
   gstId: string;
-  gst: Gst;
-  products: Product[];
-  invoiceItems: InvoiceItem[];
+  gst?: Gst;
+  products?: Product[];
+  invoiceItems?: InvoiceItem[];
 }
 
 export interface OrderItem {
