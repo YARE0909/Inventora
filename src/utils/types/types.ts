@@ -30,15 +30,15 @@ export interface Order {
 }
 
 export interface Product {
-  id: string;
+  id?: string;
   name: string;
   description: string;
   price: number;
   gstCodeId: string;
-  createdOn: Date;
-  gstCode: GstCode;
-  orderItems: OrderItem[];
-  invoiceItems: InvoiceItem[];
+  createdOn?: Date;
+  gstCode?: GstCode;
+  orderItems?: OrderItem[];
+  invoiceItems?: InvoiceItem[];
 }
 
 export interface Gst {

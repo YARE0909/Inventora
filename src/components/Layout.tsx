@@ -5,10 +5,11 @@ import {
   LayoutDashboard,
   BringToFront,
   ShoppingCart,
-  PackagePlus,
   UsersRound,
   Percent,
   ArrowDownAZ,
+  Package,
+  Container,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -35,7 +36,7 @@ const sideBarLinks = [
       },
       {
         name: "Create Order",
-        icon: <PackagePlus className="w-5 h-5" />,
+        icon: <Container className="w-5 h-5" />,
         href: "/create-order",
       },
     ],
@@ -62,6 +63,16 @@ const sideBarLinks = [
         name: "GST Codes",
         icon: <ArrowDownAZ className="w-5 h-5" />,
         href: "/gstCodes",
+      },
+    ],
+  },
+  {
+    category: "PRODUCTS",
+    links: [
+      {
+        name: "Products",
+        icon: <Package className="w-5 h-5" />,
+        href: "/products",
       },
     ],
   },
