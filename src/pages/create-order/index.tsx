@@ -327,16 +327,17 @@ const Index = () => {
         <div className="w-full md:max-w-screen-lg bg-foreground rounded-md p-4 space-y-3">
           {/* Order Details */}
           <div className="w-full flex flex-col space-y-3">
-            <div className="w-full flex justify-between items-center">
-              <div>
+            <div className="w-full flex justify-between items-end">
+              <div className="flex flex-col space-y-3">
                 <h1 className="text-text font-semibold text-lg">
                   Order Details
                 </h1>
-              </div>
-              <div className="flex space-x-3 items-center">
                 <div>
-                  <h1 className="text-text font-medium">
-                    Grand Total: &#8377;{" "}
+                  <h1 className="text-lg text-text font-semibold">
+                    <span className="text-textAlt font-semibold text-sm">
+                      Grand Total{" "}
+                    </span>
+                    &#8377;{" "}
                     {data
                       .map(
                         (item) =>
@@ -349,11 +350,14 @@ const Index = () => {
                       .reduce((acc, item) => acc + item, 0)}
                   </h1>
                 </div>
+              </div>
+              <div className="flex space-x-3 items-center">
                 <div>
                   <Button onClick={submitOrder}>Create Order</Button>
                 </div>
               </div>
             </div>
+            <hr className="border border-border" />
             <div className="w-full flex flex-col space-y-3">
               <div className="w-full flex flex-col md:flex md:flex-row items-end space-x-3 space-y-3 md:space-y-0">
                 <div className="w-full md:max-w-80">
@@ -426,8 +430,8 @@ const Index = () => {
                 Order Advance Details
               </h1>
             </div>
-            <div className="w-full flex flex-col space-y-3">
-              <div className="w-full flex space-x-3 items-center">
+            <div className="w-full flex flex-col space-y-3 md:space-y-0 md:flex md:flex-row">
+              <div className="w-full flex flex-col space-y-3">
                 <div className="w-full md:max-w-96">
                   <Input
                     name="orderAdvanceAmount"
@@ -448,7 +452,7 @@ const Index = () => {
                     }}
                   />
                 </div>
-                <div className="w-full md:max-w-80">
+                <div className="w-full md:max-w-96">
                   <Select
                     options={[
                       {
@@ -471,8 +475,8 @@ const Index = () => {
                   />
                 </div>
               </div>
-              <div className="w-full flex space-x-3">
-                <div className="w-full md:max-w-96">
+              <div className="w-full flex flex-col space-y-3">
+                <div className="w-full h-full md:max-w-96">
                   <Input
                     name="orderAdvancePaymentDetails"
                     type="textArea"
@@ -485,7 +489,7 @@ const Index = () => {
                     }}
                   />
                 </div>
-                <div className="w-full md:max-w-96">
+                <div className="w-full h-full md:max-w-96">
                   <Input
                     name="orderAdvanceComments"
                     type="textArea"
@@ -498,8 +502,9 @@ const Index = () => {
               </div>
             </div>
           </div>
+          <hr className="border border-border" />
           {/* Order Items */}
-          <div>
+          <div className="flex flex-col space-y-3">
             <div>
               <h1 className="text-text font-semibold text-lg">Order Items</h1>
             </div>

@@ -91,7 +91,7 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
             id="rows-per-page"
             value={rowsPerPage}
             onChange={handleRowsPerPageChange}
-            className="border border-border p-1 rounded bg-background"
+            className="border border-border p-1 rounded bg-background cursor-pointer"
           >
             <option value={10}>10</option>
             <option value={20}>20</option>
