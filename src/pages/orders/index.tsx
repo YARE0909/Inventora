@@ -146,7 +146,7 @@ const OrderTable = ({
           <tr
             key={index}
             className="hover:bg-foreground duration-500 cursor-pointer border-b border-b-border"
-            onClick={() => handleDrawerOpen(row.id)}
+            onClick={() => row.id && handleDrawerOpen(row.id)}
           >
             {columns.map((column) => (
               <td key={column} className="px-4 py-2">
@@ -155,7 +155,7 @@ const OrderTable = ({
                       row[columnMappings[column] as keyof Order] as string
                     )
                   : column === "Customer"
-                  ? row.customer.name
+                  ? row?.customer?.name
                   : row[columnMappings[column] as keyof Order]?.toString()}{" "}
               </td>
             ))}
