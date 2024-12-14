@@ -35,11 +35,11 @@ const Select: React.FC<SelectProps> = ({
 
   return (
     <div className="relative w-full">
-      <label className="block text-sm text-textAlt font-semibold mb-1">
+      <label className="block text-sm text-textAlt font-semibold">
         {label}
       </label>
       <div
-        className="border border-border rounded-md p-2 bg-background cursor-pointer"
+        className="border border-border rounded-md p-[0.37rem] bg-background cursor-pointer"
         onClick={() => setIsDropdownOpen((prev) => !prev)}
       >
         {selectedValue || "Select an option"}

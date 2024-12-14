@@ -66,13 +66,12 @@ export default async function handler(
           orderItems,
         } = req.body;
 
+        console.log(req.body);
+
         if (!customerId || !orderDate || !orderValue) {
-          return res
-            .status(400)
-            .json({
-              error:
-                "Missing required fields: customerId, orderDate, orderValue",
-            });
+          return res.status(400).json({
+            error: "Missing required fields: customerId, orderDate, orderValue",
+          });
         }
 
         const newOrder = await prisma.orders.create({
@@ -93,13 +92,20 @@ export default async function handler(
             orderComments,
             createdOn: new Date(),
             orderItems: {
-              create: orderItems?.map((item: { productId: string; quantity: number; unitPrice: number; totalAmount: number }) => ({
-                productId: item.productId,
-                quantity: item.quantity,
-                unitPrice: item.unitPrice,
-                totalAmount: item.totalAmount,
-                createdOn: new Date(),
-              })),
+              create: orderItems?.map(
+                (item: {
+                  productId: string;
+                  quantity: number;
+                  unitPrice: number;
+                  totalAmount: number;
+                }) => ({
+                  productId: item.productId,
+                  quantity: item.quantity,
+                  unitPrice: item.unitPrice,
+                  totalAmount: item.totalAmount,
+                  createdOn: new Date(),
+                })
+              ),
             },
           },
         });

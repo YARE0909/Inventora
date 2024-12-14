@@ -12,21 +12,21 @@ export interface Customer {
 }
 
 export interface Order {
-  id: string;
-  orderNumber: string;
-  orderDate: Date;
+  id?: string;
+  orderNumber?: string;
+  orderDate: Date | undefined;
   proformaInvoice: string;
-  proformaInvoiceDate: Date;
+  proformaInvoiceDate: Date | undefined;
   orderValue: number;
   orderCount: number;
-  orderDeliveryDate: Date;
+  orderDeliveryDate: Date | undefined;
   orderStatus: OrderStatus;
   orderComments?: string;
-  createdOn: Date;
+  createdOn?: Date;
   customerId: string;
-  customer: Customer;
-  orderItems: OrderItem[];
-  invoices: Invoice[];
+  customer?: Customer;
+  orderItems?: OrderItem[];
+  invoices?: Invoice[];
 }
 
 export interface Product {
@@ -37,6 +37,7 @@ export interface Product {
   gstCodeId: string;
   createdOn?: Date;
   gstCode?: GstCode;
+  quantity?: number;
   orderItems?: OrderItem[];
   invoiceItems?: InvoiceItem[];
 }
@@ -64,15 +65,15 @@ export interface GstCode {
 }
 
 export interface OrderItem {
-  id: string;
-  orderId: string;
+  id?: string;
+  orderId?: string;
   productId: string;
   quantity: number;
   unitPrice: number;
   totalAmount: number;
-  createdOn: Date;
-  order: Order;
-  product: Product;
+  createdOn?: Date;
+  order?: Order;
+  product?: Product;
 }
 
 export interface Invoice {

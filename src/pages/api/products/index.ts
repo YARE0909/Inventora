@@ -13,7 +13,32 @@ export default async function handler(
       // Fetch all products or filter by name
       // Fetch all products or filter by name
       case "GET": {
-        const { name } = req.query;
+        const { name, id } = req.query;
+
+        if (id) {
+          if (typeof id !== "string") {
+            return res
+              .status(400)
+              .json({ error: "Invalid ID format. Must be a string." });
+          }
+
+          const product = await prisma.products.findUnique({
+            where: { id },
+            include: {
+              gstCode: {
+                include: {
+                  gst: true,
+                }
+              }, // Include GST details
+            },
+          });
+
+          if (!product) {
+            return res.status(404).json({ error: "Product not found" });
+          }
+
+          return res.status(200).json(product);
+        }
 
         const filter = {
           where: name
