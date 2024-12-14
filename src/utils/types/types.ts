@@ -6,7 +6,7 @@ export interface Customer {
   phone: string;
   billingAddress: string;
   shippingAddress: string;
-  createdOn?: Date;
+  createdOn?: Date | undefined;
   orders?: Order[];
   invoices?: Invoice[];
 }
@@ -14,19 +14,32 @@ export interface Customer {
 export interface Order {
   id?: string;
   orderNumber?: string;
-  orderDate: Date | undefined;
+  orderDate: Date | undefined | undefined;
   proformaInvoice: string;
-  proformaInvoiceDate: Date | undefined;
+  proformaInvoiceDate: Date | undefined | undefined;
   orderValue: number;
   orderCount: number;
-  orderDeliveryDate: Date | undefined;
+  orderDeliveryDate: Date | undefined | undefined;
   orderStatus: OrderStatus;
   orderComments?: string;
-  createdOn?: Date;
+  createdOn?: Date | undefined;
   customerId: string;
   customer?: Customer;
   orderItems?: OrderItem[];
   invoices?: Invoice[];
+  orderAdvanceDetails?: OrderAdvanceDetail;
+}
+
+export interface OrderAdvanceDetail {
+  id?: string;
+  orderId?: string;
+  orderAdvanceAmount: number;
+  orderAdvanceDate: Date | undefined;
+  orderAdvancePaymentDetails: string;
+  orderAdvanceStatus: PaymentStatus;
+  orderAdvanceComments?: string;
+  createdOn?: Date | undefined;
+  order?: Order;
 }
 
 export interface Product {
@@ -35,7 +48,7 @@ export interface Product {
   description: string;
   price: number;
   gstCodeId: string;
-  createdOn?: Date;
+  createdOn?: Date | undefined;
   gstCode?: GstCode;
   quantity?: number;
   orderItems?: OrderItem[];
@@ -46,7 +59,7 @@ export interface Gst {
   id?: string;
   taxPercentage: number;
   isActive: boolean;
-  createdOn?: Date;
+  createdOn?: Date | undefined;
   gstCodes?: GstCode[];
 }
 
@@ -54,10 +67,10 @@ export interface GstCode {
   id?: string;
   code: string;
   name: string;
-  effectiveStartDate: Date;
-  effectiveEndDate?: Date;
+  effectiveStartDate: Date | undefined;
+  effectiveEndDate?: Date | undefined;
   isActive: boolean;
-  createdOn?: Date;
+  createdOn?: Date | undefined;
   gstId: string;
   gst?: Gst;
   products?: Product[];
@@ -71,7 +84,7 @@ export interface OrderItem {
   quantity: number;
   unitPrice: number;
   totalAmount: number;
-  createdOn?: Date;
+  createdOn?: Date | undefined;
   order?: Order;
   product?: Product;
 }
@@ -81,7 +94,7 @@ export interface Invoice {
   orderId: string;
   customerId: string;
   invoiceNumber: string;
-  invoiceDate: Date;
+  invoiceDate: Date | undefined;
   invoiceAmount: number;
   adjustedInvoiceAmount: number;
   reconciledInvoiceAmount: number;
@@ -90,7 +103,7 @@ export interface Invoice {
   discountAmount: number;
   customerGst: string;
   invoiceComments?: string;
-  createdOn: Date;
+  createdOn: Date | undefined;
   order: Order;
   customer: Customer;
   invoiceItems: InvoiceItem[];
@@ -107,7 +120,7 @@ export interface InvoiceItem {
   invoiceAmount: number;
   gstCodeId: string;
   gstCode: GstCode;
-  createdOn: Date;
+  createdOn: Date | undefined;
   invoice: Invoice;
   product: Product;
 }
@@ -116,13 +129,13 @@ export interface Payment {
   id: string;
   invoiceId: string;
   paymentMode: string;
-  paymentDate: Date;
+  paymentDate: Date | undefined;
   paymentAmount: number;
   paymentReferenceId: string;
   paymentDetails?: string;
   paymentComments?: string;
   paymentStatus: PaymentStatus;
-  createdOn: Date;
+  createdOn: Date | undefined;
   invoice: Invoice;
 }
 

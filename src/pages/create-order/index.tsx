@@ -3,7 +3,13 @@ import Layout from "@/components/Layout";
 import Button from "@/components/ui/Button";
 import PaginatedTable from "@/components/ui/PaginatedTable";
 import { useToast } from "@/components/ui/Toast/ToastProvider";
-import { Customer, Order, OrderStatus, Product } from "@/utils/types/types";
+import {
+  Customer,
+  Order,
+  OrderStatus,
+  PaymentStatus,
+  Product,
+} from "@/utils/types/types";
 import axios from "axios";
 import { Plus, Trash2 } from "lucide-react";
 import Input from "@/components/ui/Input";
@@ -56,7 +62,15 @@ const Index = () => {
 
   const { toast } = useToast();
 
-  const [formData, setFormData] = useState<Order>({
+  const [formData, setFormData] = useState<
+    Order & {
+      orderAdvanceAmount: number;
+      orderAdvanceDate: Date | undefined;
+      orderAdvancePaymentDetails: string;
+      orderAdvanceStatus: PaymentStatus | "";
+      orderAdvanceComments: string;
+    }
+  >({
     customerId: "",
     orderDate: undefined,
     proformaInvoice: "",
@@ -67,6 +81,11 @@ const Index = () => {
     orderStatus: OrderStatus.Active,
     orderComments: "",
     orderItems: [],
+    orderAdvanceAmount: 0,
+    orderAdvanceDate: undefined,
+    orderAdvancePaymentDetails: "",
+    orderAdvanceStatus: "",
+    orderAdvanceComments: "",
   });
 
   const addProductToTable = async () => {
@@ -159,11 +178,14 @@ const Index = () => {
     if (
       field === "orderDate" ||
       field === "proformaInvoiceDate" ||
-      field === "orderDeliveryDate"
+      field === "orderDeliveryDate" ||
+      field === "orderAdvanceDate"
     ) {
       // Convert the date value to ISO format
       value = new Date(value).toISOString();
     }
+
+    console.log({ value, field });
 
     // Update the formData state with the new value
     setFormData({
@@ -209,6 +231,26 @@ const Index = () => {
       return toast("Please select delivery date", "top-right", "warning");
     }
 
+    if (formData.orderAdvanceAmount === 0) {
+      return toast("Please enter advance amount", "top-right", "warning");
+    }
+
+    if (formData.orderAdvanceDate === undefined) {
+      return toast("Please select advance date", "top-right", "warning");
+    }
+
+    if (formData.orderAdvanceStatus === "") {
+      return toast("Please select advance status", "top-right", "warning");
+    }
+
+    if (formData.orderAdvancePaymentDetails === "") {
+      return toast(
+        "Please enter advance payment details",
+        "top-right",
+        "warning"
+      );
+    }
+
     if (data.length === 0) {
       return toast("Please add products to order", "top-right", "warning");
     }
@@ -249,15 +291,20 @@ const Index = () => {
         setData([]);
         setFormData({
           customerId: "",
-          orderDate: new Date(),
+          orderDate: undefined,
           proformaInvoice: "",
-          proformaInvoiceDate: new Date(),
+          proformaInvoiceDate: undefined,
           orderValue: 0,
           orderCount: 0,
-          orderDeliveryDate: new Date(),
+          orderDeliveryDate: undefined,
           orderStatus: OrderStatus.Active,
           orderComments: "",
           orderItems: [],
+          orderAdvanceAmount: 0,
+          orderAdvanceDate: undefined,
+          orderAdvancePaymentDetails: "",
+          orderAdvanceStatus: PaymentStatus.Pending,
+          orderAdvanceComments: "",
         });
       }
     } catch {
@@ -278,6 +325,7 @@ const Index = () => {
     <Layout header="Create Order">
       <div className="w-full flex flex-col items-center">
         <div className="w-full md:max-w-screen-lg bg-foreground rounded-md p-4 space-y-3">
+          {/* Order Details */}
           <div className="w-full flex flex-col space-y-3">
             <div className="w-full flex justify-between items-center">
               <div>
@@ -371,6 +419,86 @@ const Index = () => {
             </div>
           </div>
           <hr className="border border-border" />
+          {/* Order Advance Details */}
+          <div className="w-full flex flex-col space-y-3">
+            <div>
+              <h1 className="text-text font-semibold text-lg">
+                Order Advance Details
+              </h1>
+            </div>
+            <div className="w-full flex flex-col space-y-3">
+              <div className="w-full flex space-x-3 items-center">
+                <div className="w-full md:max-w-96">
+                  <Input
+                    name="orderAdvanceAmount"
+                    type="number"
+                    label="Amount"
+                    onChange={(e) => {
+                      handleFormInput(e.target.value, "orderAdvanceAmount");
+                    }}
+                  />
+                </div>
+                <div className="w-full md:max-w-96">
+                  <Input
+                    name="orderAdvanceDate"
+                    type="date"
+                    label="Advance Payment Date"
+                    onChange={(e) => {
+                      handleFormInput(e.target.value, "orderAdvanceDate");
+                    }}
+                  />
+                </div>
+                <div className="w-full md:max-w-80">
+                  <Select
+                    options={[
+                      {
+                        value: PaymentStatus.Pending,
+                        label: "Pending",
+                      },
+                      {
+                        value: PaymentStatus.Paid,
+                        label: "Paid",
+                      },
+                      {
+                        value: PaymentStatus.PartiallyPaid,
+                        label: "Partially Paid",
+                      },
+                    ]}
+                    label="Payment Status"
+                    onChange={(value) => {
+                      handleFormInput(value, "orderAdvanceStatus");
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="w-full flex space-x-3">
+                <div className="w-full md:max-w-96">
+                  <Input
+                    name="orderAdvancePaymentDetails"
+                    type="textArea"
+                    label="Advance Payment Details"
+                    onChange={(e) => {
+                      handleFormInput(
+                        e.target.value,
+                        "orderAdvancePaymentDetails"
+                      );
+                    }}
+                  />
+                </div>
+                <div className="w-full md:max-w-96">
+                  <Input
+                    name="orderAdvanceComments"
+                    type="textArea"
+                    label="Comments"
+                    onChange={(e) => {
+                      handleFormInput(e.target.value, "orderAdvanceComments");
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          {/* Order Items */}
           <div>
             <div>
               <h1 className="text-text font-semibold text-lg">Order Items</h1>

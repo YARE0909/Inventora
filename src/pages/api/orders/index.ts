@@ -46,6 +46,7 @@ export default async function handler(
           include: {
             customer: true,
             orderItems: true,
+            orderAdvanceDetails: true,
           },
         });
 
@@ -64,6 +65,11 @@ export default async function handler(
           orderStatus,
           orderComments,
           orderItems,
+          orderAdvanceAmount,
+          orderAdvanceDate,
+          orderAdvancePaymentDetails,
+          orderAdvanceStatus,
+          orderAdvanceComments,
         } = req.body;
 
         console.log(req.body);
@@ -106,6 +112,18 @@ export default async function handler(
                   createdOn: new Date(),
                 })
               ),
+            },
+            orderAdvanceDetails: {
+              create: {
+                orderAdvanceAmount: parseFloat(orderAdvanceAmount),
+                orderAdvanceDate: !orderAdvanceDate
+                  ? new Date(orderAdvanceDate)
+                  : orderAdvanceDate,
+                orderAdvancePaymentDetails: orderAdvancePaymentDetails,
+                orderAdvanceStatus: orderAdvanceStatus,
+                orderAdvanceComments: orderAdvanceComments,
+                createdOn: new Date(),
+              },
             },
           },
         });
