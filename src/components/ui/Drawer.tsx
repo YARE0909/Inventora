@@ -54,7 +54,7 @@ const Drawer = forwardRef<DrawerHandle, DrawerProps>(
             isOpen ? "translate-x-0" : "translate-x-full"
           } ${getWidth()}`}
         >
-          <div className="w-full h-14 border-b border-b-border p-4 z-10 bg-background flex justify-between items-center gap-5 lg:gap-0">
+          <div className="w-full h-14 border-b border-b-border p-4 z-10 bg-foreground flex justify-between items-center gap-5 lg:gap-0">
             {header ? (
               <div className="font-bold text-lg">{header}</div>
             ) : (
