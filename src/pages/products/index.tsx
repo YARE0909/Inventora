@@ -13,6 +13,7 @@ import { FileSpreadsheet, FilterX, Plus } from "lucide-react";
 import Input from "@/components/ui/Input";
 import { format } from "date-fns";
 import Select from "@/components/ui/SelectComponent";
+import { formatIndianCurrency } from "@/utils/formatIndianCurrency";
 
 const columns = ["name", "description", "price", "GST Code"];
 
@@ -201,6 +202,10 @@ const Index = () => {
                       : "Inactive"
                     : column === "GST Code"
                     ? row.gstCode?.code ?? "N/A"
+                    : column === "price"
+                    ? formatIndianCurrency(
+                        row[column as keyof Product] as number
+                      )
                     : (row[column as keyof Product] as string)}
                 </td>
               ))}

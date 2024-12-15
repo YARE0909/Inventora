@@ -35,7 +35,7 @@ const sideBarLinks = [
         href: "/orders",
       },
       {
-        name: "Create Order",
+        name: "New Order",
         icon: <Container className="w-5 h-5" />,
         href: "/create-order",
       },
@@ -96,7 +96,7 @@ const Sidebar = ({
       <div className="w-full flex gap-2 items-center justify-between">
         <div className="flex items-center gap-2">
           <BringToFront className="h-5 w-5" />
-          <h1 className="text-xl font-extrabold">Inventora</h1>
+          <h1 className="text-xl font-extrabold">ZARAVA</h1>
         </div>
         <button
           className="lg:hidden"

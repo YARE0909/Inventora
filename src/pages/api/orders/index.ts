@@ -45,7 +45,19 @@ export default async function handler(
           where: filter,
           include: {
             customer: true,
-            orderItems: true,
+            orderItems: {
+              include: {
+                product: {
+                  include: {
+                    gstCode: {
+                      include: {
+                        gst: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
             orderAdvanceDetails: true,
           },
         });

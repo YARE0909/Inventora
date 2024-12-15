@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Layout from "@/components/Layout";
 import PaginatedTable from "@/components/ui/PaginatedTable";
 import SearchBar from "@/components/ui/SearchBar";
@@ -11,6 +11,9 @@ import Button from "@/components/ui/Button";
 import Tooltip from "@/components/ui/ToolTip";
 import { useToast } from "@/components/ui/Toast/ToastProvider";
 import { Order } from "@/utils/types/types";
+import Drawer, { DrawerHandle } from "@/components/ui/Drawer";
+import OrderDetailDrawer from "./_components/OrderDetailDrawer";
+import { formatIndianCurrency } from "@/utils/formatIndianCurrency";
 
 const OrderTable = ({
   header,
@@ -29,6 +32,9 @@ const OrderTable = ({
 }) => {
   // TODO: Implement filter by date
   const { toast } = useToast();
+  const drawerRef = useRef<DrawerHandle>(null);
+  const [selectedOrderDetails, setSelectedOrderDetails] =
+    useState<Order | null>(null);
 
   const handleSearch = async (value: string) => {
     try {
@@ -74,7 +80,8 @@ const OrderTable = ({
 
   const handleDrawerOpen = (id: string) => {
     console.log("Open Drawer for Order ID:", id);
-    // TODO: Implement drawer opening logic
+    drawerRef.current?.openDrawer();
+    setSelectedOrderDetails(data.find((order) => order.id === id) || null);
   };
 
   const handleExportToCSV = (
@@ -156,12 +163,23 @@ const OrderTable = ({
                     )
                   : column === "Customer"
                   ? row?.customer?.name
+                  : column === "Total Amount"
+                  ? formatIndianCurrency(
+                      row[columnMappings[column] as keyof Order] as number
+                    )
                   : row[columnMappings[column] as keyof Order]?.toString()}{" "}
               </td>
             ))}
           </tr>
         ))}
       </PaginatedTable>
+      <Drawer
+        ref={drawerRef}
+        header={`Order #${selectedOrderDetails?.orderNumber}`}
+        size="w-full md:w-fit"
+      >
+        <OrderDetailDrawer selectedOrderDetails={selectedOrderDetails!} />
+      </Drawer>
     </div>
   );
 };
@@ -196,7 +214,9 @@ export default function Home() {
       label: "Active",
       content: (
         <OrderTable
-          header="Active Orders"
+          header={`Total Value: ${formatIndianCurrency(
+            data.reduce((acc, curr) => acc + curr.orderValue, 0) || 0
+          )}`}
           data={data}
           activeTab={activeTab}
           setData={setData}
@@ -209,7 +229,9 @@ export default function Home() {
       label: "On Hold",
       content: (
         <OrderTable
-          header="Orders On Hold"
+          header={`Total Value: ${formatIndianCurrency(
+            data.reduce((acc, curr) => acc + curr.orderValue, 0) || 0
+          )}`}
           data={data}
           activeTab={activeTab}
           setData={setData}
@@ -222,7 +244,9 @@ export default function Home() {
       label: "Completed",
       content: (
         <OrderTable
-          header="Completed Orders"
+          header={`Total Value: ${formatIndianCurrency(
+            data.reduce((acc, curr) => acc + curr.orderValue, 0) || 0
+          )}`}
           data={data}
           activeTab={activeTab}
           setData={setData}
@@ -235,7 +259,9 @@ export default function Home() {
       label: "Cancelled",
       content: (
         <OrderTable
-          header="Cancelled Orders"
+          header={`Total Value: ${formatIndianCurrency(
+            data.reduce((acc, curr) => acc + curr.orderValue, 0) || 0
+          )}`}
           data={data}
           activeTab={activeTab}
           setData={setData}

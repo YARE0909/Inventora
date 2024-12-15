@@ -11,9 +11,10 @@ import {
   Product,
 } from "@/utils/types/types";
 import axios from "axios";
-import { Plus, Trash2 } from "lucide-react";
+import { PackagePlus, Plus, Trash2 } from "lucide-react";
 import Input from "@/components/ui/Input";
 import Select from "@/components/ui/SelectComponent";
+import { formatIndianCurrency } from "@/utils/formatIndianCurrency";
 
 const columns = [
   "Product",
@@ -324,11 +325,11 @@ const Index = () => {
   return (
     <Layout header="Create Order">
       <div className="w-full flex flex-col items-center">
-        <div className="w-full md:max-w-screen-lg bg-foreground rounded-md p-4 space-y-3">
+        <div className="w-fit bg-foreground rounded-md p-4 space-y-3 relative">
           {/* Order Details */}
           <div className="w-full flex flex-col space-y-3">
-            <div className="w-full flex justify-between items-end">
-              <div className="flex flex-col space-y-3">
+            <div className="w-full flex justify-between items-end sticky -top-[1rem] z-50 bg-foreground border-b border-b-border pb-3">
+              <div className="flex flex-col space-y-3 mt-2">
                 <h1 className="text-text font-semibold text-lg">
                   Order Details
                 </h1>
@@ -337,27 +338,30 @@ const Index = () => {
                     <span className="text-textAlt font-semibold text-sm">
                       Grand Total{" "}
                     </span>
-                    &#8377;{" "}
-                    {data
-                      .map(
-                        (item) =>
-                          item.price * (item.quantity ?? 1) +
-                          (item.price *
-                            (item.quantity ?? 1) *
-                            (item.gstCode?.gst?.taxPercentage ?? 0)) /
-                            100
-                      )
-                      .reduce((acc, item) => acc + item, 0)}
+                    {formatIndianCurrency(
+                      data
+                        .map(
+                          (item) =>
+                            item.price * (item.quantity ?? 1) +
+                            (item.price *
+                              (item.quantity ?? 1) *
+                              (item.gstCode?.gst?.taxPercentage ?? 0)) /
+                              100
+                        )
+                        .reduce((acc, item) => acc + item, 0)
+                    )}
                   </h1>
                 </div>
               </div>
               <div className="flex space-x-3 items-center">
                 <div>
-                  <Button onClick={submitOrder}>Create Order</Button>
+                  <Button onClick={submitOrder}>
+                    <PackagePlus className="w-5 h-5" />
+                    Save Order
+                  </Button>
                 </div>
               </div>
             </div>
-            <hr className="border border-border" />
             <div className="w-full flex flex-col space-y-3">
               <div className="w-full flex flex-col md:flex md:flex-row items-end space-x-3 space-y-3 md:space-y-0">
                 <div className="w-full md:max-w-80">
@@ -365,7 +369,7 @@ const Index = () => {
                     options={customerData}
                     label="Select Customer"
                     onChange={(value) => {
-                      handleFormInput(value, "customerId");
+                      handleFormInput(value, " nbbb2");
                     }}
                   />
                 </div>
@@ -548,30 +552,38 @@ const Index = () => {
                     ) : column === "GST %" ? (
                       row.gstCode?.gst?.taxPercentage ?? "N/A"
                     ) : column === "Amount" ? (
-                      `₹ ${row.price * (row.quantity ?? 1)}`
+                      formatIndianCurrency(row.price * (row.quantity ?? 1))
                     ) : column === "Unit Price" ? (
-                      `₹ ${row.price}`
+                      formatIndianCurrency(row.price)
                     ) : column === "GST Amount" ? (
-                      `₹ ${(
-                        Math.floor(
-                          ((row.price *
-                            (row.quantity ?? 1) *
-                            (row.gstCode?.gst?.taxPercentage ?? 0)) /
-                            100) *
-                            100
-                        ) / 100
-                      ).toFixed(2)}`
+                      formatIndianCurrency(
+                        Number(
+                          (
+                            Math.floor(
+                              ((row.price *
+                                (row.quantity ?? 1) *
+                                (row.gstCode?.gst?.taxPercentage ?? 0)) /
+                                100) *
+                                100
+                            ) / 100
+                          ).toFixed(2)
+                        )
+                      )
                     ) : column === "Total Amount" ? (
-                      `₹ ${(
-                        Math.floor(
-                          (row.price * (row.quantity ?? 1) +
-                            (row.price *
-                              (row.quantity ?? 1) *
-                              (row.gstCode?.gst?.taxPercentage ?? 0)) /
-                              100) *
-                            100
-                        ) / 100
-                      ).toFixed(2)}`
+                      formatIndianCurrency(
+                        Number(
+                          (
+                            Math.floor(
+                              (row.price * (row.quantity ?? 1) +
+                                (row.price *
+                                  (row.quantity ?? 1) *
+                                  (row.gstCode?.gst?.taxPercentage ?? 0)) /
+                                  100) *
+                                100
+                            ) / 100
+                          ).toFixed(2)
+                        )
+                      )
                     ) : column === "" ? (
                       <Trash2
                         className="w-5 h-5 text-red-500 cursor-pointer"

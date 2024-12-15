@@ -28,3 +28,12 @@ body {
   font-family: Arial, Helvetica, sans-serif;
   @apply font-NunitoSans text-text;
 }
+
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--alt-text);
+  border-radius: 5px;
+}
