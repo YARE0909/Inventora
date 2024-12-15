@@ -154,7 +154,7 @@ const Index = () => {
           {data.map((row, index) => (
             <tr
               key={index}
-              className="hover:bg-foreground duration-500 cursor-pointer border-b border-b-border"
+              className="hover:bg-highlight duration-500 cursor-pointer border-b border-b-border"
               onClick={() => handleDrawerOpen(row.id)}
             >
               {columns.map((column) => (

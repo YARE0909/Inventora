@@ -89,7 +89,7 @@ const Sidebar = ({
 
   return (
     <div
-      className={`w-3/4 md:w-1/4 lg:w-1/6 h-screen bg-foreground p-4 flex flex-col gap-7 fixed top-0 bottom-0 border-r border-border transition-transform duration-300 z-10 
+      className={`w-3/4 md:w-1/4 lg:w-1/6 h-screen bg-foreground p-4 flex flex-col gap-7 fixed top-0 bottom-0 border-r border-border transition-transform duration-300 z-10 lg:z-0 
       ${isOpen ? "translate-x-0" : "-translate-x-full"} 
       lg:translate-x-0`}
     >

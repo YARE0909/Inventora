@@ -52,9 +52,12 @@ const OrderDetailDrawer = ({
                   </div>
                   <div>
                     <h1 className="font-semibold text-textAlt flex items-center gap-2">
-                      Performa Invoice:
+                      Delivery Date:
                       <span className="text-text font-bold">
-                        {selectedOrderDetails.proformaInvoice}
+                        {formatDate(
+                          selectedOrderDetails.orderDeliveryDate?.toString() ||
+                            ""
+                        )}
                       </span>
                     </h1>
                   </div>

@@ -328,7 +328,7 @@ const Index = () => {
         <div className="w-fit bg-foreground rounded-md p-4 space-y-3 relative">
           {/* Order Details */}
           <div className="w-full flex flex-col space-y-3">
-            <div className="w-full flex justify-between items-end sticky -top-[1rem] z-50 bg-foreground border-b border-b-border pb-3">
+            <div className="w-full flex justify-between items-end sticky -top-[1rem] z-50 bg-foreground border-b-2 border-b-border pb-3">
               <div className="flex flex-col space-y-3 mt-2">
                 <h1 className="text-text font-semibold text-lg">
                   Order Details
