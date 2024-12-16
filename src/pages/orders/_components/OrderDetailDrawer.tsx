@@ -149,35 +149,43 @@ const OrderDetailDrawer = ({
                 Order Advance Details
               </h1>
             </div>
-            <PaginatedTable
-              columns={orderAdvanceDetailsColumns}
-              loadingState={false}
-            >
-              {selectedOrderDetails?.orderAdvanceDetails?.map((row, index) => (
-                <tr
-                  key={index}
-                  className="hover:bg-highlight duration-500 cursor-pointer border-b border-b-border"
-                >
-                  {orderAdvanceDetailsColumns.map((column) => (
-                    <td key={column} className="px-4 py-2">
-                      {column === "Advance Date"
-                        ? formatDate(
-                            row[
-                              orderAdvanceDetailsColumnMapping[
-                                column
-                              ] as keyof OrderAdvanceDetail
-                            ] as string
-                          )
-                        : (row[
-                            orderAdvanceDetailsColumnMapping[
-                              column
-                            ] as keyof OrderAdvanceDetail
-                          ] as string)}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </PaginatedTable>
+            {selectedOrderDetails?.orderAdvanceDetails!.length > 0 ? (
+              <PaginatedTable
+                columns={orderAdvanceDetailsColumns}
+                loadingState={false}
+              >
+                {selectedOrderDetails?.orderAdvanceDetails?.map(
+                  (row, index) => (
+                    <tr
+                      key={index}
+                      className="hover:bg-highlight duration-500 cursor-pointer border-b border-b-border"
+                    >
+                      {orderAdvanceDetailsColumns.map((column) => (
+                        <td key={column} className="px-4 py-2">
+                          {column === "Advance Date"
+                            ? formatDate(
+                                row[
+                                  orderAdvanceDetailsColumnMapping[
+                                    column
+                                  ] as keyof OrderAdvanceDetail
+                                ] as string
+                              )
+                            : (row[
+                                orderAdvanceDetailsColumnMapping[
+                                  column
+                                ] as keyof OrderAdvanceDetail
+                              ] as string)}
+                        </td>
+                      ))}
+                    </tr>
+                  )
+                )}
+              </PaginatedTable>
+            ) : (
+              <div className="w-full bg-background border border-border rounded-md p-4">
+                <h1 className="text-center">No advance paid</h1>
+              </div>
+            )}
           </div>
           {/* Customer Details */}
           <div className="w-full flex flex-col space-y-3">

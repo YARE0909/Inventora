@@ -77,18 +77,13 @@ export default async function handler(
           orderStatus,
           orderComments,
           orderItems,
-          orderAdvanceAmount,
-          orderAdvanceDate,
-          orderAdvancePaymentDetails,
-          orderAdvanceStatus,
-          orderAdvanceComments,
+          orderAdvanceDetails,
         } = req.body;
 
-        console.log(req.body);
-
-        if (!customerId || !orderDate || !orderValue) {
+        if (!customerId || !orderDate || !orderValue || !orderItems) {
           return res.status(400).json({
-            error: "Missing required fields: customerId, orderDate, orderValue",
+            error:
+              "Missing required fields: customerId, orderDate, orderValue, orderItems",
           });
         }
 
@@ -98,19 +93,19 @@ export default async function handler(
             customerId,
             orderDate: new Date(orderDate),
             proformaInvoice,
-            proformaInvoiceDate: !proformaInvoiceDate
+            proformaInvoiceDate: proformaInvoiceDate
               ? new Date(proformaInvoiceDate)
               : proformaInvoiceDate,
             orderValue: parseFloat(orderValue),
             orderCount: parseInt(orderCount, 10),
-            orderDeliveryDate: !orderDeliveryDate
+            orderDeliveryDate: orderDeliveryDate
               ? new Date(orderDeliveryDate)
               : orderDeliveryDate,
             orderStatus: orderStatus || "Active",
             orderComments,
             createdOn: new Date(),
             orderItems: {
-              create: orderItems?.map(
+              create: orderItems.map(
                 (item: {
                   productId: string;
                   quantity: number;
@@ -126,16 +121,23 @@ export default async function handler(
               ),
             },
             orderAdvanceDetails: {
-              create: {
-                orderAdvanceAmount: parseFloat(orderAdvanceAmount),
-                orderAdvanceDate: !orderAdvanceDate
-                  ? new Date(orderAdvanceDate)
-                  : orderAdvanceDate,
-                orderAdvancePaymentDetails: orderAdvancePaymentDetails,
-                orderAdvanceStatus: orderAdvanceStatus,
-                orderAdvanceComments: orderAdvanceComments,
-                createdOn: new Date(),
-              },
+              create: orderAdvanceDetails?.map(
+                (advance: {
+                  orderAdvanceAmount: number;
+                  orderAdvanceDate: string;
+                  orderAdvancePaymentDetails: string;
+                  orderAdvanceStatus: string;
+                  orderAdvanceComments: string;
+                }) => ({
+                  orderAdvanceAmount: advance.orderAdvanceAmount,
+                  orderAdvanceDate: new Date(advance.orderAdvanceDate),
+                  orderAdvancePaymentDetails:
+                    advance.orderAdvancePaymentDetails,
+                  orderAdvanceStatus: advance.orderAdvanceStatus,
+                  orderAdvanceComments: advance.orderAdvanceComments,
+                  createdOn: new Date(),
+                })
+              ),
             },
           },
         });

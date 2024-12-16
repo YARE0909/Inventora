@@ -36,7 +36,7 @@ export interface OrderAdvanceDetail {
   orderAdvanceAmount: number;
   orderAdvanceDate: Date | undefined;
   orderAdvancePaymentDetails: string;
-  orderAdvanceStatus: PaymentStatus;
+  orderAdvanceStatus: PaymentStatus | undefined;
   orderAdvanceComments?: string;
   createdOn?: Date | undefined;
   order?: Order;
