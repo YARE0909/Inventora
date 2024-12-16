@@ -5,7 +5,7 @@ import SearchBar from "@/components/ui/SearchBar";
 import Tabs from "@/components/ui/Tabs";
 import axios from "axios";
 import { format } from "date-fns";
-import { FileSpreadsheet, FilterX } from "lucide-react";
+import { FileSpreadsheet, FilterX, Plus } from "lucide-react";
 import { exportToCSV } from "@/utils/jsonToCsv";
 import Button from "@/components/ui/Button";
 import Tooltip from "@/components/ui/ToolTip";
@@ -14,6 +14,7 @@ import { Order } from "@/utils/types/types";
 import Drawer, { DrawerHandle } from "@/components/ui/Drawer";
 import OrderDetailDrawer from "./_components/OrderDetailDrawer";
 import { formatIndianCurrency } from "@/utils/formatIndianCurrency";
+import { useRouter } from "next/router";
 
 const OrderTable = ({
   header,
@@ -23,7 +24,7 @@ const OrderTable = ({
   loading,
   setLoading,
 }: {
-  header: string;
+  header: React.ReactNode;
   data: Order[];
   activeTab: "Active" | "OnHold" | "Completed" | "Cancelled";
   setData: React.Dispatch<React.SetStateAction<Order[]>>;
@@ -100,17 +101,19 @@ const OrderTable = ({
 
   const columns = [
     "Order #",
+    "Order Date",
+    "Order Amount",
     "Customer",
     "Delivery Date",
-    "Total Amount",
     "Comments",
   ];
 
   const columnMappings: { [key: string]: keyof Order } = {
     "Order #": "orderNumber",
+    "Order Date": "orderDate",
+    "Order Amount": "orderValue",
     Customer: "customer",
     "Delivery Date": "orderDeliveryDate",
-    "Total Amount": "orderValue",
     Comments: "orderComments",
   };
 
@@ -157,7 +160,7 @@ const OrderTable = ({
           >
             {columns.map((column) => (
               <td key={column} className="px-4 py-2">
-                {column === "Delivery Date"
+                {column === "Delivery Date" || column === "Order Date"
                   ? formatDate(
                       row[columnMappings[column] as keyof Order] as string
                     )
@@ -191,6 +194,7 @@ export default function Home() {
   >("Active");
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const router = useRouter();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -214,9 +218,28 @@ export default function Home() {
       label: "Active",
       content: (
         <OrderTable
-          header={`Total Value: ${formatIndianCurrency(
-            data.reduce((acc, curr) => acc + curr.orderValue, 0) || 0
-          )}`}
+          header={
+            <div className="w-fit flex space-x-3 items-center">
+              <div>
+                <h1 className="text-text flex items-center gap-2">
+                  <span className="text-sm text-textAlt">Total Value </span>
+                  {formatIndianCurrency(
+                    data.reduce((acc, curr) => acc + curr.orderValue, 0) || 0
+                  )}
+                </h1>
+              </div>
+              <div>
+                <Button
+                  onClick={() => {
+                    router.push("/create-order");
+                  }}
+                >
+                  <Plus className="w-5 h-5" />
+                  New Order
+                </Button>
+              </div>
+            </div>
+          }
           data={data}
           activeTab={activeTab}
           setData={setData}
@@ -229,9 +252,28 @@ export default function Home() {
       label: "On Hold",
       content: (
         <OrderTable
-          header={`Total Value: ${formatIndianCurrency(
-            data.reduce((acc, curr) => acc + curr.orderValue, 0) || 0
-          )}`}
+          header={
+            <div className="w-fit flex space-x-3 items-center">
+              <div>
+                <h1 className="text-text flex items-center gap-2">
+                  <span className="text-sm text-textAlt">Total Value </span>
+                  {formatIndianCurrency(
+                    data.reduce((acc, curr) => acc + curr.orderValue, 0) || 0
+                  )}
+                </h1>
+              </div>
+              <div>
+                <Button
+                  onClick={() => {
+                    router.push("/create-order");
+                  }}
+                >
+                  <Plus className="w-5 h-5" />
+                  New Order
+                </Button>
+              </div>
+            </div>
+          }
           data={data}
           activeTab={activeTab}
           setData={setData}
@@ -244,9 +286,28 @@ export default function Home() {
       label: "Completed",
       content: (
         <OrderTable
-          header={`Total Value: ${formatIndianCurrency(
-            data.reduce((acc, curr) => acc + curr.orderValue, 0) || 0
-          )}`}
+          header={
+            <div className="w-fit flex space-x-3 items-center">
+              <div>
+                <h1 className="text-text flex items-center gap-2">
+                  <span className="text-sm text-textAlt">Total Value </span>
+                  {formatIndianCurrency(
+                    data.reduce((acc, curr) => acc + curr.orderValue, 0) || 0
+                  )}
+                </h1>
+              </div>
+              <div>
+                <Button
+                  onClick={() => {
+                    router.push("/create-order");
+                  }}
+                >
+                  <Plus className="w-5 h-5" />
+                  New Order
+                </Button>
+              </div>
+            </div>
+          }
           data={data}
           activeTab={activeTab}
           setData={setData}
@@ -259,9 +320,28 @@ export default function Home() {
       label: "Cancelled",
       content: (
         <OrderTable
-          header={`Total Value: ${formatIndianCurrency(
-            data.reduce((acc, curr) => acc + curr.orderValue, 0) || 0
-          )}`}
+          header={
+            <div className="w-fit flex space-x-3 items-center">
+              <div>
+                <h1 className="text-text flex items-center gap-2">
+                  <span className="text-sm text-textAlt">Total Value </span>
+                  {formatIndianCurrency(
+                    data.reduce((acc, curr) => acc + curr.orderValue, 0) || 0
+                  )}
+                </h1>
+              </div>
+              <div>
+                <Button
+                  onClick={() => {
+                    router.push("/create-order");
+                  }}
+                >
+                  <Plus className="w-5 h-5" />
+                  New Order
+                </Button>
+              </div>
+            </div>
+          }
           data={data}
           activeTab={activeTab}
           setData={setData}

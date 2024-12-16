@@ -183,7 +183,7 @@ const OrderDetailDrawer = ({
               </PaginatedTable>
             ) : (
               <div className="w-full bg-background border border-border rounded-md p-4">
-                <h1 className="text-center">No advance paid</h1>
+                <h1 className="text-center text-textAlt font-bold">No advance paid</h1>
               </div>
             )}
           </div>

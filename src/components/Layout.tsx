@@ -96,7 +96,7 @@ const Sidebar = ({
       <div className="w-full flex gap-2 items-center justify-between">
         <div className="flex items-center gap-2">
           <BringToFront className="h-5 w-5" />
-          <h1 className="text-xl font-extrabold">ZARAVA</h1>
+          <h1 className="text-xl font-extrabold">INVENTORA</h1>
         </div>
         <button
           className="lg:hidden"

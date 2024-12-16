@@ -446,7 +446,7 @@ const Index = () => {
                   <Input
                     name="proformaInvoice"
                     type="text"
-                    label="Performa Invoice"
+                    label="Performa Invoice #/PO #"
                     onChange={(e) => {
                       handleFormInput(e.target.value, "proformaInvoice");
                     }}
@@ -551,7 +551,7 @@ const Index = () => {
                     <Input
                       name="orderAdvancePaymentDetails"
                       type="text"
-                      label="Payment Details"
+                      label="Payment Reference #"
                       onChange={(e) => {
                         handleOrderAdvanceDetailsInput(
                           e.target.value,
