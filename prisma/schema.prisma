@@ -36,12 +36,12 @@ model Orders {
   customer            Customers            @relation(fields: [customerId], references: [id])
   orderItems          OrderItems[]
   invoices            Invoices[]
-  orderAdvanceDetails OrderAdvanceDetails?
+  orderAdvanceDetails OrderAdvanceDetails[]
 }
 
 model OrderAdvanceDetails {
   id                         String        @id @default(auto()) @map("_id") @db.ObjectId
-  orderId                    String        @unique @db.ObjectId
+  orderId                    String        @db.ObjectId
   orderAdvanceAmount         Float
   orderAdvanceDate           DateTime
   orderAdvancePaymentDetails String?

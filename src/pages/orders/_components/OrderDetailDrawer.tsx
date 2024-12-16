@@ -1,4 +1,4 @@
-import { Order } from "@/utils/types/types";
+import { Order, OrderAdvanceDetail } from "@/utils/types/types";
 import React, { useEffect } from "react";
 import { format } from "date-fns";
 import PaginatedTable from "@/components/ui/PaginatedTable";
@@ -13,6 +13,24 @@ const columns = [
   "GST Amount",
   "Total Amount",
 ];
+
+const orderAdvanceDetailsColumns = [
+  "Advance Amount",
+  "Advance Date",
+  "Advance Status",
+  "Payment Details",
+  "Comments",
+];
+
+const orderAdvanceDetailsColumnMapping: {
+  [key: string]: keyof OrderAdvanceDetail;
+} = {
+  "Advance Amount": "orderAdvanceAmount",
+  "Advance Date": "orderAdvanceDate",
+  "Advance Status": "orderAdvanceStatus",
+  "Payment Details": "orderAdvancePaymentDetails",
+  Comments: "orderAdvanceComments",
+};
 
 const OrderDetailDrawer = ({
   selectedOrderDetails,
@@ -131,79 +149,35 @@ const OrderDetailDrawer = ({
                 Order Advance Details
               </h1>
             </div>
-            <div className="w-full rounded-md bg-background p-4 border border-border flex flex-col space-y-3">
-              {selectedOrderDetails.orderAdvanceDetails ? (
-                <div className="flex flex-col space-y-3">
-                  <div className="flex flex-col md:flex md:flex-row md:justify-between border-b border-b-border pb-2">
-                    <div>
-                      <h1 className="font-semibold text-textAlt flex items-center gap-2">
-                        Advance Date:
-                        <span className="text-text font-bold">
-                          {formatDate(
-                            selectedOrderDetails.orderAdvanceDetails?.orderAdvanceDate?.toString() ||
-                              ""
-                          )}
-                        </span>
-                      </h1>
-                    </div>
-                    <div>
-                      <h1 className="font-semibold text-textAlt flex items-center gap-2">
-                        Advance Amount:
-                        <span className="text-text font-bold">
-                          {formatIndianCurrency(
-                            selectedOrderDetails.orderAdvanceDetails
-                              .orderAdvanceAmount
-                          )}
-                        </span>
-                      </h1>
-                    </div>
-                  </div>
-                  <div className="flex flex-col md:flex md:flex-row md:justify-between border-b border-b-border pb-2">
-                    <div>
-                      <h1 className="font-semibold text-textAlt flex items-center gap-2">
-                        Status:
-                        <span className="text-text font-bold">
-                          {
-                            selectedOrderDetails.orderAdvanceDetails
-                              .orderAdvanceStatus
-                          }
-                        </span>
-                      </h1>
-                    </div>
-                  </div>
-                  <div className="flex flex-col border-b border-b-border pb-2">
-                    <div>
-                      <h1 className="font-semibold text-textAlt flex items-center gap-2">
-                        Payment Details:
-                        <span className="text-text font-bold">
-                          {
-                            selectedOrderDetails.orderAdvanceDetails
-                              .orderAdvancePaymentDetails
-                          }
-                        </span>
-                      </h1>
-                    </div>
-                  </div>
-                  <div className="flex flex-col pb-2">
-                    <div>
-                      <h1 className="font-semibold text-textAlt flex items-center gap-2">
-                        Comments:
-                        <span className="text-text font-bold">
-                          {
-                            selectedOrderDetails.orderAdvanceDetails
-                              .orderAdvanceComments
-                          }
-                        </span>
-                      </h1>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="p-4 text-center">
-                  No advance details available
-                </div>
-              )}
-            </div>
+            <PaginatedTable
+              columns={orderAdvanceDetailsColumns}
+              loadingState={false}
+            >
+              {selectedOrderDetails?.orderAdvanceDetails?.map((row, index) => (
+                <tr
+                  key={index}
+                  className="hover:bg-highlight duration-500 cursor-pointer border-b border-b-border"
+                >
+                  {orderAdvanceDetailsColumns.map((column) => (
+                    <td key={column} className="px-4 py-2">
+                      {column === "Advance Date"
+                        ? formatDate(
+                            row[
+                              orderAdvanceDetailsColumnMapping[
+                                column
+                              ] as keyof OrderAdvanceDetail
+                            ] as string
+                          )
+                        : (row[
+                            orderAdvanceDetailsColumnMapping[
+                              column
+                            ] as keyof OrderAdvanceDetail
+                          ] as string)}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </PaginatedTable>
           </div>
           {/* Customer Details */}
           <div className="w-full flex flex-col space-y-3">
@@ -310,8 +284,8 @@ const OrderDetailDrawer = ({
                                   Math.floor(
                                     ((item.quantity *
                                       item.unitPrice *
-                                      item.product?.gstCode?.gst
-                                        ?.taxPercentage!) /
+                                      (item.product?.gstCode?.gst
+                                        ?.taxPercentage ?? 0)) /
                                       100) *
                                       100
                                   ) / 100

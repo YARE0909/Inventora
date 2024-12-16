@@ -27,7 +27,7 @@ export interface Order {
   customer?: Customer;
   orderItems?: OrderItem[];
   invoices?: Invoice[];
-  orderAdvanceDetails?: OrderAdvanceDetail;
+  orderAdvanceDetails?: OrderAdvanceDetail[];
 }
 
 export interface OrderAdvanceDetail {
