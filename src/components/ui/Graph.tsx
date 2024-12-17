@@ -22,8 +22,12 @@ interface DataPoint {
 interface GraphProps {
   data: DataPoint[];
   graphType: "bar" | "line" | "pie" | "ring";
-  dataKeys?: string[]; // Array of keys for multiple data series
+  dataKeys?: {
+    label: string;
+    value: string;
+  }[]; // Array of keys for multiple data series
   fillColors?: string[]; // Custom colors for data series
+  height?: number;
 }
 
 const patternFlyColors = [
@@ -71,31 +75,37 @@ const CustomTooltip: React.FC<{
 const Graph: React.FC<GraphProps> = ({
   data,
   graphType,
-  dataKeys = ["value"],
+  dataKeys = [],
   fillColors,
+  height = 300,
 }) => {
   const vibrantColors = fillColors || getVibrantColors(dataKeys.length);
 
   return (
-    <div className="bg-background p-4 rounded-lg shadow-md">
-      <ResponsiveContainer width="100%" height={300}>
+    <div className="bg-background p-4 rounded-lg">
+      <ResponsiveContainer width="100%" height={height}>
         {graphType === "bar" ? (
           <BarChart data={data}>
             <XAxis dataKey="label" className="text-textAlt" />
-            <YAxis className="text-textAlt" />
+            <YAxis className="text-textAlt" allowDecimals={false} />
             <Tooltip
               content={<CustomTooltip />}
               cursor={{ fill: "transparent" }}
             />
             <Legend />
             {dataKeys.map((key, index) => (
-              <Bar key={key} dataKey={key} fill={vibrantColors[index]} />
+              <Bar
+                key={key.label}
+                dataKey={key.value} // This is where the `value` from dataKeys is used
+                fill={vibrantColors[index]}
+                name={key.label} // This is where the `label` is used for display
+              />
             ))}
           </BarChart>
         ) : graphType === "line" ? (
           <LineChart data={data}>
             <XAxis dataKey="label" className="text-textAlt" />
-            <YAxis className="text-textAlt" />
+            <YAxis className="text-textAlt" allowDecimals={false} />
             <Tooltip
               content={<CustomTooltip />}
               cursor={{ fill: "transparent" }}
@@ -103,11 +113,12 @@ const Graph: React.FC<GraphProps> = ({
             <Legend />
             {dataKeys.map((key, index) => (
               <Line
-                key={key}
+                key={key.value}
                 type="monotone"
-                dataKey={key}
+                dataKey={key.label}
                 stroke={vibrantColors[index]}
                 strokeWidth={2}
+                name={key.label} // This is where the `label` is used for display
               />
             ))}
           </LineChart>
@@ -116,7 +127,7 @@ const Graph: React.FC<GraphProps> = ({
             <Legend />
             <Pie
               data={data}
-              dataKey={dataKeys[0]}
+              dataKey={dataKeys[0].label}
               nameKey="label"
               cx="50%"
               cy="50%"
@@ -133,7 +144,7 @@ const Graph: React.FC<GraphProps> = ({
             <Legend />
             <Pie
               data={data}
-              dataKey={dataKeys[0]}
+              dataKey={dataKeys[0].label}
               nameKey="label"
               cx="50%"
               cy="50%"
