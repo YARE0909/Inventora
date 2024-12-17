@@ -4,7 +4,7 @@ import Input from "@/components/ui/Input";
 import { useToast } from "@/components/ui/Toast/ToastProvider";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { FilterX, Search } from "lucide-react";
+import { FilterX, Search, LoaderCircle } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Tooltip from "@/components/ui/ToolTip";
 import { formatIndianCurrency } from "@/utils/formatIndianCurrency";
@@ -128,11 +128,13 @@ export default function Home() {
     startDate: "",
     endDate: "",
   });
+  const [loading, setLoading] = useState<boolean>(false);
 
   const { toast } = useToast();
 
   const fetchOrderData = async (startDate = "", endDate = "") => {
     try {
+      setLoading(true);
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/analytics/orders`,
         {
@@ -142,6 +144,8 @@ export default function Home() {
       setOrderData(response.data);
     } catch {
       toast("Something went wrong.", "top-right", "error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -167,85 +171,92 @@ export default function Home() {
 
   return (
     <Layout header={"Dashboard"}>
-      <GraphComponent
-        data={orderData.orders.graphData}
-        dataKeys={[
-          { label: "Active", value: "active" },
-          { label: "On Hold", value: "onHold" },
-          { label: "Completed", value: "completed" },
-          { label: "Cancelled", value: "cancelled" },
-        ]}
-        fillColors={["#3b82f6", "#f97316 ", "#10b981", "#ef4444"]}
-        header="Orders"
-        setDate={handleSetDate}
-        applyFilter={applyFilter}
-        clearFilter={clearFilter}
-        statistics={[
-          { label: "Total Orders", value: orderData.orders.count },
-          {
-            label: "Total Revenue",
-            value: formatIndianCurrency(orderData.orders.totalValue),
-          },
-        ]}
-        cardsData={[
-          {
-            label: (
-              <div className="flex space-x-1 items-center">
-                <h1 className="text-blue-500 font-bold">Active</h1>
-              </div>
-            ),
-            value: (
-              <div className="flex space-x-1 items-center">
-                <h1 className="text-text font-bold text-2xl">
-                  {formatIndianCurrency(orderData.orders.activeOrderTotal)}
-                </h1>
-              </div>
-            ),
-          },
-          {
-            label: (
-              <div className="flex space-x-1 items-center">
-                <h1 className="text-orange-500 font-bold">On Hold</h1>
-              </div>
-            ),
-            value: (
-              <div className="flex space-x-1 items-center">
-                <h1 className="text-text font-bold text-2xl">
-                  {formatIndianCurrency(orderData.orders.onHoldOrderTotal)}
-                </h1>
-              </div>
-            ),
-          },
-          {
-            label: (
-              <div className="flex space-x-1 items-center">
-                <h1 className="text-green-500 font-bold">Completed</h1>
-              </div>
-            ),
-            value: (
-              <div className="flex space-x-1 items-center">
-                <h1 className="text-text font-bold text-2xl">
-                  {formatIndianCurrency(orderData.orders.completedOrderTotal)}
-                </h1>
-              </div>
-            ),
-          },
-          {
-            label: (
-              <div className="flex space-x-1 items-center">
-                <h1 className="text-red-500 font-bold">Cancelled</h1>
-              </div>
-            ),
-            value: (
-              <div className="flex space-x-1 items-center">
-                <h1 className="text-text font-bold text-2xl">
-                  {formatIndianCurrency(orderData.orders.cancelledOrderTotal)}
-                </h1>
-              </div>
-            ),
-          },
-        ]}
-      />
+      {/* Show loader while data is being fetched */}
+      {loading ? (
+        <div className="w-full flex justify-center items-center py-8">
+          <LoaderCircle className="animate-spin rounded-full h-5 w-5"></LoaderCircle>
+        </div>
+      ) : (
+        <GraphComponent
+          data={orderData.orders.graphData}
+          dataKeys={[
+            { label: "Active", value: "active" },
+            { label: "On Hold", value: "onHold" },
+            { label: "Completed", value: "completed" },
+            { label: "Cancelled", value: "cancelled" },
+          ]}
+          fillColors={["#3b82f6", "#f97316 ", "#10b981", "#ef4444"]}
+          header="Orders"
+          setDate={handleSetDate}
+          applyFilter={applyFilter}
+          clearFilter={clearFilter}
+          statistics={[
+            { label: "Total Orders", value: orderData.orders.count },
+            {
+              label: "Total Revenue",
+              value: formatIndianCurrency(orderData.orders.totalValue),
+            },
+          ]}
+          cardsData={[
+            {
+              label: (
+                <div className="flex space-x-1 items-center">
+                  <h1 className="text-blue-500 font-bold">Active</h1>
+                </div>
+              ),
+              value: (
+                <div className="flex space-x-1 items-center">
+                  <h1 className="text-text font-bold text-2xl">
+                    {formatIndianCurrency(orderData.orders.activeOrderTotal)}
+                  </h1>
+                </div>
+              ),
+            },
+            {
+              label: (
+                <div className="flex space-x-1 items-center">
+                  <h1 className="text-orange-500 font-bold">On Hold</h1>
+                </div>
+              ),
+              value: (
+                <div className="flex space-x-1 items-center">
+                  <h1 className="text-text font-bold text-2xl">
+                    {formatIndianCurrency(orderData.orders.onHoldOrderTotal)}
+                  </h1>
+                </div>
+              ),
+            },
+            {
+              label: (
+                <div className="flex space-x-1 items-center">
+                  <h1 className="text-green-500 font-bold">Completed</h1>
+                </div>
+              ),
+              value: (
+                <div className="flex space-x-1 items-center">
+                  <h1 className="text-text font-bold text-2xl">
+                    {formatIndianCurrency(orderData.orders.completedOrderTotal)}
+                  </h1>
+                </div>
+              ),
+            },
+            {
+              label: (
+                <div className="flex space-x-1 items-center">
+                  <h1 className="text-red-500 font-bold">Cancelled</h1>
+                </div>
+              ),
+              value: (
+                <div className="flex space-x-1 items-center">
+                  <h1 className="text-text font-bold text-2xl">
+                    {formatIndianCurrency(orderData.orders.cancelledOrderTotal)}
+                  </h1>
+                </div>
+              ),
+            },
+          ]}
+        />
+      )}
     </Layout>
   );
 }
