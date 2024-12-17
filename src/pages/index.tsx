@@ -90,7 +90,7 @@ const GraphComponent = ({
             {cardsData?.map((item, index) => (
               <div
                 key={index}
-                className="w-full bg-card p-4 rounded-md border border-border"
+                className="w-full bg-background p-4 rounded-md border border-border"
               >
                 {item.label}
                 {item.value}
