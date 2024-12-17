@@ -14,7 +14,8 @@ import Input from "@/components/ui/Input";
 import ClickToCopy from "@/components/ui/ClickToCopy";
 
 const columns = [
-  "Name",
+  "Customer",
+  "Contact Person",
   "Email",
   "Phone",
   "Billing Address",
@@ -22,7 +23,8 @@ const columns = [
 ];
 
 const columnMappings: { [key: string]: keyof Customer } = {
-  Name: "name",
+  Customer: "name",
+  "Contact Person": "contactPerson",
   Email: "email",
   Phone: "phone",
   "Billing Address": "billingAddress",
@@ -189,7 +191,7 @@ const Index = () => {
         </PaginatedTable>
       </div>
       <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
-        <h2 className="text-lg font-semibold mb-4">Add Customer</h2>
+        <h2 className="text-lg font-semibold mb-4">ADD CUSTOMER</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input
             type="text"
@@ -198,7 +200,7 @@ const Index = () => {
             value={formData.name}
             onChange={handleInputChange}
             required
-            label="Name"
+            label="Customer"
           />
           <Input
             type="text"

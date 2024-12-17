@@ -11,14 +11,12 @@ import { Gst } from "@/utils/types/types";
 import axios from "axios";
 import { FileSpreadsheet, FilterX, Plus } from "lucide-react";
 import Input from "@/components/ui/Input";
-import { format } from "date-fns";
 
-const columns = ["Tax Percentage", "Status", "Created On"];
+const columns = ["Tax Percentage", "Status"];
 
 const columnMappings: { [key: string]: keyof Gst } = {
   "Tax Percentage": "taxPercentage",
   Status: "isActive",
-  "Created On": "createdOn",
 };
 
 const Index = () => {
@@ -109,10 +107,6 @@ const Index = () => {
     }
   };
 
-  const formatDate = (date: string) => {
-    return format(new Date(date), "dd-MMM-yyyy"); // Format to "01-Jan-2024"
-  };
-
   useEffect(() => {
     fetchData();
   }, []);
@@ -159,11 +153,7 @@ const Index = () => {
             >
               {columns.map((column) => (
                 <td key={column} className="px-4 py-2">
-                  {column === "Created On"
-                    ? formatDate(
-                        row[columnMappings[column] as keyof Gst] as string
-                      )
-                    : column === "Status"
+                  {column === "Status"
                     ? row[columnMappings[column] as keyof Gst]
                       ? "Active"
                       : "Inactive"
@@ -177,7 +167,7 @@ const Index = () => {
         </PaginatedTable>
       </div>
       <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
-        <h2 className="text-lg font-semibold mb-4">Add Gst</h2>
+        <h2 className="text-lg font-semibold mb-4">ADD GST</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input
             type="text"

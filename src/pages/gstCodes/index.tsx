@@ -228,7 +228,7 @@ const Index = () => {
         </PaginatedTable>
       </div>
       <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
-        <h2 className="text-lg font-semibold mb-4">Add GstCode</h2>
+        <h2 className="text-lg font-semibold mb-4">ADD GST CODE</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input
             type="text"
