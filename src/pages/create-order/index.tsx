@@ -47,7 +47,7 @@ const orderAdvanceDetailsColumns = [
   "Advance Amount",
   "Advance Date",
   "Advance Status",
-  "Payment Details",
+  "Payment Reference #",
   "Comments",
   "",
 ];
@@ -58,7 +58,7 @@ const orderAdvanceDetailsColumnMapping: {
   "Advance Amount": "orderAdvanceAmount",
   "Advance Date": "orderAdvanceDate",
   "Advance Status": "orderAdvanceStatus",
-  "Payment Details": "orderAdvancePaymentDetails",
+  "Payment Reference #": "orderAdvancePaymentDetails",
   Comments: "orderAdvanceComments",
 };
 
@@ -382,7 +382,7 @@ const Index = () => {
   }, [data]);
 
   return (
-    <Layout header="Create Order">
+    <Layout header="New Order">
       <div className="w-full flex flex-col items-center">
         <div className="w-fit bg-foreground rounded-md p-4 space-y-3">
           {/* Order Details */}
@@ -426,7 +426,7 @@ const Index = () => {
                 <div className="w-full md:max-w-80">
                   <Select
                     options={customerData}
-                    label="Select Customer"
+                    label="Customer"
                     onChange={(value) => {
                       handleFormInput(value, "customerId");
                     }}
@@ -446,7 +446,7 @@ const Index = () => {
                   <Input
                     name="proformaInvoice"
                     type="text"
-                    label="Performa Invoice #/PO #"
+                    label="Performa Invoice/PO #"
                     onChange={(e) => {
                       handleFormInput(e.target.value, "proformaInvoice");
                     }}
@@ -500,7 +500,7 @@ const Index = () => {
                     <Input
                       name="orderAdvanceAmount"
                       type="number"
-                      label="Amount"
+                      label="Order Amount"
                       onChange={(e) => {
                         handleOrderAdvanceDetailsInput(
                           e.target.value,
@@ -513,7 +513,7 @@ const Index = () => {
                     <Input
                       name="orderAdvanceDate"
                       type="date"
-                      label="Advance Payment Date"
+                      label="Advance Date"
                       onChange={(e) => {
                         handleOrderAdvanceDetailsInput(
                           e.target.value,
@@ -538,7 +538,7 @@ const Index = () => {
                           label: "Partially Paid",
                         },
                       ]}
-                      label="Payment Status"
+                      label="Advance Status"
                       onChange={(value) => {
                         handleOrderAdvanceDetailsInput(
                           value,
@@ -631,7 +631,7 @@ const Index = () => {
               <div className="w-full md:max-w-80">
                 <Select
                   options={productData}
-                  label="Select Product"
+                  label="Product"
                   onChange={(value) => {
                     selectProductChange(value, "productId");
                   }}

@@ -15,7 +15,7 @@ import { format } from "date-fns";
 import Select from "@/components/ui/SelectComponent";
 import { formatIndianCurrency } from "@/utils/formatIndianCurrency";
 
-const columns = ["name", "description", "price", "GST Code"];
+const columns = ["name", "description", "price", "GST Code", "GST %"];
 
 const Index = () => {
   const [data, setData] = useState<Product[]>([]);
@@ -206,6 +206,8 @@ const Index = () => {
                     ? formatIndianCurrency(
                         row[column as keyof Product] as number
                       )
+                    : column === "GST %"
+                    ? `${row.gstCode?.gst?.taxPercentage ?? "N/A"} %`
                     : (row[column as keyof Product] as string)}
                 </td>
               ))}
@@ -245,13 +247,14 @@ const Index = () => {
           />
           <Select
             options={gstCodeData}
-            label="Select GST Code"
+            label="GST Code"
             onChange={handleChange}
           />
 
           <hr className="border border-border" />
-          <div className="w-full">
-            <Button type="submit">Submit</Button>
+          <div className="w-full flex space-x-3">
+            <Button type="submit">Save</Button>
+            <Button onClick={handleCloseModal}>Cancel</Button>
           </div>
         </form>
       </Modal>

@@ -246,8 +246,9 @@ const Index = () => {
             label="Shipping Address"
           />
           <hr className="border border-border" />
-          <div className="w-full">
-            <Button type="submit">Submit</Button>
+          <div className="w-full flex space-x-3">
+            <Button type="submit">Save</Button>
+            <Button onClick={handleCloseModal}>Cancel</Button>
           </div>
         </form>
       </Modal>

@@ -13,12 +13,12 @@ import { FileSpreadsheet, FilterX, Plus } from "lucide-react";
 import Input from "@/components/ui/Input";
 import { format } from "date-fns";
 
-const columns = ["taxPercentage", "Status", "createdOn"];
+const columns = ["Tax Percentage", "Status", "Created On"];
 
 const columnMappings: { [key: string]: keyof Gst } = {
-  taxPercentage: "taxPercentage",
+  "Tax Percentage": "taxPercentage",
   Status: "isActive",
-  createdOn: "createdOn",
+  "Created On": "createdOn",
 };
 
 const Index = () => {
@@ -159,13 +159,17 @@ const Index = () => {
             >
               {columns.map((column) => (
                 <td key={column} className="px-4 py-2">
-                  {column === "createdOn"
-                    ? formatDate(row[column as keyof Gst] as string)
+                  {column === "Created On"
+                    ? formatDate(
+                        row[columnMappings[column] as keyof Gst] as string
+                      )
                     : column === "Status"
                     ? row[columnMappings[column] as keyof Gst]
                       ? "Active"
                       : "Inactive"
-                    : (row[column as keyof Gst] as string)}
+                    : column === "Tax Percentage"
+                    ? `${row[columnMappings[column] as keyof Gst]} %`
+                    : (row[columnMappings[column] as keyof Gst] as string)}
                 </td>
               ))}
             </tr>
@@ -193,8 +197,9 @@ const Index = () => {
             label="Is Active"
           />
           <hr className="border border-border" />
-          <div className="w-full">
-            <Button type="submit">Submit</Button>
+          <div className="w-full flex space-x-3">
+            <Button type="submit">Save</Button>
+            <Button onClick={handleCloseModal}>Cancel</Button>
           </div>
         </form>
       </Modal>

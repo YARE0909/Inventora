@@ -18,7 +18,7 @@ const orderAdvanceDetailsColumns = [
   "Advance Amount",
   "Advance Date",
   "Advance Status",
-  "Payment Details",
+  "Payment Reference #",
   "Comments",
 ];
 
@@ -28,7 +28,7 @@ const orderAdvanceDetailsColumnMapping: {
   "Advance Amount": "orderAdvanceAmount",
   "Advance Date": "orderAdvanceDate",
   "Advance Status": "orderAdvanceStatus",
-  "Payment Details": "orderAdvancePaymentDetails",
+  "Payment Reference #": "orderAdvancePaymentDetails",
   Comments: "orderAdvanceComments",
 };
 

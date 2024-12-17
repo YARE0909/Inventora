@@ -28,7 +28,7 @@ export default async function handler(
               gstCode: {
                 include: {
                   gst: true,
-                }
+                },
               }, // Include GST details
             },
           });
@@ -54,7 +54,11 @@ export default async function handler(
         const products = await prisma.products.findMany({
           ...filter,
           include: {
-            gstCode: true, // Include GST details
+            gstCode: {
+              include: {
+                gst: true,
+              },
+            }, // Include GST details
           },
         });
 
