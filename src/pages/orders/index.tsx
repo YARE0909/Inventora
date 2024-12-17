@@ -222,7 +222,9 @@ export default function Home() {
             <div className="w-fit flex space-x-3 items-center">
               <div>
                 <h1 className="text-text flex items-center gap-2">
-                  <span className="text-sm text-textAlt">Total Value </span>
+                  <span className="text-sm text-textAlt">
+                    Total Orders Amount{" "}
+                  </span>
                   {formatIndianCurrency(
                     data.reduce((acc, curr) => acc + curr.orderValue, 0) || 0
                   )}
@@ -256,7 +258,9 @@ export default function Home() {
             <div className="w-fit flex space-x-3 items-center">
               <div>
                 <h1 className="text-text flex items-center gap-2">
-                  <span className="text-sm text-textAlt">Total Value </span>
+                  <span className="text-sm text-textAlt">
+                    Total Orders Amount{" "}
+                  </span>
                   {formatIndianCurrency(
                     data.reduce((acc, curr) => acc + curr.orderValue, 0) || 0
                   )}
@@ -290,7 +294,9 @@ export default function Home() {
             <div className="w-fit flex space-x-3 items-center">
               <div>
                 <h1 className="text-text flex items-center gap-2">
-                  <span className="text-sm text-textAlt">Total Value </span>
+                  <span className="text-sm text-textAlt">
+                    Total Orders Amount{" "}
+                  </span>
                   {formatIndianCurrency(
                     data.reduce((acc, curr) => acc + curr.orderValue, 0) || 0
                   )}
@@ -324,7 +330,9 @@ export default function Home() {
             <div className="w-fit flex space-x-3 items-center">
               <div>
                 <h1 className="text-text flex items-center gap-2">
-                  <span className="text-sm text-textAlt">Total Value </span>
+                  <span className="text-sm text-textAlt">
+                    Total Orders Amount{" "}
+                  </span>
                   {formatIndianCurrency(
                     data.reduce((acc, curr) => acc + curr.orderValue, 0) || 0
                   )}
