@@ -193,7 +193,7 @@ export default function Home() {
           statistics={[
             { label: "Total Orders", value: orderData.orders.count },
             {
-              label: "Total Revenue",
+              label: "Total Order Value",
               value: formatIndianCurrency(orderData.orders.totalValue),
             },
           ]}
