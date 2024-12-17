@@ -17,6 +17,7 @@ import Input from "@/components/ui/Input";
 import Select from "@/components/ui/SelectComponent";
 import { formatIndianCurrency } from "@/utils/formatIndianCurrency";
 import { format } from "date-fns";
+import { useRouter } from "next/router";
 
 const columns = [
   "Product",
@@ -109,6 +110,8 @@ const Index = () => {
     orderAdvancePaymentDetails: "",
     orderAdvanceStatus: undefined,
   });
+
+  const router = useRouter();
 
   const addOrderAdvanceDetailsToTable = () => {
     if (currentOrderAdvanceDetails?.orderAdvanceAmount === 0) {
@@ -363,6 +366,10 @@ const Index = () => {
           orderAdvanceDetails: [],
         });
       }
+
+      setTimeout(() => {
+        router.push("/orders");
+      }, 2000);
     } catch {
       toast("Something went wrong.", "top-right", "error");
     }
@@ -625,7 +632,9 @@ const Index = () => {
           {/* Order Items */}
           <div className="flex flex-col space-y-3">
             <div>
-              <h1 className="text-text font-semibold text-lg">Order Item Details</h1>
+              <h1 className="text-text font-semibold text-lg">
+                Order Item Details
+              </h1>
             </div>
             <div className="w-full flex space-x-3 items-end">
               <div className="w-full md:max-w-80">

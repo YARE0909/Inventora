@@ -113,7 +113,21 @@ const GraphComponent = ({
 };
 
 export default function Home() {
-  const [orderData, setOrderData] = useState({
+  const [orderData, setOrderData] = useState<{
+    orders: {
+      count: number;
+      totalValue: number;
+      activeOrderTotal: number;
+      onHoldOrderTotal: number;
+      completedOrderTotal: number;
+      cancelledOrderTotal: number;
+      activeOrderCount: number;
+      onHoldOrderCount: number;
+      completedOrderCount: number;
+      cancelledOrderCount: number;
+      graphData: { label: string; [key: string]: number | string }[];
+    };
+  }>({
     orders: {
       count: 0,
       totalValue: 0,
@@ -121,6 +135,10 @@ export default function Home() {
       onHoldOrderTotal: 0,
       completedOrderTotal: 0,
       cancelledOrderTotal: 0,
+      activeOrderCount: 0,
+      onHoldOrderCount: 0,
+      completedOrderCount: 0,
+      cancelledOrderCount: 0,
       graphData: [],
     },
   });
@@ -201,7 +219,12 @@ export default function Home() {
             {
               label: (
                 <div className="flex space-x-1 items-center">
-                  <h1 className="text-blue-500 font-bold">Active</h1>
+                  <h1 className="text-blue-500 font-bold flex gap-2 items-center">
+                    Active
+                    <span className="text-text text-2xl">
+                      {orderData.orders.activeOrderCount}
+                    </span>
+                  </h1>
                 </div>
               ),
               value: (
@@ -215,7 +238,12 @@ export default function Home() {
             {
               label: (
                 <div className="flex space-x-1 items-center">
-                  <h1 className="text-orange-500 font-bold">On Hold</h1>
+                  <h1 className="text-orange-500 font-bold flex gap-2 items-center">
+                    On Hold
+                    <span className="text-text text-2xl">
+                      {orderData.orders.onHoldOrderCount}
+                    </span>
+                  </h1>
                 </div>
               ),
               value: (
@@ -229,7 +257,12 @@ export default function Home() {
             {
               label: (
                 <div className="flex space-x-1 items-center">
-                  <h1 className="text-green-500 font-bold">Completed</h1>
+                  <h1 className="text-green-500 font-bold flex gap-2 items-center">
+                    Completed
+                    <span className="text-text text-2xl">
+                      {orderData.orders.completedOrderCount}
+                    </span>
+                  </h1>
                 </div>
               ),
               value: (
@@ -243,7 +276,12 @@ export default function Home() {
             {
               label: (
                 <div className="flex space-x-1 items-center">
-                  <h1 className="text-red-500 font-bold">Cancelled</h1>
+                  <h1 className="text-red-500 font-bold flex gap-2 items-center">
+                    Cancelled
+                    <span className="text-text text-2xl">
+                      {orderData.orders.cancelledOrderCount}
+                    </span>
+                  </h1>
                 </div>
               ),
               value: (

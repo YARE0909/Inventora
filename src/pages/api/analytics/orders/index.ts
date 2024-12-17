@@ -56,10 +56,11 @@ export default async function handler(
         where: { orderDate: { gte: start, lte: end } },
         orderBy: { orderDate: "asc" },
       }),
-      // Total amounts grouped by status
+      // Total amounts and counts grouped by status
       prisma.orders.groupBy({
         by: ["orderStatus"],
         _sum: { orderValue: true },
+        _count: true,
         where: { orderDate: { gte: start, lte: end } },
       }),
     ]);
@@ -123,31 +124,44 @@ export default async function handler(
     // Calculate totals for each status
     const statusTotals: {
       activeOrderTotal: number;
+      activeOrderCount: number;
       onHoldOrderTotal: number;
+      onHoldOrderCount: number;
       completedOrderTotal: number;
+      completedOrderCount: number;
       cancelledOrderTotal: number;
+      cancelledOrderCount: number;
     } = {
       activeOrderTotal: 0,
+      activeOrderCount: 0,
       onHoldOrderTotal: 0,
+      onHoldOrderCount: 0,
       completedOrderTotal: 0,
+      completedOrderCount: 0,
       cancelledOrderTotal: 0,
+      cancelledOrderCount: 0,
     };
 
     orderTotalsByStatus.forEach((group) => {
       const totalValue = group._sum.orderValue || 0;
+      const count = group._count || 0;
 
       switch (group.orderStatus) {
         case OrderStatus.Active:
           statusTotals.activeOrderTotal = totalValue;
+          statusTotals.activeOrderCount = count;
           break;
         case OrderStatus.OnHold:
           statusTotals.onHoldOrderTotal = totalValue;
+          statusTotals.onHoldOrderCount = count;
           break;
         case OrderStatus.Completed:
           statusTotals.completedOrderTotal = totalValue;
+          statusTotals.completedOrderCount = count;
           break;
         case OrderStatus.Cancelled:
           statusTotals.cancelledOrderTotal = totalValue;
+          statusTotals.cancelledOrderCount = count;
           break;
       }
     });
