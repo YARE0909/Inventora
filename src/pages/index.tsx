@@ -230,7 +230,9 @@ export default function Home() {
               value: (
                 <div className="flex space-x-1 items-center">
                   <h1 className="text-text font-bold text-2xl">
-                    {formatIndianCurrency(orderData.orders.activeOrderTotal)}
+                    {formatIndianCurrency(orderData.orders.activeOrderTotal, {
+                      decimalPlaces: 2,
+                    })}
                   </h1>
                 </div>
               ),

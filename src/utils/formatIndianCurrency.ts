@@ -9,14 +9,14 @@ export const formatIndianCurrency = (
   const { decimalPlaces = 2 } = options;
 
   // Convert the amount to a string
-  let x = amount.toString();
+  const x = amount.toString();
 
   // Split the number into integer and decimal parts
   const [integerPart, decimalPart = ""] = x.split(".");
 
   // Handle the last three digits separately
   let lastThree = integerPart.substring(integerPart.length - 3);
-  let otherNumbers = integerPart.substring(0, integerPart.length - 3);
+  const otherNumbers = integerPart.substring(0, integerPart.length - 3);
 
   // If there are other digits, add a comma before the last three digits
   if (otherNumbers !== "") {

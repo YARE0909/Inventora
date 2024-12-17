@@ -123,27 +123,29 @@ export default async function handler(
 
     // Calculate totals for each status
     const statusTotals: {
-      activeOrderTotal: number;
+      activeOrderTotal: string;
       activeOrderCount: number;
-      onHoldOrderTotal: number;
+      onHoldOrderTotal: string;
       onHoldOrderCount: number;
-      completedOrderTotal: number;
+      completedOrderTotal: string;
       completedOrderCount: number;
-      cancelledOrderTotal: number;
+      cancelledOrderTotal: string;
       cancelledOrderCount: number;
     } = {
-      activeOrderTotal: 0,
+      activeOrderTotal: "0.00",
       activeOrderCount: 0,
-      onHoldOrderTotal: 0,
+      onHoldOrderTotal: "0.00",
       onHoldOrderCount: 0,
-      completedOrderTotal: 0,
+      completedOrderTotal: "0.00",
       completedOrderCount: 0,
-      cancelledOrderTotal: 0,
+      cancelledOrderTotal: "0.00",
       cancelledOrderCount: 0,
     };
 
     orderTotalsByStatus.forEach((group) => {
-      const totalValue = group._sum.orderValue || 0;
+      const totalValue = group._sum.orderValue
+        ? group._sum.orderValue.toFixed(2)
+        : "0.00";
       const count = group._count || 0;
 
       switch (group.orderStatus) {
@@ -170,7 +172,9 @@ export default async function handler(
     const responseData = {
       orders: {
         count: totalOrders,
-        totalValue: totalOrderValue._sum.orderValue || 0,
+        totalValue: totalOrderValue._sum.orderValue
+          ? totalOrderValue._sum.orderValue.toFixed(2)
+          : "0.00",
         ...statusTotals,
         graphData,
       },

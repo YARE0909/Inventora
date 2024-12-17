@@ -369,7 +369,7 @@ const Index = () => {
 
       setTimeout(() => {
         router.push("/orders");
-      }, 2000);
+      }, 1000);
     } catch {
       toast("Something went wrong.", "top-right", "error");
     }
