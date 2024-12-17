@@ -625,7 +625,7 @@ const Index = () => {
           {/* Order Items */}
           <div className="flex flex-col space-y-3">
             <div>
-              <h1 className="text-text font-semibold text-lg">Order Items</h1>
+              <h1 className="text-text font-semibold text-lg">Order Item Details</h1>
             </div>
             <div className="w-full flex space-x-3 items-end">
               <div className="w-full md:max-w-80">
