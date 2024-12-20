@@ -109,7 +109,7 @@ const Sidebar = ({
           </button>
         </div>
         <div>
-          <h1 className="font-bold uppercase">{businessName}</h1>
+          <h1 className="font-bold uppercase text-textAlt">{businessName}</h1>
         </div>
       </div>
       {/* Sidebar Content */}
