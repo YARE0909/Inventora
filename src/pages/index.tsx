@@ -83,7 +83,7 @@ const GraphComponent = ({
               data={data}
               graphType="bar"
               dataKeys={dataKeys}
-              height={350}
+              height={435}
               fillColors={fillColors}
             />
           </div>

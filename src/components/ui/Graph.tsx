@@ -114,19 +114,6 @@ const Graph: React.FC<GraphProps> = ({
         {graphType === "bar" ? (
           <BarChart data={data}>
             <XAxis dataKey="label" className="text-textAlt" />
-            <YAxis
-              yAxisId="left"
-              className="text-textAlt"
-              allowDecimals={false}
-              tickFormatter={(value) => numberFormatter(value)}
-            />
-            <YAxis
-              yAxisId="right"
-              className="text-textAlt"
-              orientation="right"
-              allowDecimals={false}
-              tickFormatter={(value) => numberFormatter(value)}
-            />
             <Tooltip content={<CustomTooltip />} cursor={{ fill: "transparent" }} />
             <Legend />
             {dataKeys.map((key, index) => (
@@ -141,7 +128,7 @@ const Graph: React.FC<GraphProps> = ({
                 <LabelList
                   dataKey={key.value}
                   position="insideTop"
-                  className="text-white text-xs font-bold"
+                  className="text-white text-xs font-black"
                   style={{
                     fill: "#000",
                   }}
