@@ -3,7 +3,7 @@ import Graph from "@/components/ui/Graph";
 import { useToast } from "@/components/ui/Toast/ToastProvider";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { FilterX, Search, LoaderCircle } from "lucide-react";
+import { FilterX, LoaderCircle } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Tooltip from "@/components/ui/ToolTip";
 import { formatIndianCurrency } from "@/utils/formatIndianCurrency";
@@ -13,43 +13,45 @@ const GraphComponent = ({
   data,
   header,
   setYear,
-  applyFilter,
   clearFilter,
   statistics,
   dataKeys,
   fillColors,
   cardsData,
+  selectedYear, // Added the selectedYear prop
 }: {
   data: { label: string;[key: string]: number | string }[];
   header: string;
   setYear: (value: string) => void;
-  applyFilter: () => void;
   clearFilter: () => void;
   statistics: { label: string; value: number | string }[];
   dataKeys: { label: string; value: string }[];
   fillColors?: string[];
   cardsData?: { label: React.ReactNode; value: React.ReactNode }[];
+  selectedYear: string; // Added selectedYear prop type
 }) => {
-
-  // Generate years for the dropdown (e.g., from 2020 to the current year)
   const years = Array.from({ length: new Date().getFullYear() - 2020 + 1 }, (_, i) => {
     const year = (2020 + i).toString();
     return { value: year, label: year };
   });
 
-
   return (
     <div className="w-full border border-border rounded-md">
       <div className="w-full flex flex-col space-y-4 p-4">
-        <div className="w-full flex flex-col md:flex-row justify-between md:items-end border-b border-b-border pb-4">
+        <div className="w-full flex flex-col md:flex-row justify-between md:items-center border-b border-b-border pb-4">
           <div className="flex items-center space-x-3">
-            <div className="border-r border-r-border pr-4">
-              <h1 className="text-2xl text-text font-bold">{header}</h1>
+            <div className="flex flex-col md:flex md:flex-row md:gap-4">
+              <div className="border-r border-r-border pr-4">
+                <h1 className="text-2xl text-text font-bold">{header}</h1>
+              </div>
+              <div className="border-r border-r-border pr-4">
+                <h1 className="text-text text-2xl font-bold">{selectedYear}</h1>
+              </div>
             </div>
             <div className="w-full flex flex-col md:flex-row space-y-3 md:space-y-0 md:space-x-3">
               {statistics.map((item, index) => (
                 <div key={index}>
-                  <h1 className="text-textAlt font-bold">
+                  <h1 className="text-textAlt font-bold flex flex-col md:flex md:flex-row md:items-end md:gap-1">
                     {item.label}:
                     <span className="text-text text-xl"> {item.value}</span>
                   </h1>
@@ -63,14 +65,9 @@ const GraphComponent = ({
               options={years}
               label="Select Year"
               onChange={setYear}
+              showLabel={false}
             />
             <div className="w-fit flex justify-end space-x-3">
-              <Tooltip tooltip="Search">
-                <Button onClick={applyFilter}>
-                  <Search className="w-5 h-5" />
-                  <span className="md:hidden">Search</span>
-                </Button>
-              </Tooltip>
               <Tooltip tooltip="Clear Filters">
                 <Button onClick={clearFilter}>
                   <FilterX className="w-5 h-5" />
@@ -80,6 +77,7 @@ const GraphComponent = ({
             </div>
           </div>
         </div>
+
         <div>
           <div className="w-full flex flex-col md:flex md:flex-row space-y-3 md:space-y-0 md:space-x-3">
             {cardsData?.map((item, index) => (
@@ -106,7 +104,6 @@ const GraphComponent = ({
     </div>
   );
 };
-
 
 export default function Home() {
   const [orderData, setOrderData] = useState<{
@@ -139,7 +136,7 @@ export default function Home() {
     },
   });
   const [filters, setFilters] = useState({
-    year: "",
+    year: new Date().getFullYear().toString(), // Default to current year
   });
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -166,30 +163,25 @@ export default function Home() {
     setFilters({
       year: value,
     });
-  };
-
-  const applyFilter = () => {
-    if (!filters.year || filters.year === "") {
-      return toast("Please select both dates.", "top-right", "warning");
-    }
-    fetchOrderData(filters.year);
+    fetchOrderData(value); // Automatically call API on year change
   };
 
   const clearFilter = () => {
-    setFilters({ year: "" });
-    fetchOrderData();
+    const currentYear = new Date().getFullYear().toString(); // Get current year
+    setFilters({ year: currentYear });
+    fetchOrderData(currentYear); // Fetch data for current year
   };
 
   useEffect(() => {
-    fetchOrderData();
-  }, []);
+    fetchOrderData(filters.year); // Load data based on selected year
+  }, [filters.year]);
 
   return (
     <Layout header={"Dashboard"}>
       {/* Show loader while data is being fetched */}
       {loading ? (
         <div className="w-full flex justify-center items-center py-8">
-          <LoaderCircle className="animate-spin rounded-full h-5 w-5"></LoaderCircle>
+          <LoaderCircle className="animate-spin rounded-full h-5 w-5" />
         </div>
       ) : (
         <GraphComponent
@@ -197,8 +189,8 @@ export default function Home() {
           dataKeys={[{ label: "Monthly Order Value", value: "value" }]}
           header="Orders"
           setYear={handleSetDate}
-          applyFilter={applyFilter}
           clearFilter={clearFilter}
+          selectedYear={filters.year} // Pass selected year as a prop
           statistics={[
             { label: "Total Orders", value: orderData.orders.count },
             {

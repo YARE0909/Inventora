@@ -10,6 +10,7 @@ type SelectProps = {
   label: string;
   placeholder?: string;
   onChange: (value: string) => void;
+  showLabel?: boolean; // Prop to control label visibility
 };
 
 const Select: React.FC<SelectProps> = ({
@@ -17,6 +18,7 @@ const Select: React.FC<SelectProps> = ({
   label,
   placeholder = "Search...",
   onChange,
+  showLabel = true, // Default to show label
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -35,14 +37,16 @@ const Select: React.FC<SelectProps> = ({
 
   return (
     <div className="relative w-full">
-      <label className="block text-sm text-textAlt font-semibold mb-1">
-        {label}
-      </label>
+      {showLabel && (
+        <label className="block text-sm text-textAlt font-semibold mb-1">
+          {label}
+        </label>
+      )}
       <div
         className="border border-border rounded-md p-2 bg-background cursor-pointer text-sm"
         onClick={() => setIsDropdownOpen((prev) => !prev)}
       >
-        {selectedValue || "Select an option"}
+        {showLabel ? selectedValue || "Select an option" : label} {/* Conditionally render */}
       </div>
       {isDropdownOpen && (
         <div className="absolute z-10 bg-background border border-border rounded-md mt-1 w-full">

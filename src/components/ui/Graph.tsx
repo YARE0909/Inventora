@@ -44,12 +44,13 @@ interface GraphProps {
 }
 
 const patternFlyColors = [
-  "#3b82f6", // Blue
+  "#3788D8", // Blue
   "#06b6d4", // Cyan
   "#10b981", // Green
   "#6366f1", // Purple
   "#ef4444", // Red
   "#8b5cf6", // Violet
+  "#FFB74D", // Yellow
 ];
 
 const getVibrantColors = (count: number): string[] => {

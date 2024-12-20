@@ -17,7 +17,7 @@ export default {
         text: "var(--default-text)",
       },
       fontFamily: {
-        NunitoSans: ["Nunito Sans", "sans-serif"],
+        NunitoSans: ["Rubik", "sans-serif"],
       },
     },
   },
