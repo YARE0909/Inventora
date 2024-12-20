@@ -14,34 +14,25 @@ export default async function handler(
 
     const { year } = req.query;
 
-    // Get the current year
     const currentYear = new Date().getFullYear();
-
-    // If a year is provided in the query, use that, otherwise default to the current year
     const selectedYear = year ? parseInt(year as string, 10) : currentYear;
 
-    // Start of the year (January 1st)
-    const start = new Date(selectedYear, 0, 1); // January 1st of the selected year
-    // End of the year (December 31st, 23:59:59)
-    const end = new Date(selectedYear, 11, 31, 23, 59, 59); // December 31st of the selected year
+    const start = new Date(selectedYear, 0, 1);
+    const end = new Date(selectedYear, 11, 31, 23, 59, 59);
 
-    // Validate dates
     if (isNaN(start.getTime()) || isNaN(end.getTime())) {
       return res.status(400).json({ error: "Invalid financial year provided" });
     }
 
-    // Fetch order data
     const [
       totalOrders,
       totalOrderValue,
       ordersGroupedByMonth,
       orderTotalsByStatus,
     ] = await Promise.all([
-      // Total orders count
       prisma.orders.count({
         where: { orderDate: { gte: start, lte: end } },
       }),
-      // Total sum of order values excluding cancelled
       prisma.orders.aggregate({
         _sum: { orderValue: true },
         where: {
@@ -49,16 +40,15 @@ export default async function handler(
           orderStatus: { not: OrderStatus.Cancelled },
         },
       }),
-      // Orders grouped by month and filtered by completed and active statuses
       prisma.orders.groupBy({
         by: ["orderDate"],
         _sum: { orderValue: true },
+        _count: true,
         where: {
           orderDate: { gte: start, lte: end },
           orderStatus: { in: [OrderStatus.Active, OrderStatus.Completed] },
         },
       }),
-      // Total amounts and counts grouped by status
       prisma.orders.groupBy({
         by: ["orderStatus"],
         _sum: { orderValue: true },
@@ -67,42 +57,41 @@ export default async function handler(
       }),
     ]);
 
-    // Prepare graph data
     const graphData: {
       label: string;
       value: number;
+      count: number;
     }[] = [];
 
-    // Initialize a map for monthly totals
-    const monthlyTotals = new Map<string, number>();
+    const monthlyData = new Map<string, { total: number; count: number }>();
     for (let month = 0; month < 12; month++) {
       const monthName = new Date(0, month).toLocaleString("en-US", {
         month: "short",
       });
-      monthlyTotals.set(monthName, 0);
+      monthlyData.set(monthName, { total: 0, count: 0 });
     }
 
-    // Populate monthly totals with grouped data
     ordersGroupedByMonth.forEach((group) => {
       const monthName = new Date(group.orderDate).toLocaleString("en-US", {
         month: "short",
       });
-      const currentTotal = monthlyTotals.get(monthName) || 0;
-      monthlyTotals.set(
-        monthName,
-        parseFloat((currentTotal + (group._sum.orderValue || 0)).toFixed(2))
-      );
-    });
-
-    // Convert the map into an array for graph data
-    monthlyTotals.forEach((value, key) => {
-      graphData.push({
-        label: key,
-        value,
+      const currentData = monthlyData.get(monthName) || { total: 0, count: 0 };
+      monthlyData.set(monthName, {
+        total: parseFloat(
+          (currentData.total + (group._sum.orderValue || 0)).toFixed(2)
+        ),
+        count: currentData.count + (group._count || 0),
       });
     });
 
-    // Calculate totals for each status
+    monthlyData.forEach((data, key) => {
+      graphData.push({
+        label: key,
+        value: data.total,
+        count: data.count,
+      });
+    });
+
     const statusTotals: {
       activeOrderTotal: string;
       activeOrderCount: number;
@@ -149,7 +138,6 @@ export default async function handler(
       }
     });
 
-    // Final response data format
     const responseData = {
       orders: {
         count: totalOrders,

@@ -12,6 +12,7 @@ import {
   Pie,
   Cell,
   PieChart,
+  LabelList,
 } from "recharts";
 
 const numberFormatter = (value: number) => {
@@ -20,6 +21,18 @@ const numberFormatter = (value: number) => {
   }
   if (value >= 100000) {
     return `${(value / 100000).toFixed(1)} L`; // Format as Lakhs
+  }
+
+  // Format the number in the Indian system with commas
+  return value.toLocaleString('en-IN'); // Localize for Indian numbering system
+};
+
+const numberFormatterWithoutText = (value: number) => {
+  if (value >= 10000000) {
+    return `${(value / 10000000).toFixed(1)} Cr`; // Format as Crores
+  }
+  if (value >= 100000) {
+    return `${(value / 100000).toFixed(1)}`; // Format as Lakhs
   }
 
   // Format the number in the Indian system with commas
@@ -102,19 +115,39 @@ const Graph: React.FC<GraphProps> = ({
           <BarChart data={data}>
             <XAxis dataKey="label" className="text-textAlt" />
             <YAxis
+              yAxisId="left"
               className="text-textAlt"
               allowDecimals={false}
-              tickFormatter={numberFormatter} // Apply the formatter here
+              tickFormatter={(value) => numberFormatter(value)}
+            />
+            <YAxis
+              yAxisId="right"
+              className="text-textAlt"
+              orientation="right"
+              allowDecimals={false}
+              tickFormatter={(value) => numberFormatter(value)}
             />
             <Tooltip content={<CustomTooltip />} cursor={{ fill: "transparent" }} />
             <Legend />
             {dataKeys.map((key, index) => (
               <Bar
                 key={key.label}
-                dataKey={key.value} // This is where the `value` from dataKeys is used
+                dataKey={key.value}
                 fill={vibrantColors[index]}
-                name={key.label} // This is where the `label` is used for display
-              />
+                name={key.label}
+                yAxisId={index === 0 ? "left" : "right"}
+              >
+                {/* Add LabelList to show values on top of bars */}
+                <LabelList
+                  dataKey={key.value}
+                  position="insideTop"
+                  className="text-white text-xs font-bold"
+                  style={{
+                    fill: "#000",
+                  }}
+                  formatter={(value: number) => numberFormatterWithoutText(value)}
+                />
+              </Bar>
             ))}
           </BarChart>
         ) : graphType === "line" ? (

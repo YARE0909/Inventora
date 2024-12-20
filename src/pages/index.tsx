@@ -83,7 +83,7 @@ const GraphComponent = ({
               data={data}
               graphType="bar"
               dataKeys={dataKeys}
-              height={300}
+              height={350}
               fillColors={fillColors}
             />
           </div>
@@ -168,7 +168,10 @@ export default function Home() {
       ) : (
         <GraphComponent
           data={orderData.orders.graphData}
-          dataKeys={[{ label: "Monthly Order Value", value: "value" }]}
+          dataKeys={[
+            { label: "Total Order Value", value: "value" },
+            { label: "Total Order Count", value: "count" },
+          ]}
           header="Orders"
           setYear={handleSetDate}
           selectedYear={filters.year} // Pass selected year as a prop
@@ -258,6 +261,10 @@ export default function Home() {
                 </div>
               ),
             },
+          ]}
+          fillColors={[
+            "#10b981",
+            "#3788D8"
           ]}
         />
       )}
