@@ -3,9 +3,7 @@ import Graph from "@/components/ui/Graph";
 import { useToast } from "@/components/ui/Toast/ToastProvider";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { FilterX, LoaderCircle } from "lucide-react";
-import Button from "@/components/ui/Button";
-import Tooltip from "@/components/ui/ToolTip";
+import { LoaderCircle } from "lucide-react";
 import { formatIndianCurrency } from "@/utils/formatIndianCurrency";
 import Select from "@/components/ui/SelectComponent";
 
@@ -13,7 +11,6 @@ const GraphComponent = ({
   data,
   header,
   setYear,
-  clearFilter,
   statistics,
   dataKeys,
   fillColors,
@@ -23,7 +20,6 @@ const GraphComponent = ({
   data: { label: string;[key: string]: number | string }[];
   header: string;
   setYear: (value: string) => void;
-  clearFilter: () => void;
   statistics: { label: string; value: number | string }[];
   dataKeys: { label: string; value: string }[];
   fillColors?: string[];
@@ -40,8 +36,8 @@ const GraphComponent = ({
       <div className="w-full flex flex-col space-y-4 p-4">
         <div className="w-full flex flex-col md:flex-row justify-between md:items-center border-b border-b-border pb-4">
           <div className="flex items-center space-x-3">
-            <div className="flex flex-col md:flex md:flex-row md:gap-4">
-              <div className="border-r border-r-border pr-4">
+            <div className="flex flex-col md:flex md:flex-row md:gap-2">
+              <div className="">
                 <h1 className="text-2xl text-text font-bold">{header}</h1>
               </div>
               <div className="border-r border-r-border pr-4">
@@ -52,7 +48,7 @@ const GraphComponent = ({
               {statistics.map((item, index) => (
                 <div key={index}>
                   <h1 className="text-textAlt font-bold flex flex-col md:flex md:flex-row md:items-end md:gap-1">
-                    {item.label}:
+                    {item.label}
                     <span className="text-text text-xl"> {item.value}</span>
                   </h1>
                 </div>
@@ -62,23 +58,15 @@ const GraphComponent = ({
           <div className="w-full md:w-fit flex flex-col md:flex md:flex-row md:space-x-3 space-y-3 md:space-y-0 items-end">
             {/* Year Select Dropdown */}
             <Select
-              options={years}
+              options={years.reverse()}
               label="Select Year"
               onChange={setYear}
               showLabel={false}
             />
-            <div className="w-fit flex justify-end space-x-3">
-              <Tooltip tooltip="Clear Filters">
-                <Button onClick={clearFilter}>
-                  <FilterX className="w-5 h-5" />
-                  <span className="md:hidden">Clear Filters</span>
-                </Button>
-              </Tooltip>
-            </div>
           </div>
         </div>
 
-        <div>
+        <div className="w-full flex flex-col space-y-4">
           <div className="w-full flex flex-col md:flex md:flex-row space-y-3 md:space-y-0 md:space-x-3">
             {cardsData?.map((item, index) => (
               <div
@@ -166,12 +154,6 @@ export default function Home() {
     fetchOrderData(value); // Automatically call API on year change
   };
 
-  const clearFilter = () => {
-    const currentYear = new Date().getFullYear().toString(); // Get current year
-    setFilters({ year: currentYear });
-    fetchOrderData(currentYear); // Fetch data for current year
-  };
-
   useEffect(() => {
     fetchOrderData(filters.year); // Load data based on selected year
   }, [filters.year]);
@@ -189,7 +171,6 @@ export default function Home() {
           dataKeys={[{ label: "Monthly Order Value", value: "value" }]}
           header="Orders"
           setYear={handleSetDate}
-          clearFilter={clearFilter}
           selectedYear={filters.year} // Pass selected year as a prop
           statistics={[
             { label: "Total Orders", value: orderData.orders.count },
