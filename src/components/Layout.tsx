@@ -165,10 +165,7 @@ const Sidebar = ({
               <LogOut className="w-5 h-5 text-red-500" />
               <h1 className="font-semibold text-red-500">Logout</h1>
             </button>
-            <button className="w-full flex gap-1 items-center hover:bg-highlight border border-transparent hover:border hover:border-border duration-500 cursor-pointer px-2 py-1 rounded-md" onClick={handleUserLogout}>
-              <LogOut className="w-5 h-5 text-red-500" />
-              <h1 className="font-semibold text-red-500">Logout</h1>
-            </button>
+            {/* Add More Options Below */}
           </div>
         </AccordionContent>
 
