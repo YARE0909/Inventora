@@ -21,19 +21,19 @@ model Customers {
 }
 
 model Orders {
-  id                  String               @id @default(auto()) @map("_id") @db.ObjectId
-  orderNumber         String               @unique
+  id                  String                @id @default(auto()) @map("_id") @db.ObjectId
+  orderNumber         String                @unique
   orderDate           DateTime
   proformaInvoice     String
   proformaInvoiceDate DateTime
   orderValue          Float
   orderCount          Int
   orderDeliveryDate   DateTime
-  orderStatus         OrderStatus          @default(Active)
+  orderStatus         OrderStatus           @default(Active)
   orderComments       String?
   createdOn           DateTime
-  customerId          String               @db.ObjectId
-  customer            Customers            @relation(fields: [customerId], references: [id])
+  customerId          String                @db.ObjectId
+  customer            Customers             @relation(fields: [customerId], references: [id])
   orderItems          OrderItems[]
   invoices            Invoices[]
   orderAdvanceDetails OrderAdvanceDetails[]

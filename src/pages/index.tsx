@@ -1,6 +1,5 @@
 import Layout from "@/components/Layout";
 import Graph from "@/components/ui/Graph";
-import Input from "@/components/ui/Input";
 import { useToast } from "@/components/ui/Toast/ToastProvider";
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -8,11 +7,12 @@ import { FilterX, Search, LoaderCircle } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Tooltip from "@/components/ui/ToolTip";
 import { formatIndianCurrency } from "@/utils/formatIndianCurrency";
+import Select from "@/components/ui/SelectComponent";
 
 const GraphComponent = ({
   data,
   header,
-  setDate,
+  setYear,
   applyFilter,
   clearFilter,
   statistics,
@@ -20,23 +20,28 @@ const GraphComponent = ({
   fillColors,
   cardsData,
 }: {
-  data: { label: string; [key: string]: number | string }[];
+  data: { label: string;[key: string]: number | string }[];
   header: string;
-  setDate: (name: string, value: string) => void;
+  setYear: (value: string) => void;
   applyFilter: () => void;
   clearFilter: () => void;
   statistics: { label: string; value: number | string }[];
-  dataKeys: {
-    label: string;
-    value: string;
-  }[];
-  fillColors: string[];
+  dataKeys: { label: string; value: string }[];
+  fillColors?: string[];
   cardsData?: { label: React.ReactNode; value: React.ReactNode }[];
 }) => {
+
+  // Generate years for the dropdown (e.g., from 2020 to the current year)
+  const years = Array.from({ length: new Date().getFullYear() - 2020 + 1 }, (_, i) => {
+    const year = (2020 + i).toString();
+    return { value: year, label: year };
+  });
+
+
   return (
     <div className="w-full border border-border rounded-md">
       <div className="w-full flex flex-col space-y-4 p-4">
-        <div className="w-full flex flex-col md:flex-row justify-between md:items-center border-b border-b-border pb-4">
+        <div className="w-full flex flex-col md:flex-row justify-between md:items-end border-b border-b-border pb-4">
           <div className="flex items-center space-x-3">
             <div className="border-r border-r-border pr-4">
               <h1 className="text-2xl text-text font-bold">{header}</h1>
@@ -53,21 +58,11 @@ const GraphComponent = ({
             </div>
           </div>
           <div className="w-full md:w-fit flex flex-col md:flex md:flex-row md:space-x-3 space-y-3 md:space-y-0 items-end">
-            <Input
-              name="startDate"
-              id="startDate"
-              placeholder="Select Date"
-              type="date"
-              label="Start Date"
-              onChange={(e) => setDate("startDate", e.target.value)}
-            />
-            <Input
-              name="endDate"
-              id="endDate"
-              placeholder="Select Date"
-              type="date"
-              label="End Date"
-              onChange={(e) => setDate("endDate", e.target.value)}
+            {/* Year Select Dropdown */}
+            <Select
+              options={years}
+              label="Select Year"
+              onChange={setYear}
             />
             <div className="w-fit flex justify-end space-x-3">
               <Tooltip tooltip="Search">
@@ -112,6 +107,7 @@ const GraphComponent = ({
   );
 };
 
+
 export default function Home() {
   const [orderData, setOrderData] = useState<{
     orders: {
@@ -125,7 +121,7 @@ export default function Home() {
       onHoldOrderCount: number;
       completedOrderCount: number;
       cancelledOrderCount: number;
-      graphData: { label: string; [key: string]: number | string }[];
+      graphData: { label: string;[key: string]: number | string }[];
     };
   }>({
     orders: {
@@ -143,20 +139,19 @@ export default function Home() {
     },
   });
   const [filters, setFilters] = useState({
-    startDate: "",
-    endDate: "",
+    year: "",
   });
   const [loading, setLoading] = useState<boolean>(false);
 
   const { toast } = useToast();
 
-  const fetchOrderData = async (startDate = "", endDate = "") => {
+  const fetchOrderData = async (year = "") => {
     try {
       setLoading(true);
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/analytics/orders`,
         {
-          params: { startDate, endDate },
+          params: { year },
         }
       );
       setOrderData(response.data);
@@ -167,19 +162,21 @@ export default function Home() {
     }
   };
 
-  const handleSetDate = (name: string, value: string) => {
-    setFilters((prev) => ({ ...prev, [name]: value }));
+  const handleSetDate = (value: string) => {
+    setFilters({
+      year: value,
+    });
   };
 
   const applyFilter = () => {
-    if (!filters.startDate || !filters.endDate) {
+    if (!filters.year || filters.year === "") {
       return toast("Please select both dates.", "top-right", "warning");
     }
-    fetchOrderData(filters.startDate, filters.endDate);
+    fetchOrderData(filters.year);
   };
 
   const clearFilter = () => {
-    setFilters({ startDate: "", endDate: "" });
+    setFilters({ year: "" });
     fetchOrderData();
   };
 
@@ -197,15 +194,9 @@ export default function Home() {
       ) : (
         <GraphComponent
           data={orderData.orders.graphData}
-          dataKeys={[
-            { label: "Active", value: "active" },
-            { label: "On Hold", value: "onHold" },
-            { label: "Completed", value: "completed" },
-            { label: "Cancelled", value: "cancelled" },
-          ]}
-          fillColors={["#3b82f6", "#f97316 ", "#10b981", "#ef4444"]}
+          dataKeys={[{ label: "Monthly Order Value", value: "value" }]}
           header="Orders"
-          setDate={handleSetDate}
+          setYear={handleSetDate}
           applyFilter={applyFilter}
           clearFilter={clearFilter}
           statistics={[

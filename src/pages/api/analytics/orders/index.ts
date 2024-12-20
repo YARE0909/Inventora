@@ -12,29 +12,29 @@ export default async function handler(
       return res.status(405).json({ error: "Method Not Allowed" });
     }
 
-    const { startDate, endDate } = req.query;
+    const { year } = req.query;
 
-    // Get the current date
-    const currentDate = new Date();
+    // Get the current year
+    const currentYear = new Date().getFullYear();
 
-    // Default date range to the current month
-    const start = startDate
-      ? new Date(startDate as string)
-      : new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-    const end = endDate
-      ? new Date(endDate as string)
-      : new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+    // If a year is provided in the query, use that, otherwise default to the current year
+    const selectedYear = year ? parseInt(year as string, 10) : currentYear;
+
+    // Start of the year (January 1st)
+    const start = new Date(selectedYear, 0, 1); // January 1st of the selected year
+    // End of the year (December 31st, 23:59:59)
+    const end = new Date(selectedYear, 11, 31, 23, 59, 59); // December 31st of the selected year
 
     // Validate dates
     if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-      return res.status(400).json({ error: "Invalid date range provided" });
+      return res.status(400).json({ error: "Invalid financial year provided" });
     }
 
     // Fetch order data
     const [
       totalOrders,
       totalOrderValue,
-      ordersGroupedByDateAndStatus,
+      ordersGroupedByMonth,
       orderTotalsByStatus,
     ] = await Promise.all([
       // Total orders count
@@ -49,12 +49,14 @@ export default async function handler(
           orderStatus: { not: OrderStatus.Cancelled },
         },
       }),
-      // Orders grouped by date and status
+      // Orders grouped by month and filtered by completed and active statuses
       prisma.orders.groupBy({
-        by: ["orderDate", "orderStatus"],
-        _count: true,
-        where: { orderDate: { gte: start, lte: end } },
-        orderBy: { orderDate: "asc" },
+        by: ["orderDate"],
+        _sum: { orderValue: true },
+        where: {
+          orderDate: { gte: start, lte: end },
+          orderStatus: { in: [OrderStatus.Active, OrderStatus.Completed] },
+        },
       }),
       // Total amounts and counts grouped by status
       prisma.orders.groupBy({
@@ -68,56 +70,35 @@ export default async function handler(
     // Prepare graph data
     const graphData: {
       label: string;
-      active: number;
-      onHold: number;
-      completed: number;
-      cancelled: number;
+      value: number;
     }[] = [];
 
-    // Group data by date and consolidate statuses
-    const graphDataMap = new Map<
-      string,
-      { active: number; onHold: number; completed: number; cancelled: number }
-    >();
+    // Initialize a map for monthly totals
+    const monthlyTotals = new Map<string, number>();
+    for (let month = 0; month < 12; month++) {
+      const monthName = new Date(0, month).toLocaleString("en-US", {
+        month: "short",
+      });
+      monthlyTotals.set(monthName, 0);
+    }
 
-    ordersGroupedByDateAndStatus.forEach((group) => {
-      const dateLabel = group.orderDate.toISOString().split("T")[0];
-
-      if (!graphDataMap.has(dateLabel)) {
-        graphDataMap.set(dateLabel, {
-          active: 0,
-          onHold: 0,
-          completed: 0,
-          cancelled: 0,
-        });
-      }
-
-      const currentStatusCounts = graphDataMap.get(dateLabel);
-      switch (group.orderStatus) {
-        case OrderStatus.Active:
-          currentStatusCounts!.active += group._count;
-          break;
-        case OrderStatus.OnHold:
-          currentStatusCounts!.onHold += group._count;
-          break;
-        case OrderStatus.Completed:
-          currentStatusCounts!.completed += group._count;
-          break;
-        case OrderStatus.Cancelled:
-          currentStatusCounts!.cancelled += group._count;
-          break;
-      }
-      graphDataMap.set(dateLabel, currentStatusCounts!);
+    // Populate monthly totals with grouped data
+    ordersGroupedByMonth.forEach((group) => {
+      const monthName = new Date(group.orderDate).toLocaleString("en-US", {
+        month: "short",
+      });
+      const currentTotal = monthlyTotals.get(monthName) || 0;
+      monthlyTotals.set(
+        monthName,
+        parseFloat((currentTotal + (group._sum.orderValue || 0)).toFixed(2))
+      );
     });
 
-    // Convert the map into an array
-    graphDataMap.forEach((value, key) => {
+    // Convert the map into an array for graph data
+    monthlyTotals.forEach((value, key) => {
       graphData.push({
         label: key,
-        active: value.active,
-        onHold: value.onHold,
-        completed: value.completed,
-        cancelled: value.cancelled,
+        value,
       });
     });
 

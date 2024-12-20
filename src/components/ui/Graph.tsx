@@ -14,6 +14,19 @@ import {
   PieChart,
 } from "recharts";
 
+const numberFormatter = (value: number) => {
+  if (value >= 10000000) {
+    return `${(value / 10000000).toFixed(1)} Cr`; // Format as Crores
+  }
+  if (value >= 100000) {
+    return `${(value / 100000).toFixed(1)} L`; // Format as Lakhs
+  }
+
+  // Format the number in the Indian system with commas
+  return value.toLocaleString('en-IN'); // Localize for Indian numbering system
+};
+
+
 interface DataPoint {
   label: string;
   [key: string]: number | string; // Allows multiple data series
@@ -87,11 +100,12 @@ const Graph: React.FC<GraphProps> = ({
         {graphType === "bar" ? (
           <BarChart data={data}>
             <XAxis dataKey="label" className="text-textAlt" />
-            <YAxis className="text-textAlt" allowDecimals={false} />
-            <Tooltip
-              content={<CustomTooltip />}
-              cursor={{ fill: "transparent" }}
+            <YAxis
+              className="text-textAlt"
+              allowDecimals={false}
+              tickFormatter={numberFormatter} // Apply the formatter here
             />
+            <Tooltip content={<CustomTooltip />} cursor={{ fill: "transparent" }} />
             <Legend />
             {dataKeys.map((key, index) => (
               <Bar
@@ -105,11 +119,12 @@ const Graph: React.FC<GraphProps> = ({
         ) : graphType === "line" ? (
           <LineChart data={data}>
             <XAxis dataKey="label" className="text-textAlt" />
-            <YAxis className="text-textAlt" allowDecimals={false} />
-            <Tooltip
-              content={<CustomTooltip />}
-              cursor={{ fill: "transparent" }}
+            <YAxis
+              className="text-textAlt"
+              allowDecimals={false}
+              tickFormatter={numberFormatter} // Apply the formatter here
             />
+            <Tooltip content={<CustomTooltip />} cursor={{ fill: "transparent" }} />
             <Legend />
             {dataKeys.map((key, index) => (
               <Line
