@@ -4,7 +4,7 @@ import { useToast } from "@/components/ui/Toast/ToastProvider";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { LoaderCircle } from "lucide-react";
-import { formatIndianCurrency } from "@/utils/formatIndianCurrency";
+import formatIndianCurrency from "@/utils/formatIndianCurrency";
 import Select from "@/components/ui/SelectComponent";
 
 const GraphComponent = ({
@@ -67,6 +67,8 @@ const GraphComponent = ({
               data={data}
               graphType="bar"
               dataKeys={dataKeys}
+              // dynamically set the height to available space
+
               height={400}
               fillColors={fillColors}
             />
@@ -172,20 +174,18 @@ export default function Home() {
         </div>
       ) : (
         <div className="flex flex-col space-y-4">
-
-
           <GraphComponent
             data={orderData.orders.graphData}
             dataKeys={[
-              { label: "Total Order Value", value: "value" },
-              { label: "Total Order Count", value: "count" },
+              { label: "Order Count", value: "count" },
+              { label: "Order Value", value: "value" },
             ]}
             header="Orders"
             selectedYear={filters.year} // Pass selected year as a prop
             statistics={[
-              { label: "Total Orders", value: orderData.orders.count },
+              { label: "Orders", value: orderData.orders.count },
               {
-                label: "Total Order Value",
+                label: "Order Value",
                 value: formatIndianCurrency(orderData.orders.totalValue),
               },
             ]}
@@ -270,108 +270,8 @@ export default function Home() {
               },
             ]}
             fillColors={[
-              "#10b981",
-              "#3788D8"
-            ]}
-          />
-          <GraphComponent
-            data={orderData.orders.graphData}
-            dataKeys={[
-              { label: "Total Order Value", value: "value" },
-              { label: "Total Order Count", value: "count" },
-            ]}
-            header="Orders"
-            selectedYear={filters.year} // Pass selected year as a prop
-            statistics={[
-              { label: "Total Orders", value: orderData.orders.count },
-              {
-                label: "Total Order Value",
-                value: formatIndianCurrency(orderData.orders.totalValue),
-              },
-            ]}
-            cardsData={[
-              {
-                label: (
-                  <div className="flex space-x-1 items-center">
-                    <h1 className="text-blue-500 font-bold flex gap-2 items-center">
-                      Active
-                      <span className="text-text text-2xl">
-                        {orderData.orders.activeOrderCount}
-                      </span>
-                    </h1>
-                  </div>
-                ),
-                value: (
-                  <div className="flex space-x-1 items-center">
-                    <h1 className="text-text font-bold text-2xl">
-                      {formatIndianCurrency(orderData.orders.activeOrderTotal, {
-                        decimalPlaces: 2,
-                      })}
-                    </h1>
-                  </div>
-                ),
-              },
-              {
-                label: (
-                  <div className="flex space-x-1 items-center">
-                    <h1 className="text-orange-500 font-bold flex gap-2 items-center">
-                      On Hold
-                      <span className="text-text text-2xl">
-                        {orderData.orders.onHoldOrderCount}
-                      </span>
-                    </h1>
-                  </div>
-                ),
-                value: (
-                  <div className="flex space-x-1 items-center">
-                    <h1 className="text-text font-bold text-2xl">
-                      {formatIndianCurrency(orderData.orders.onHoldOrderTotal)}
-                    </h1>
-                  </div>
-                ),
-              },
-              {
-                label: (
-                  <div className="flex space-x-1 items-center">
-                    <h1 className="text-green-500 font-bold flex gap-2 items-center">
-                      Completed
-                      <span className="text-text text-2xl">
-                        {orderData.orders.completedOrderCount}
-                      </span>
-                    </h1>
-                  </div>
-                ),
-                value: (
-                  <div className="flex space-x-1 items-center">
-                    <h1 className="text-text font-bold text-2xl">
-                      {formatIndianCurrency(orderData.orders.completedOrderTotal)}
-                    </h1>
-                  </div>
-                ),
-              },
-              {
-                label: (
-                  <div className="flex space-x-1 items-center">
-                    <h1 className="text-red-500 font-bold flex gap-2 items-center">
-                      Cancelled
-                      <span className="text-text text-2xl">
-                        {orderData.orders.cancelledOrderCount}
-                      </span>
-                    </h1>
-                  </div>
-                ),
-                value: (
-                  <div className="flex space-x-1 items-center">
-                    <h1 className="text-text font-bold text-2xl">
-                      {formatIndianCurrency(orderData.orders.cancelledOrderTotal)}
-                    </h1>
-                  </div>
-                ),
-              },
-            ]}
-            fillColors={[
-              "#10b981",
-              "#3788D8"
+              "#3788D8",
+              "#10b981"
             ]}
           />
         </div>

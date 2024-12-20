@@ -13,7 +13,7 @@ import { useToast } from "@/components/ui/Toast/ToastProvider";
 import { Order } from "@/utils/types/types";
 import Drawer, { DrawerHandle } from "@/components/ui/Drawer";
 import OrderDetailDrawer from "./_components/OrderDetailDrawer";
-import { formatIndianCurrency } from "@/utils/formatIndianCurrency";
+import formatIndianCurrency from "@/utils/formatIndianCurrency";
 import { useRouter } from "next/router";
 
 const OrderTable = ({

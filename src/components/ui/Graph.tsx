@@ -14,31 +14,8 @@ import {
   PieChart,
   LabelList,
 } from "recharts";
-
-const numberFormatter = (value: number) => {
-  if (value >= 10000000) {
-    return `${(value / 10000000).toFixed(1)} Cr`; // Format as Crores
-  }
-  if (value >= 100000) {
-    return `${(value / 100000).toFixed(1)} L`; // Format as Lakhs
-  }
-
-  // Format the number in the Indian system with commas
-  return value.toLocaleString('en-IN'); // Localize for Indian numbering system
-};
-
-const numberFormatterWithoutText = (value: number) => {
-  if (value >= 10000000) {
-    return `${(value / 10000000).toFixed(1)} Cr`; // Format as Crores
-  }
-  if (value >= 100000) {
-    return `${(value / 100000).toFixed(1)}`; // Format as Lakhs
-  }
-
-  // Format the number in the Indian system with commas
-  return value.toLocaleString('en-IN'); // Localize for Indian numbering system
-};
-
+import formatIndianCurrency from "@/utils/formatIndianCurrency";
+import { numberFormatter, numberFormatterWithoutText } from "@/utils/numberFormatter";
 
 interface DataPoint {
   label: string;
@@ -87,10 +64,13 @@ const CustomTooltip: React.FC<{
   if (active && payload) {
     return (
       <div className="bg-foreground p-2 rounded-md">
-        <p className="text-text text-sm font-semibold">{label}</p>
+        <p className="text-text text-sm font-bold">{label}</p>
         {payload.map((entry, index) => (
-          <p key={`tooltip-${index}`} className="text-text text-sm">
-            {`${entry.name} : ${entry.value}`}
+          <p key={`tooltip-${index}`} className="text-text text-sm font-bold">
+            <span className="text-textAlt font-bold">
+              {`${entry.name} : `}
+            </span>
+            {formatIndianCurrency(entry.value)}
           </p>
         ))}
       </div>
@@ -123,6 +103,10 @@ const Graph: React.FC<GraphProps> = ({
                 fill={vibrantColors[index]}
                 name={key.label}
                 yAxisId={index === 0 ? "left" : "right"}
+                style={{
+                  borderRadius: "6px",
+                }}
+                radius={[4, 4, 0, 0]}
               >
                 {/* Add LabelList to show values on top of bars */}
                 <LabelList

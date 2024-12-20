@@ -13,7 +13,7 @@ import { FileSpreadsheet, FilterX, Plus } from "lucide-react";
 import Input from "@/components/ui/Input";
 import { format } from "date-fns";
 import Select from "@/components/ui/SelectComponent";
-import { formatIndianCurrency } from "@/utils/formatIndianCurrency";
+import formatIndianCurrency from "@/utils/formatIndianCurrency";
 
 const columns = ["name", "description", "price", "GST Code", "GST %"];
 

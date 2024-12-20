@@ -2,7 +2,7 @@ type FormatIndianCurrencyOptions = {
   decimalPlaces?: number; // Number of decimal places to retain, defaults to 2
 };
 
-export const formatIndianCurrency = (
+const formatIndianCurrency = (
   amount: number,
   options: FormatIndianCurrencyOptions = {}
 ): string => {
@@ -35,3 +35,5 @@ export const formatIndianCurrency = (
 
   return `₹ ${result}`;
 };
+
+export default formatIndianCurrency;

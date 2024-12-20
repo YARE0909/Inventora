@@ -28,7 +28,7 @@ const AccordionHeader: React.FC<AccordionHeaderProps> = ({
   return (
     <div
       onClick={onClick}
-      className={"cursor-pointer p-4 bg-transparent"}
+      className={"cursor-pointer px-4 py-2 bg-transparent"}
     >
       <div className="flex gap-1 justify-between items-center">
         {children}
@@ -46,7 +46,7 @@ const AccordionContent: React.FC<AccordionContentProps> = ({
 }) => {
   return (
     <div
-      className={`w-full overflow-hidden transition-all duration-300 px-2 flex flex-col gap-1 ${isOpen ? "pb-2" : "pb-0"
+      className={`w-full overflow-hidden transition-all duration-300 px-4 flex flex-col gap-1 ${isOpen ? "pb-2" : "pb-0"
         }`}
     >
       {isOpen && <div className="w-full">{children}</div>}

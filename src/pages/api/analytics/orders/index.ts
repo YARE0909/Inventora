@@ -87,8 +87,8 @@ export default async function handler(
     monthlyData.forEach((data, key) => {
       graphData.push({
         label: key,
-        value: data.total,
         count: data.count,
+        value: data.total,
       });
     });
 

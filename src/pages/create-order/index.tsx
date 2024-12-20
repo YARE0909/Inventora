@@ -15,7 +15,7 @@ import axios from "axios";
 import { PackagePlus, Plus, Trash2 } from "lucide-react";
 import Input from "@/components/ui/Input";
 import Select from "@/components/ui/SelectComponent";
-import { formatIndianCurrency } from "@/utils/formatIndianCurrency";
+import formatIndianCurrency from "@/utils/formatIndianCurrency";
 import { format } from "date-fns";
 import { useRouter } from "next/router";
 

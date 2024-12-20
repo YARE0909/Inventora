@@ -2,7 +2,7 @@ import { Order, OrderAdvanceDetail } from "@/utils/types/types";
 import React, { useEffect } from "react";
 import { format } from "date-fns";
 import PaginatedTable from "@/components/ui/PaginatedTable";
-import { formatIndianCurrency } from "@/utils/formatIndianCurrency";
+import formatIndianCurrency from "@/utils/formatIndianCurrency";
 
 const columns = [
   "Product",
