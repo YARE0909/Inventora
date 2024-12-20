@@ -113,7 +113,7 @@ const Graph: React.FC<GraphProps> = ({
       <ResponsiveContainer width="100%" height={height}>
         {graphType === "bar" ? (
           <BarChart data={data}>
-            <XAxis dataKey="label" className="text-textAlt" />
+            <XAxis dataKey="label" className="text-textAlt font-bold" />
             <Tooltip content={<CustomTooltip />} cursor={{ fill: "transparent" }} />
             <Legend />
             {dataKeys.map((key, index) => (
