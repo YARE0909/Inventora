@@ -35,8 +35,7 @@ const Index = () => {
     try {
       setLoading(true);
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/gst${
-          filter ? `?filter=${filter}` : ""
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/gst${filter ? `?filter=${filter}` : ""
         }`
       );
       setData(response.data);
@@ -112,7 +111,13 @@ const Index = () => {
   }, []);
 
   return (
-    <Layout header="GST">
+    <Layout header={(
+      <div className="w-full flex justify-between items-center">
+        <div>
+          <h1 className="font-extrabold text-2xl">GST</h1>
+        </div>
+      </div>
+    )}>
       <div className="w-full flex flex-col space-y-3 bg-foreground p-4 rounded-md">
         <div className="w-full flex flex-col space-y-1 md:flex md:flex-row justify-between items-center">
           <div className="w-full md:w-fit flex flex-row items-center space-x-1">
@@ -158,8 +163,8 @@ const Index = () => {
                       ? "Active"
                       : "Inactive"
                     : column === "Tax Percentage"
-                    ? `${row[columnMappings[column] as keyof Gst]} %`
-                    : (row[columnMappings[column] as keyof Gst] as string)}
+                      ? `${row[columnMappings[column] as keyof Gst]} %`
+                      : (row[columnMappings[column] as keyof Gst] as string)}
                 </td>
               ))}
             </tr>

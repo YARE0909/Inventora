@@ -51,8 +51,7 @@ const Index = () => {
     try {
       setLoading(true);
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/customers${
-          filter ? `?filter=${filter}` : ""
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/customers${filter ? `?filter=${filter}` : ""
         }`
       );
       setData(response.data);
@@ -126,7 +125,13 @@ const Index = () => {
   }, []);
 
   return (
-    <Layout header="Customers">
+    <Layout header={(
+      <div className="w-full flex justify-between items-center">
+        <div>
+          <h1 className="font-extrabold text-2xl uppercase">Customers</h1>
+        </div>
+      </div>
+    )}>
       <div className="w-full flex flex-col space-y-3 bg-foreground p-4 rounded-md">
         <div className="w-full flex flex-col space-y-1 md:flex md:flex-row justify-between items-center">
           <div className="w-full md:w-fit flex flex-row items-center space-x-1">
@@ -168,15 +173,14 @@ const Index = () => {
               {columns.map((column) => (
                 <td
                   key={column}
-                  className={`px-4 py-2 ${
-                    column === "Billing Address" ||
-                    column === "Shipping Address"
+                  className={`px-4 py-2 ${column === "Billing Address" ||
+                      column === "Shipping Address"
                       ? "max-w-28"
                       : ""
-                  }`}
+                    }`}
                 >
                   {column === "Billing Address" ||
-                  column === "Shipping Address" ? (
+                    column === "Shipping Address" ? (
                     // truncate the address if it's too long
                     <ClickToCopy toolTipPosition="top">
                       {row[columnMappings[column] as keyof Customer] as string}

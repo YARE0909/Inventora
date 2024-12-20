@@ -162,15 +162,15 @@ const OrderTable = ({
               <td key={column} className="px-4 py-2">
                 {column === "Delivery Date" || column === "Order Date"
                   ? formatDate(
-                      row[columnMappings[column] as keyof Order] as string
-                    )
+                    row[columnMappings[column] as keyof Order] as string
+                  )
                   : column === "Customer"
-                  ? row?.customer?.name
-                  : column === "Total Amount"
-                  ? formatIndianCurrency(
-                      row[columnMappings[column] as keyof Order] as number
-                    )
-                  : row[columnMappings[column] as keyof Order]?.toString()}{" "}
+                    ? row?.customer?.name
+                    : column === "Total Amount"
+                      ? formatIndianCurrency(
+                        row[columnMappings[column] as keyof Order] as number
+                      )
+                      : row[columnMappings[column] as keyof Order]?.toString()}{" "}
               </td>
             ))}
           </tr>
@@ -361,7 +361,13 @@ export default function Home() {
   ];
 
   return (
-    <Layout header={"Orders"}>
+    <Layout header={(
+      <div className="w-full flex justify-between items-center">
+        <div>
+          <h1 className="font-extrabold text-2xl uppercase">Orders</h1>
+        </div>
+      </div>
+    )}>
       <Tabs tabs={tabs} setActiveTab={setActiveTab} /> {/* Pass setActiveTab */}
     </Layout>
   );

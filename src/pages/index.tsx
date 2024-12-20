@@ -149,7 +149,22 @@ export default function Home() {
   }, [filters.year]);
 
   return (
-    <Layout header={"Dashboard"}>
+    <Layout header={(
+      <div className="w-full flex justify-between items-center">
+        <div>
+          <h1 className="font-extrabold text-2xl uppercase">Dashboard</h1>
+        </div>
+        <div className="w-full md:w-fit flex flex-col md:flex md:flex-row md:space-x-3 space-y-3 md:space-y-0 items-end">
+          {/* Year Select Dropdown */}
+          <Select
+            options={years.reverse()}
+            label="Select Year"
+            onChange={handleSetDate}
+            showLabel={false}
+          />
+        </div>
+      </div>
+    )}>
       {/* Show loader while data is being fetched */}
       {loading ? (
         <div className="w-full flex justify-center items-center py-8">
@@ -157,20 +172,7 @@ export default function Home() {
         </div>
       ) : (
         <div className="flex flex-col space-y-4">
-          <div className="w-full flex justify-between">
-            <div>
-              <h1 className="font-bold text-3xl">Analytics</h1>
-            </div>
-            <div className="w-full md:w-fit flex flex-col md:flex md:flex-row md:space-x-3 space-y-3 md:space-y-0 items-end">
-              {/* Year Select Dropdown */}
-              <Select
-                options={years.reverse()}
-                label="Select Year"
-                onChange={handleSetDate}
-                showLabel={false}
-              />
-            </div>
-          </div>
+
 
           <GraphComponent
             data={orderData.orders.graphData}

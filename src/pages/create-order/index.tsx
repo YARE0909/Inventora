@@ -192,8 +192,7 @@ const Index = () => {
     try {
       setLoading(true);
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/products${
-          filter ? `?filter=${filter}` : ""
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/products${filter ? `?filter=${filter}` : ""
         }`
       );
       // map over response.data and assign id to value and taxPercentage to label
@@ -213,8 +212,7 @@ const Index = () => {
     try {
       setLoading(true);
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/customers${
-          filter ? `?name=${filter}` : ""
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/customers${filter ? `?name=${filter}` : ""
         }`
       );
       // map over response.data and assign id to value and taxPercentage to label
@@ -327,8 +325,8 @@ const Index = () => {
             (item.price *
               (item.quantity ?? 1) *
               (item.gstCode?.gst?.taxPercentage ?? 0)) /
-              100) *
-            100
+            100) *
+          100
         ) / 100,
     }));
 
@@ -389,7 +387,13 @@ const Index = () => {
   }, [data]);
 
   return (
-    <Layout header="New Order">
+    <Layout header={(
+      <div className="w-full flex justify-between items-center">
+        <div>
+          <h1 className="font-extrabold text-2xl uppercase">New Order</h1>
+        </div>
+      </div>
+    )}>
       <div className="w-full flex flex-col items-center">
         <div className="w-fit bg-foreground rounded-md p-4 space-y-3">
           {/* Order Details */}
@@ -412,7 +416,7 @@ const Index = () => {
                             (item.price *
                               (item.quantity ?? 1) *
                               (item.gstCode?.gst?.taxPercentage ?? 0)) /
-                              100
+                            100
                         )
                         .reduce((acc, item) => acc + item, 0)
                     )}
@@ -603,9 +607,9 @@ const Index = () => {
                       {column === "Advance Date" ? (
                         formatDate(
                           row[
-                            orderAdvanceDetailsColumnMapping[
-                              column
-                            ] as keyof OrderAdvanceDetail
+                          orderAdvanceDetailsColumnMapping[
+                          column
+                          ] as keyof OrderAdvanceDetail
                           ] as string
                         )
                       ) : column === "" ? (
@@ -618,7 +622,7 @@ const Index = () => {
                       ) : (
                         (row[
                           orderAdvanceDetailsColumnMapping[
-                            column
+                          column
                           ] as keyof OrderAdvanceDetail
                         ] as string)
                       )}
@@ -688,7 +692,7 @@ const Index = () => {
                                 (row.quantity ?? 1) *
                                 (row.gstCode?.gst?.taxPercentage ?? 0)) /
                                 100) *
-                                100
+                              100
                             ) / 100
                           ).toFixed(2)
                         )
@@ -702,8 +706,8 @@ const Index = () => {
                                 (row.price *
                                   (row.quantity ?? 1) *
                                   (row.gstCode?.gst?.taxPercentage ?? 0)) /
-                                  100) *
-                                100
+                                100) *
+                              100
                             ) / 100
                           ).toFixed(2)
                         )

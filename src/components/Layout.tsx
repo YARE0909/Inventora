@@ -182,8 +182,8 @@ const Header = ({
   children: React.ReactNode;
 }) => {
   return (
-    <div className="w-full h-14 border-b border-b-border p-4 z-10 bg-background flex justify-between items-center gap-5 lg:gap-0">
-      <div className="flex items-center gap-1">
+    <div className="w-full h-14 border-b border-b-border p-4 z-10 bg-background flex justify-between items-center gap-5 lg:gap-4">
+      <div className="w-full flex items-center gap-1">
         <button
           className="lg:hidden"
           onClick={onMenuClick}
@@ -191,7 +191,7 @@ const Header = ({
         >
           <Menu className="h-6 w-6" />
         </button>
-        <h1 className="font-bold text-2xl">{children}</h1>
+        {children}
       </div>
       <div>
         <ThemeToggler />

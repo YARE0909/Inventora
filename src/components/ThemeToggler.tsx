@@ -1,6 +1,5 @@
 import { Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
-import Tooltip from "./ui/ToolTip";
 
 const ThemeToggler: React.FC = () => {
   const [theme, setTheme] = useState<"light" | "dark">("dark"); // Default to dark during SSR
@@ -51,21 +50,21 @@ const ThemeToggler: React.FC = () => {
     const themeVariables =
       newTheme === "light"
         ? {
-            "--background": "#ffffff",
-            "--foreground": "#fafafa",
-            "--default-text": "#000000",
-            "--border-color": "#d9d9d6",
-            "--alt-text": "#4c4c54",
-            "--highlight": "#f5f5f5",
-          }
+          "--background": "#ffffff",
+          "--foreground": "#fafafa",
+          "--default-text": "#000000",
+          "--border-color": "#d9d9d6",
+          "--alt-text": "#4c4c54",
+          "--highlight": "#f5f5f5",
+        }
         : {
-            "--background": "#0a0a0a",
-            "--foreground": "#19191c",
-            "--default-text": "#ffffff",
-            "--border-color": "#262629",
-            "--alt-text": "#b3b3ab",
-            "--highlight": "#262629",
-          };
+          "--background": "#0a0a0a",
+          "--foreground": "#19191c",
+          "--default-text": "#ffffff",
+          "--border-color": "#262629",
+          "--alt-text": "#b3b3ab",
+          "--highlight": "#262629",
+        };
 
     for (const [key, value] of Object.entries(themeVariables)) {
       root.style.setProperty(key, value);
@@ -87,13 +86,9 @@ const ThemeToggler: React.FC = () => {
       }}
     >
       {theme === "light" ? (
-        <Tooltip tooltip="Switch to Dark Mode" position="left">
-          <Sun className="w-6 h-6 text-textAlt" />
-        </Tooltip>
+        <Sun className="w-6 h-6 text-textAlt" />
       ) : (
-        <Tooltip tooltip="Switch to Light Mode" position="left">
-          <Moon className="w-6 h-6 text-textAlt" />
-        </Tooltip>
+        <Moon className="w-6 h-6 text-textAlt" />
       )}
     </div>
   );

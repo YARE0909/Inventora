@@ -55,8 +55,7 @@ const Index = () => {
     try {
       setLoading(true);
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/gstCode${
-          filter ? `?filter=${filter}` : ""
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/gstCode${filter ? `?filter=${filter}` : ""
         }`
       );
       setData(response.data);
@@ -70,8 +69,7 @@ const Index = () => {
     try {
       setLoading(true);
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/gst${
-          filter ? `?filter=${filter}` : ""
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/gst${filter ? `?filter=${filter}` : ""
         }`
       );
       // map over response.data and assign id to value and taxPercentage to label
@@ -168,7 +166,13 @@ const Index = () => {
   }, []);
 
   return (
-    <Layout header="GST Codes">
+    <Layout header={(
+      <div className="w-full flex justify-between items-center">
+        <div>
+          <h1 className="font-extrabold text-2xl uppercase">GST Codes</h1>
+        </div>
+      </div>
+    )}>
       <div className="w-full flex flex-col space-y-3 bg-foreground p-4 rounded-md">
         <div className="w-full flex flex-col space-y-1 md:flex md:flex-row justify-between items-center">
           <div className="w-full md:w-fit flex flex-row items-center space-x-1">
@@ -210,17 +214,17 @@ const Index = () => {
               {columns.map((column) => (
                 <td key={column} className="px-4 py-2">
                   {column === "Effective Start Date" ||
-                  column === "Effective End Date"
+                    column === "Effective End Date"
                     ? formatDate(
-                        row[columnMappings[column] as keyof GstCode] as string
-                      )
+                      row[columnMappings[column] as keyof GstCode] as string
+                    )
                     : column === "Status"
-                    ? row[columnMappings[column] as keyof GstCode]
-                      ? "Active"
-                      : "Inactive"
-                    : column === "GST %"
-                    ? row.gst?.taxPercentage ?? "N/A"
-                    : (row[column as keyof GstCode] as string)}
+                      ? row[columnMappings[column] as keyof GstCode]
+                        ? "Active"
+                        : "Inactive"
+                      : column === "GST %"
+                        ? row.gst?.taxPercentage ?? "N/A"
+                        : (row[column as keyof GstCode] as string)}
                 </td>
               ))}
             </tr>

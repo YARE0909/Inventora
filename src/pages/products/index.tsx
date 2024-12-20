@@ -41,8 +41,7 @@ const Index = () => {
     try {
       setLoading(true);
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/products${
-          filter ? `?name=${filter}` : ""
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/products${filter ? `?name=${filter}` : ""
         }`
       );
       setData(response.data);
@@ -56,8 +55,7 @@ const Index = () => {
     try {
       setLoading(true);
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/gstCode${
-          filter ? `?filter=${filter}` : ""
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/gstCode${filter ? `?filter=${filter}` : ""
         }`
       );
       // map over response.data and assign id to value and taxPercentage to label
@@ -152,7 +150,13 @@ const Index = () => {
   }, []);
 
   return (
-    <Layout header="Products">
+    <Layout header={(
+      <div className="w-full flex justify-between items-center">
+        <div>
+          <h1 className="font-extrabold text-2xl uppercase">Products</h1>
+        </div>
+      </div>
+    )}>
       <div className="w-full flex flex-col space-y-3 bg-foreground p-4 rounded-md">
         <div className="w-full flex flex-col space-y-1 md:flex md:flex-row justify-between items-center">
           <div className="w-full md:w-fit flex flex-row items-center space-x-1">
@@ -194,21 +198,21 @@ const Index = () => {
               {columns.map((column) => (
                 <td key={column} className="px-4 py-2">
                   {column === "Effective Start Date" ||
-                  column === "Effective End Date"
+                    column === "Effective End Date"
                     ? formatDate(row[column as keyof Product] as string)
                     : column === "Status"
-                    ? row[column as keyof Product]
-                      ? "Active"
-                      : "Inactive"
-                    : column === "GST Code"
-                    ? row.gstCode?.code ?? "N/A"
-                    : column === "price"
-                    ? formatIndianCurrency(
-                        row[column as keyof Product] as number
-                      )
-                    : column === "GST %"
-                    ? `${row.gstCode?.gst?.taxPercentage ?? "N/A"} %`
-                    : (row[column as keyof Product] as string)}
+                      ? row[column as keyof Product]
+                        ? "Active"
+                        : "Inactive"
+                      : column === "GST Code"
+                        ? row.gstCode?.code ?? "N/A"
+                        : column === "price"
+                          ? formatIndianCurrency(
+                            row[column as keyof Product] as number
+                          )
+                          : column === "GST %"
+                            ? `${row.gstCode?.gst?.taxPercentage ?? "N/A"} %`
+                            : (row[column as keyof Product] as string)}
                 </td>
               ))}
             </tr>
