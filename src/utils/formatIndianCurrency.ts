@@ -8,6 +8,8 @@ const formatIndianCurrency = (
 ): string => {
   const { decimalPlaces = 2 } = options;
 
+  if (amount === undefined) return "₹ 0.00";
+
   // Convert the amount to a string
   const x = amount.toString();
 

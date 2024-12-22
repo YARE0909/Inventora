@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import prisma from "@/utils/prismaClient";
 import generateRandomString from "@/utils/randomStringGenerator";
 import { Prisma, OrderStatus } from "@prisma/client";
@@ -12,10 +13,40 @@ export default async function handler(
   try {
     switch (method) {
       case "GET": {
-        const { status, clientName, orderNumber, startDate, endDate } =
+        const { id, status, clientName, orderNumber, startDate, endDate } =
           req.query;
 
         const filter: Prisma.OrdersWhereInput = {};
+
+        if (id && typeof id === "string") {
+          // Fetch a single order by id
+          const order = await prisma.orders.findUnique({
+            where: { id },
+            include: {
+              customer: true,
+              orderItems: {
+                include: {
+                  product: {
+                    include: {
+                      gstCode: {
+                        include: {
+                          gst: true,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              orderAdvanceDetails: true,
+            },
+          });
+
+          if (!order) {
+            return res.status(404).json({ error: "Order not found" });
+          }
+
+          return res.status(200).json(order); // Return as an object
+        }
 
         if (status && typeof status === "string") {
           filter.orderStatus = OrderStatus[status as keyof typeof OrderStatus];
@@ -146,7 +177,10 @@ export default async function handler(
       }
 
       case "PUT": {
-        const { id, ...updateData } = req.body;
+        const { id, orderItems, orderAdvanceDetails, ...updateData } = req.body;
+
+        console.log("id", id);
+        console.log("updateData", updateData);
 
         if (!id) {
           return res
@@ -154,6 +188,7 @@ export default async function handler(
             .json({ error: "ID is required for updating an order" });
         }
 
+        // Convert dates if present
         if (updateData.orderDate) {
           updateData.orderDate = new Date(updateData.orderDate);
         }
@@ -166,11 +201,78 @@ export default async function handler(
           updateData.orderDeliveryDate = new Date(updateData.orderDeliveryDate);
         }
 
+        // Prepare nested writes for orderItems and orderAdvanceDetails
+        const nestedOrderItems: {
+          delete?: { id: any };
+          update?: { where: { id: any }; data: any };
+          create?: any;
+        }[] = [];
+        const nestedOrderAdvanceDetails: {
+          delete?: { id: any };
+          update?: { where: { id: any }; data: any };
+          create?: any;
+        }[] = [];
+
+        if (orderItems) {
+          orderItems.forEach((item: { id: any; _delete: any }) => {
+            if (item.id) {
+              // If an ID exists, update or delete
+              if (item._delete) {
+                nestedOrderItems.push({ delete: { id: item.id } });
+              } else {
+                nestedOrderItems.push({
+                  update: {
+                    where: { id: item.id },
+                    data: { ...item },
+                  },
+                });
+              }
+            } else {
+              // If no ID, it's a new item to add
+              nestedOrderItems.push({
+                create: { ...item },
+              });
+            }
+          });
+        }
+
+        if (orderAdvanceDetails) {
+          orderAdvanceDetails.forEach((detail: { id: any; _delete: any }) => {
+            if (detail.id) {
+              // If an ID exists, update or delete
+              if (detail._delete) {
+                nestedOrderAdvanceDetails.push({ delete: { id: detail.id } });
+              } else {
+                nestedOrderAdvanceDetails.push({
+                  update: {
+                    where: { id: detail.id },
+                    data: { ...detail },
+                  },
+                });
+              }
+            } else {
+              // If no ID, it's a new detail to add
+              nestedOrderAdvanceDetails.push({
+                create: { ...detail },
+              });
+            }
+          });
+        }
+
+        // Perform the update
         const updatedOrder = await prisma.orders.update({
           where: { id },
           data: {
             ...updateData,
-            modifiedOn: new Date(),
+            orderItems: {
+              // Process nested writes
+              ...(nestedOrderItems.length && { updateMany: nestedOrderItems }),
+            },
+            orderAdvanceDetails: {
+              ...(nestedOrderAdvanceDetails.length && {
+                updateMany: nestedOrderAdvanceDetails,
+              }),
+            },
           },
         });
 

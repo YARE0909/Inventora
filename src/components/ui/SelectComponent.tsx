@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 type SelectOption = {
   value: string;
@@ -10,6 +10,7 @@ type SelectProps = {
   label: string;
   placeholder?: string;
   onChange: (value: string) => void;
+  value?: string;
   showLabel?: boolean; // Prop to control label visibility
 };
 
@@ -17,12 +18,20 @@ const Select: React.FC<SelectProps> = ({
   options,
   label,
   placeholder = "Search...",
+  value = "",
   onChange,
   showLabel = true, // Default to show label
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedValue, setSelectedValue] = useState("");
+
+  useEffect(() => {
+    const selectedOption = options.find((option) => option.value === value);
+    if (selectedOption) {
+      setSelectedValue(selectedOption.label);
+    }
+  }, [value, options]);
 
   const filteredOptions = options.filter((option) =>
     option.label.toLowerCase().includes(searchTerm.toLowerCase())
@@ -46,7 +55,7 @@ const Select: React.FC<SelectProps> = ({
         className="border border-border rounded-md p-2 bg-background cursor-pointer text-sm"
         onClick={() => setIsDropdownOpen((prev) => !prev)}
       >
-        {showLabel ? selectedValue || "Select an option" : label} {/* Conditionally render */}
+        {showLabel ? selectedValue || "Select an option" : label}
       </div>
       {isDropdownOpen && (
         <div className="absolute z-10 bg-background border border-border rounded-md mt-1 w-full">

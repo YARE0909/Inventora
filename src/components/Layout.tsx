@@ -187,7 +187,7 @@ const Header = ({
   children: React.ReactNode;
 }) => {
   return (
-    <div className="w-full h-14 border-b border-b-border p-4 z-10 bg-background flex justify-between items-center gap-5 lg:gap-4">
+    <div className="w-full h-14 border-b border-b-border p-4 z-10 bg-foreground flex justify-between items-center gap-5 lg:gap-4">
       <div className="w-full flex items-center gap-1">
         <button
           className="lg:hidden"

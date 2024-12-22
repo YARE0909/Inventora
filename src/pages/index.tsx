@@ -25,7 +25,7 @@ const GraphComponent = ({
   selectedYear: string; // Added selectedYear prop type
 }) => {
   return (
-    <div className="w-full border border-border rounded-md">
+    <div className="w-full border border-border rounded-md bg-foreground">
       <div className="w-full flex flex-col space-y-4 p-4">
         <div className="w-full flex flex-col md:flex-row justify-between md:items-center border-b border-b-border pb-4">
           <div className="flex items-center space-x-3">

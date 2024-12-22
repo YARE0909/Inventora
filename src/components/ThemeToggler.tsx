@@ -15,19 +15,19 @@ const ThemeToggler: React.FC = () => {
     const root = document.documentElement;
 
     const lightTheme = {
-      "--background": "#ffffff",
-      "--foreground": "#fafafa",
+      "--background": "#e5e5e3",
+      "--foreground": "#eaeae8",
       "--default-text": "#000000",
-      "--border-color": "#d9d9d6",
+      "--border-color": "#c4c4c4",
       "--alt-text": "#4c4c54",
       "--highlight": "#f5f5f5",
     };
 
     const darkTheme = {
-      "--background": "#0a0a0a",
-      "--foreground": "#19191c",
+      "--background": "#1a1a1c",
+      "--foreground": "#151517",
       "--default-text": "#ffffff",
-      "--border-color": "#262629",
+      "--border-color": "#3b3b3b",
       "--alt-text": "#b3b3ab",
       "--highlight": "#262629",
     };
@@ -50,18 +50,18 @@ const ThemeToggler: React.FC = () => {
     const themeVariables =
       newTheme === "light"
         ? {
-          "--background": "#ffffff",
-          "--foreground": "#fafafa",
+          "--background": "#e5e5e3",
+          "--foreground": "#eaeae8",
           "--default-text": "#000000",
-          "--border-color": "#d9d9d6",
+          "--border-color": "#c4c4c4",
           "--alt-text": "#4c4c54",
           "--highlight": "#f5f5f5",
         }
         : {
-          "--background": "#0a0a0a",
-          "--foreground": "#19191c",
+          "--background": "#1a1a1c",
+          "--foreground": "#151517",
           "--default-text": "#ffffff",
-          "--border-color": "#262629",
+          "--border-color": "#3b3b3b",
           "--alt-text": "#b3b3ab",
           "--highlight": "#262629",
         };

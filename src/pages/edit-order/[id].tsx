@@ -7,6 +7,7 @@ import {
   Customer,
   Order,
   OrderAdvanceDetail,
+  OrderItem,
   OrderStatus,
   PaymentStatus,
   Product,
@@ -18,6 +19,7 @@ import Select from "@/components/ui/SelectComponent";
 import formatIndianCurrency from "@/utils/formatIndianCurrency";
 import { format } from "date-fns";
 import { useRouter } from "next/router";
+import { formatDateToYYYYMMDD } from "@/utils/dateFormatting";
 
 const columns = [
   "Product",
@@ -30,19 +32,6 @@ const columns = [
   "Total Amount",
   "",
 ];
-
-const columnMapping: {
-  [key: string]: string;
-} = {
-  Product: "name",
-  Quantity: "quantity",
-  "Unit Price": "price",
-  Amount: "amount",
-  "GST Code": "gstCode",
-  "GST %": "gst",
-  "GST Amount": "gstAmount",
-  "Total Amount": "totalAmount",
-};
 
 const orderAdvanceDetailsColumns = [
   "Advance Amount",
@@ -64,7 +53,6 @@ const orderAdvanceDetailsColumnMapping: {
 };
 
 const Index = () => {
-  const [data, setData] = useState<Product[]>([]);
   const [productData, setProductData] = useState<
     {
       value: string;
@@ -113,6 +101,21 @@ const Index = () => {
 
   const router = useRouter();
 
+  const fetchOrderData = async (filter?: string) => {
+    try {
+      setLoading(true);
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/orders${filter ? `?id=${filter}` : ""
+        }`
+      );
+      setFormData(response.data);
+      console.log(response.data);
+      setLoading(false);
+    } catch {
+      toast("Something went wrong.", "top-right", "error");
+    }
+  }
+
   const addOrderAdvanceDetailsToTable = () => {
     if (currentOrderAdvanceDetails?.orderAdvanceAmount === 0) {
       return toast("Please enter advance amount", "top-right", "warning");
@@ -160,13 +163,30 @@ const Index = () => {
 
       const product = productResponse.data;
       product.quantity = selectedProduct?.quantity;
-      // add product to data array
-      setData([
-        ...data,
-        {
-          ...product,
-        },
-      ]);
+
+      const OrderItem: OrderItem = {
+        productId: product.id!,
+        quantity: product.quantity!,
+        unitPrice: product.price,
+        totalAmount:
+          Math.floor(
+            (product.price * (product.quantity ?? 1) +
+              (product.price *
+                (product.quantity ?? 1) *
+                (product.gstCode?.gst?.taxPercentage ?? 0)) /
+              100) *
+            100
+          ) / 100,
+        product
+      }
+
+      setFormData({
+        ...formData,
+        orderItems: [
+          ...formData.orderItems!,
+          OrderItem
+        ],
+      });
     } catch (error) {
       console.log("Error:", error);
       toast("Something went wrong.", "top-right", "error");
@@ -174,8 +194,11 @@ const Index = () => {
   };
 
   const removeProductFromTable = (id: string) => {
-    const updatedData = data.filter((item) => item.id !== id);
-    setData(updatedData);
+    const updatedData = formData.orderItems!.filter((item) => item.id !== id);
+    setFormData({
+      ...formData,
+      orderItems: updatedData,
+    });
   };
 
   const removeOrderAdvanceDetailsFromTable = (id: string) => {
@@ -312,44 +335,46 @@ const Index = () => {
       return toast("Please select delivery date", "top-right", "warning");
     }
 
-    if (data.length === 0) {
+    if (formData.orderItems!.length === 0) {
       return toast("Please add products to order", "top-right", "warning");
     }
-    const orderItems = data.map((item) => ({
-      productId: item.id!,
-      quantity: item.quantity!,
-      unitPrice: item.price,
-      totalAmount:
-        Math.floor(
-          (item.price * (item.quantity ?? 1) +
-            (item.price *
-              (item.quantity ?? 1) *
-              (item.gstCode?.gst?.taxPercentage ?? 0)) /
-            100) *
-          100
-        ) / 100,
-    }));
 
-    formData.orderItems = orderItems;
-    formData.orderCount = orderItems.length;
-    formData.orderValue = orderItems.reduce(
-      (acc, item) => acc + item.totalAmount,
+    formData.orderCount = formData.orderItems!.length;
+    formData.orderValue = formData.orderItems!.reduce(
+      (acc, item) => acc + item.totalAmount!,
       0
     );
 
+    const dataOrderItemsToSend: OrderItem[] = formData.orderItems!.map((order) => {
+      return {
+        id: order.id,
+        quantity: order.quantity,
+        unitPrice: order.unitPrice,
+        totalAmount: order.totalAmount,
+      }
+    })
+
     const dataToSend: Order = {
-      ...formData,
+      id: formData.id,
+      orderDate: formData.orderDate,
+      proformaInvoice: formData.proformaInvoice,
+      proformaInvoiceDate: formData.proformaInvoiceDate,
+      orderValue: formData.orderValue,
+      orderCount: formData.orderCount,
+      orderDeliveryDate: formData.orderDeliveryDate,
+      orderStatus: formData.orderStatus,
+      orderComments: formData.orderComments,
+      orderItems: dataOrderItemsToSend,
     };
 
     try {
-      const response = await axios.post(
+      const response = await axios.put(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/orders`,
         dataToSend
       );
 
       if (response.status === 201) {
         toast("Order created successfully", "top-right", "success");
-        setData([]);
         setFormData({
           customerId: "",
           orderDate: undefined,
@@ -380,22 +405,23 @@ const Index = () => {
   useEffect(() => {
     fetchProductData();
     fetchCustomerData();
-  }, []);
+    fetchOrderData(router.query.id as string);
+  }, [router.query.id]);
 
   useEffect(() => {
-    console.log({ data });
-  }, [data]);
+    console.log({ formData });
+  }, [formData]);
 
   return (
     <Layout header={(
       <div className="w-full flex justify-between items-center">
         <div>
-          <h1 className="font-extrabold text-2xl uppercase">New Order</h1>
+          <h1 className="font-extrabold text-2xl uppercase">Edit Order #{formData.orderNumber}</h1>
         </div>
       </div>
     )}>
       <div className="w-full flex flex-col items-center">
-        <div className="w-fit bg-foreground border border-border rounded-md p-4 space-y-3">
+        <div className="w-fit bg-foreground rounded-md p-4 space-y-3">
           {/* Order Details */}
           <div className="w-full flex flex-col space-y-3">
             <div className="w-full flex justify-between items-end sticky top-0 z-50 bg-foreground border-b-2 border-b-border pb-3">
@@ -408,18 +434,13 @@ const Index = () => {
                     <span className="text-textAlt font-semibold text-sm">
                       Order Value{" "}
                     </span>
-                    {formatIndianCurrency(
-                      data
-                        .map(
-                          (item) =>
-                            item.price * (item.quantity ?? 1) +
-                            (item.price *
-                              (item.quantity ?? 1) *
-                              (item.gstCode?.gst?.taxPercentage ?? 0)) /
-                            100
-                        )
-                        .reduce((acc, item) => acc + item, 0)
-                    )}
+                    {
+                      formData.orderItems?.reduce(
+                        (acc, item) => acc + item.totalAmount,
+                        0
+                      ) || 0
+
+                    }
                   </h1>
                 </div>
               </div>
@@ -441,6 +462,7 @@ const Index = () => {
                     onChange={(value) => {
                       handleFormInput(value, "customerId");
                     }}
+                    value={formData.customerId}
                   />
                 </div>
                 <div className="w-full md:max-w-52">
@@ -451,6 +473,7 @@ const Index = () => {
                     onChange={(e) => {
                       handleFormInput(e.target.value, "orderDate");
                     }}
+                    value={formatDateToYYYYMMDD((formData.orderDate ? formData.orderDate : "").toString())}
                   />
                 </div>
                 <div className="w-full md:max-w-52">
@@ -461,6 +484,7 @@ const Index = () => {
                     onChange={(e) => {
                       handleFormInput(e.target.value, "proformaInvoice");
                     }}
+                    value={formData.proformaInvoice}
                   />
                 </div>
                 <div className="w-full md:max-w-52">
@@ -471,6 +495,7 @@ const Index = () => {
                     onChange={(e) => {
                       handleFormInput(e.target.value, "proformaInvoiceDate");
                     }}
+                    value={formatDateToYYYYMMDD((formData.proformaInvoiceDate ? formData.proformaInvoiceDate : "").toString())}
                   />
                 </div>
                 <div className="w-full md:max-w-52">
@@ -481,6 +506,7 @@ const Index = () => {
                     onChange={(e) => {
                       handleFormInput(e.target.value, "orderDeliveryDate");
                     }}
+                    value={formatDateToYYYYMMDD((formData.orderDeliveryDate ? formData.orderDeliveryDate : "").toString())}
                   />
                 </div>
               </div>
@@ -492,6 +518,7 @@ const Index = () => {
                   onChange={(e) => {
                     handleFormInput(e.target.value, "orderComments");
                   }}
+                  value={formData.orderComments}
                 />
               </div>
             </div>
@@ -668,7 +695,7 @@ const Index = () => {
           </div>
 
           <PaginatedTable columns={columns} loadingState={loading}>
-            {data.map((row, index) => (
+            {formData?.orderItems?.map((row, index) => (
               <tr
                 key={index}
                 className="hover:bg-foreground duration-500 cursor-pointer border-b border-b-border"
@@ -676,21 +703,21 @@ const Index = () => {
                 {columns.map((column) => (
                   <td key={column} className="px-4 py-2">
                     {column === "GST Code" ? (
-                      row.gstCode?.code ?? "N/A"
+                      row.product?.gstCode?.code ?? "N/A"
                     ) : column === "GST %" ? (
-                      row.gstCode?.gst?.taxPercentage ?? "N/A"
+                      row.product?.gstCode?.gst?.taxPercentage ?? "N/A"
                     ) : column === "Amount" ? (
-                      formatIndianCurrency(row.price * (row.quantity ?? 1))
+                      formatIndianCurrency(row.unitPrice! * (row.quantity ?? 1))
                     ) : column === "Unit Price" ? (
-                      formatIndianCurrency(row.price)
+                      formatIndianCurrency(row.unitPrice!)
                     ) : column === "GST Amount" ? (
                       formatIndianCurrency(
                         Number(
                           (
                             Math.floor(
-                              ((row.price *
+                              ((row.unitPrice! *
                                 (row.quantity ?? 1) *
-                                (row.gstCode?.gst?.taxPercentage ?? 0)) /
+                                (row.product?.gstCode?.gst?.taxPercentage ?? 0)) /
                                 100) *
                               100
                             ) / 100
@@ -702,10 +729,10 @@ const Index = () => {
                         Number(
                           (
                             Math.floor(
-                              (row.price * (row.quantity ?? 1) +
-                                (row.price *
+                              (row.unitPrice! * (row.quantity ?? 1) +
+                                (row.unitPrice! *
                                   (row.quantity ?? 1) *
-                                  (row.gstCode?.gst?.taxPercentage ?? 0)) /
+                                  (row.product?.gstCode?.gst?.taxPercentage ?? 0)) /
                                 100) *
                               100
                             ) / 100
@@ -717,9 +744,13 @@ const Index = () => {
                         className="w-5 h-5 text-red-500 cursor-pointer"
                         onClick={() => removeProductFromTable(row.id!)}
                       />
-                    ) : (
-                      (row[columnMapping[column] as keyof Product] as string)
-                    )}
+                    ) :
+                      column === "Quantity" ? (
+                        row.quantity
+                      ) :
+                        (
+                          row.product?.name
+                        )}
                   </td>
                 ))}
               </tr>

@@ -23,7 +23,7 @@ export interface Order {
   orderStatus: OrderStatus;
   orderComments?: string;
   createdOn?: Date | undefined;
-  customerId: string;
+  customerId?: string;
   customer?: Customer;
   orderItems?: OrderItem[];
   invoices?: Invoice[];
@@ -47,6 +47,7 @@ export interface Product {
   name: string;
   description: string;
   price: number;
+  unitPrice?: number;
   gstCodeId: string;
   createdOn?: Date | undefined;
   gstCode?: GstCode;
@@ -80,7 +81,7 @@ export interface GstCode {
 export interface OrderItem {
   id?: string;
   orderId?: string;
-  productId: string;
+  productId?: string;
   quantity: number;
   unitPrice: number;
   totalAmount: number;
