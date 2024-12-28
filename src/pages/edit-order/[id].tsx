@@ -348,6 +348,7 @@ const Index = () => {
     const dataOrderItemsToSend: OrderItem[] = formData.orderItems!.map((order) => {
       return {
         id: order.id,
+        productId: order.productId,
         quantity: order.quantity,
         unitPrice: order.unitPrice,
         totalAmount: order.totalAmount,
@@ -356,6 +357,7 @@ const Index = () => {
 
     const dataToSend: Order = {
       id: formData.id,
+      customerId: formData.customerId,
       orderDate: formData.orderDate,
       proformaInvoice: formData.proformaInvoice,
       proformaInvoiceDate: formData.proformaInvoiceDate,
@@ -365,6 +367,7 @@ const Index = () => {
       orderStatus: formData.orderStatus,
       orderComments: formData.orderComments,
       orderItems: dataOrderItemsToSend,
+      orderAdvanceDetails: formData.orderAdvanceDetails,
     };
 
     try {
