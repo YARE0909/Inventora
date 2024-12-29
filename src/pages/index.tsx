@@ -109,8 +109,34 @@ export default function Home() {
       graphData: [],
     },
   });
+  const [invoiceData, setInvoiceData] = useState<{
+    invoices: {
+      count: number;
+      totalValue: number;
+      pendingInvoiceTotal: number;
+      pendingInvoiceCount: number;
+      partiallyPaidInvoiceTotal: number;
+      partiallyPaidInvoiceCount: number;
+      paidInvoiceTotal: number;
+      paidInvoiceCount: number;
+      graphData: { label: string;[key: string]: number | string }[];
+    };
+  }>({
+    invoices: {
+      count: 0,
+      totalValue: 0,
+      pendingInvoiceTotal: 0,
+      pendingInvoiceCount: 0,
+      partiallyPaidInvoiceTotal: 0,
+      partiallyPaidInvoiceCount: 0,
+      paidInvoiceTotal: 0,
+      paidInvoiceCount: 0,
+      graphData: [],
+    },
+  });
+
   const [filters, setFilters] = useState({
-    year: new Date().getFullYear().toString(), // Default to current year
+    year: new Date().getFullYear().toString(),
   });
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -139,15 +165,34 @@ export default function Home() {
     }
   };
 
+  const fetchInvoiceData = async (year = "") => {
+    try {
+      setLoading(true);
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/analytics/invoices`,
+        {
+          params: { year },
+        }
+      );
+      setInvoiceData(response.data);
+    } catch {
+      toast("Something went wrong.", "top-right", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSetDate = (value: string) => {
     setFilters({
       year: value,
     });
-    fetchOrderData(value); // Automatically call API on year change
+    fetchOrderData(value);
+    fetchInvoiceData(value);
   };
 
   useEffect(() => {
-    fetchOrderData(filters.year); // Load data based on selected year
+    fetchOrderData(filters.year);
+    fetchInvoiceData(filters.year);
   }, [filters.year]);
 
   return (
@@ -264,6 +309,87 @@ export default function Home() {
                   <div className="flex space-x-1 items-center">
                     <h1 className="text-text font-bold text-2xl">
                       {formatIndianCurrency(orderData.orders.cancelledOrderTotal)}
+                    </h1>
+                  </div>
+                ),
+              },
+            ]}
+            fillColors={[
+              "#3788D8",
+              "#10b981"
+            ]}
+          />
+          <GraphComponent
+            data={invoiceData.invoices.graphData}
+            dataKeys={[
+              { label: "Invoice Count", value: "count" },
+              { label: "Invoice Value", value: "value" },
+            ]}
+            header="Invoices"
+            selectedYear={filters.year} // Pass selected year as a prop
+            statistics={[
+              { label: "Invoices", value: invoiceData.invoices.count },
+              {
+                label: "Invoices Value",
+                value: formatIndianCurrency(invoiceData.invoices.totalValue),
+              },
+            ]}
+            cardsData={[
+              {
+                label: (
+                  <div className="flex space-x-1 items-center">
+                    <h1 className="text-green-500 font-bold flex gap-2 items-center">
+                      Paid
+                      <span className="text-text text-2xl">
+                        {invoiceData.invoices.paidInvoiceCount}
+                      </span>
+                    </h1>
+                  </div>
+                ),
+                value: (
+                  <div className="flex space-x-1 items-center">
+                    <h1 className="text-text font-bold text-2xl">
+                      {formatIndianCurrency(invoiceData.invoices.paidInvoiceTotal, {
+                        decimalPlaces: 2,
+                      })}
+                    </h1>
+                  </div>
+                ),
+              },
+              {
+                label: (
+                  <div className="flex space-x-1 items-center">
+                    <h1 className="text-orange-500 font-bold flex gap-2 items-center">
+                      Pending
+                      <span className="text-text text-2xl">
+                        {invoiceData.invoices.pendingInvoiceCount}
+                      </span>
+                    </h1>
+                  </div>
+                ),
+                value: (
+                  <div className="flex space-x-1 items-center">
+                    <h1 className="text-text font-bold text-2xl">
+                      {formatIndianCurrency(invoiceData.invoices.pendingInvoiceTotal)}
+                    </h1>
+                  </div>
+                ),
+              },
+              {
+                label: (
+                  <div className="flex space-x-1 items-center">
+                    <h1 className="text-blue-500 font-bold flex gap-2 items-center">
+                      Partially Paid
+                      <span className="text-text text-2xl">
+                        {invoiceData.invoices.partiallyPaidInvoiceCount}
+                      </span>
+                    </h1>
+                  </div>
+                ),
+                value: (
+                  <div className="flex space-x-1 items-center">
+                    <h1 className="text-text font-bold text-2xl">
+                      {formatIndianCurrency(invoiceData.invoices.partiallyPaidInvoiceTotal)}
                     </h1>
                   </div>
                 ),
