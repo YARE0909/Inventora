@@ -177,8 +177,8 @@ export default async function handler(
       }
 
       case "PUT": {
-        const { id } = req.query;
         const {
+          id,
           customerId,
           orderDate,
           proformaInvoice,
@@ -193,7 +193,6 @@ export default async function handler(
         } = req.body;
 
         try {
-          // Update the order with nested updates for items and advance details
           const updatedOrder = await prisma.orders.update({
             where: { id: id as string },
             data: {
@@ -231,7 +230,7 @@ export default async function handler(
               },
               orderAdvanceDetails: {
                 deleteMany: {},
-                create: orderAdvanceDetails?.map(
+                create: orderAdvanceDetails.map(
                   (advance: {
                     orderAdvanceAmount: number;
                     orderAdvanceDate: string;
