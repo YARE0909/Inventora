@@ -181,6 +181,19 @@ const Index = () => {
     }
   }
 
+  const handleDeleteCustomer = async (id: string | undefined) => {
+    try {
+      await axios.delete(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/customers?id=${id}`
+      );
+      toast("Customer deleted successfully!", "top-right", "success");
+      fetchData();
+      handleCloseEditModal();
+    } catch {
+      toast("Failed to delete customer.", "top-right", "error");
+    }
+  }
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -388,7 +401,7 @@ const Index = () => {
             <hr className="border border-border" />
             <div className="w-full flex space-x-3">
               <Button type="submit">Save</Button>
-              <Button onClick={handleCloseEditModal}>Cancel</Button>
+              <Button onClick={() => handleDeleteCustomer(editFormData.id)} classname="text-red-500 border-red-500 bg-red-500/20 hover:bg-background">Delete</Button>
             </div>
           </form>
         ) : (
