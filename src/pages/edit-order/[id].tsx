@@ -13,7 +13,7 @@ import {
   Product,
 } from "@/utils/types/types";
 import axios from "axios";
-import { PackagePlus, Plus, Trash2 } from "lucide-react";
+import { LoaderCircle, PackagePlus, Plus, Trash2 } from "lucide-react";
 import Input from "@/components/ui/Input";
 import Select from "@/components/ui/SelectComponent";
 import formatIndianCurrency from "@/utils/formatIndianCurrency";
@@ -213,7 +213,6 @@ const Index = () => {
 
   const fetchProductData = async (filter?: string) => {
     try {
-      setLoading(true);
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/products${filter ? `?filter=${filter}` : ""
         }`
@@ -225,7 +224,6 @@ const Index = () => {
       }));
 
       setProductData(data);
-      setLoading(false);
     } catch {
       toast("Something went wrong.", "top-right", "error");
     }
@@ -233,7 +231,6 @@ const Index = () => {
 
   const fetchCustomerData = async (filter?: string) => {
     try {
-      setLoading(true);
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/customers${filter ? `?name=${filter}` : ""
         }`
@@ -245,7 +242,6 @@ const Index = () => {
       }));
 
       setCustomerData(data);
-      setLoading(false);
     } catch {
       toast("Something went wrong.", "top-right", "error");
     }
@@ -419,348 +415,364 @@ const Index = () => {
     <Layout header={(
       <div className="w-full flex justify-between items-center">
         <div>
-          <h1 className="font-extrabold text-2xl uppercase">Edit Order #{formData.orderNumber}</h1>
+          <h1 className="font-extrabold text-2xl uppercase flex items-center gap-1">Edit Order #{!loading ? formData.orderNumber :
+            <LoaderCircle className="animate-spin h-5 w-5 mx-auto" />
+          }</h1>
         </div>
       </div>
     )}>
-      <div className="w-full flex flex-col items-center">
-        <div className="w-fit bg-foreground rounded-md p-4 space-y-3">
-          {/* Order Details */}
-          <div className="w-full flex flex-col space-y-3">
-            <div className="w-full flex justify-between items-end sticky top-0 z-50 bg-foreground border-b-2 border-b-border pb-3">
-              <div className="flex flex-col space-y-3 mt-2">
-                <h1 className="text-text font-semibold text-lg">
-                  Order Details
-                </h1>
-                <div>
-                  <h1 className="text-lg text-text font-semibold">
-                    <span className="text-textAlt font-semibold text-sm">
-                      Order Value{" "}
-                    </span>
-                    {
-                      formData.orderItems?.reduce(
-                        (acc, item) => acc + item.totalAmount,
-                        0
-                      ) || 0
+      {!loading ? (
+        <div className="w-full flex flex-col items-center">
+          <div className="w-fit bg-foreground rounded-md p-4 space-y-3">
+            {/* Order Details */}
+            <div className="w-full flex flex-col space-y-3">
+              <div className="w-full flex justify-between items-end z-50 bg-foreground border-b-2 border-b-border pb-3">
+                <div className="flex flex-col space-y-3 mt-2">
+                  <h1 className="text-text font-semibold text-lg">
+                    Order Details
+                  </h1>
+                  <div>
+                    <h1 className="text-lg text-text font-semibold">
+                      <span className="text-textAlt font-semibold text-sm">
+                        Order Value{" "}
+                      </span>
+                      {
+                        formData.orderItems?.reduce(
+                          (acc, item) => acc + item.totalAmount,
+                          0
+                        ) || 0
 
-                    }
+                      }
+                    </h1>
+                  </div>
+                </div>
+                <div className="flex space-x-3 items-center">
+                  <div>
+                    <Button onClick={submitOrder}>
+                      <PackagePlus className="w-5 h-5" />
+                      Save Order
+                    </Button>
+                  </div>
+                </div>
+              </div>
+              <div className="w-full flex flex-col space-y-3">
+                <div className="w-full flex flex-col md:flex md:flex-row items-end space-x-3 space-y-3 md:space-y-0">
+                  <div className="w-full md:max-w-80">
+                    <Select
+                      options={customerData}
+                      label="Customer"
+                      onChange={(value) => {
+                        handleFormInput(value, "customerId");
+                      }}
+                      value={formData.customerId}
+                    />
+                  </div>
+                  <div className="w-full md:max-w-52">
+                    <Input
+                      name="orderDate"
+                      type="date"
+                      label="Order Date"
+                      onChange={(e) => {
+                        handleFormInput(e.target.value, "orderDate");
+                      }}
+                      value={formatDateToYYYYMMDD((formData.orderDate ? formData.orderDate : "").toString())}
+                    />
+                  </div>
+                  <div className="w-full md:max-w-52">
+                    <Input
+                      name="proformaInvoice"
+                      type="text"
+                      label="Performa Invoice/PO #"
+                      onChange={(e) => {
+                        handleFormInput(e.target.value, "proformaInvoice");
+                      }}
+                      value={formData.proformaInvoice}
+                    />
+                  </div>
+                  <div className="w-full md:max-w-52">
+                    <Input
+                      name="proformaInvoiceDate"
+                      type="date"
+                      label="Performa Invoice Date"
+                      onChange={(e) => {
+                        handleFormInput(e.target.value, "proformaInvoiceDate");
+                      }}
+                      value={formatDateToYYYYMMDD((formData.proformaInvoiceDate ? formData.proformaInvoiceDate : "").toString())}
+                    />
+                  </div>
+                  <div className="w-full md:max-w-52">
+                    <Input
+                      name="orderDeliveryDate"
+                      type="date"
+                      label="Delivery Date"
+                      onChange={(e) => {
+                        handleFormInput(e.target.value, "orderDeliveryDate");
+                      }}
+                      value={formatDateToYYYYMMDD((formData.orderDeliveryDate ? formData.orderDeliveryDate : "").toString())}
+                    />
+                  </div>
+                </div>
+                <div className="w-full md:max-w-96">
+                  <Input
+                    name="orderComments"
+                    type="textArea"
+                    label="Comments"
+                    onChange={(e) => {
+                      handleFormInput(e.target.value, "orderComments");
+                    }}
+                    value={formData.orderComments}
+                  />
+                </div>
+              </div>
+            </div>
+            {/* Order Items */}
+            <div className="w-full flex flex-col space-y-3">
+              <div className="flex flex-col space-y-3">
+                <div>
+                  <h1 className="text-text font-semibold text-lg">
+                    Order Item Details
                   </h1>
                 </div>
-              </div>
-              <div className="flex space-x-3 items-center">
-                <div>
-                  <Button onClick={submitOrder}>
-                    <PackagePlus className="w-5 h-5" />
-                    Save Order
-                  </Button>
-                </div>
-              </div>
-            </div>
-            <div className="w-full flex flex-col space-y-3">
-              <div className="w-full flex flex-col md:flex md:flex-row items-end space-x-3 space-y-3 md:space-y-0">
-                <div className="w-full md:max-w-80">
-                  <Select
-                    options={customerData}
-                    label="Customer"
-                    onChange={(value) => {
-                      handleFormInput(value, "customerId");
-                    }}
-                    value={formData.customerId}
-                  />
-                </div>
-                <div className="w-full md:max-w-52">
-                  <Input
-                    name="orderDate"
-                    type="date"
-                    label="Order Date"
-                    onChange={(e) => {
-                      handleFormInput(e.target.value, "orderDate");
-                    }}
-                    value={formatDateToYYYYMMDD((formData.orderDate ? formData.orderDate : "").toString())}
-                  />
-                </div>
-                <div className="w-full md:max-w-52">
-                  <Input
-                    name="proformaInvoice"
-                    type="text"
-                    label="Performa Invoice/PO #"
-                    onChange={(e) => {
-                      handleFormInput(e.target.value, "proformaInvoice");
-                    }}
-                    value={formData.proformaInvoice}
-                  />
-                </div>
-                <div className="w-full md:max-w-52">
-                  <Input
-                    name="proformaInvoiceDate"
-                    type="date"
-                    label="Performa Invoice Date"
-                    onChange={(e) => {
-                      handleFormInput(e.target.value, "proformaInvoiceDate");
-                    }}
-                    value={formatDateToYYYYMMDD((formData.proformaInvoiceDate ? formData.proformaInvoiceDate : "").toString())}
-                  />
-                </div>
-                <div className="w-full md:max-w-52">
-                  <Input
-                    name="orderDeliveryDate"
-                    type="date"
-                    label="Delivery Date"
-                    onChange={(e) => {
-                      handleFormInput(e.target.value, "orderDeliveryDate");
-                    }}
-                    value={formatDateToYYYYMMDD((formData.orderDeliveryDate ? formData.orderDeliveryDate : "").toString())}
-                  />
-                </div>
-              </div>
-              <div className="w-full md:max-w-96">
-                <Input
-                  name="orderComments"
-                  type="textArea"
-                  label="Comments"
-                  onChange={(e) => {
-                    handleFormInput(e.target.value, "orderComments");
-                  }}
-                  value={formData.orderComments}
-                />
-              </div>
-            </div>
-          </div>
-          <hr className="border border-border" />
-          {/* Order Advance Details */}
-          <div className="w-full flex flex-col space-y-3">
-            <div>
-              <h1 className="text-text font-semibold text-lg">
-                Order Advance Details
-              </h1>
-            </div>
-            <div className="w-full flex flex-col space-y-3 md:space-y-0 md:flex md:flex-row">
-              <div className="w-full flex flex-col space-y-3">
-                <div className="w-full flex flex-col md:flex md:flex-row space-y-3 md:space-y-0 md:space-x-3">
-                  <div className="w-full md:max-w-96">
-                    <Input
-                      name="orderAdvanceAmount"
-                      type="number"
-                      label="Order Amount"
-                      onChange={(e) => {
-                        handleOrderAdvanceDetailsInput(
-                          e.target.value,
-                          "orderAdvanceAmount"
-                        );
-                      }}
-                    />
-                  </div>
-                  <div className="w-full md:max-w-96">
-                    <Input
-                      name="orderAdvanceDate"
-                      type="date"
-                      label="Advance Date"
-                      onChange={(e) => {
-                        handleOrderAdvanceDetailsInput(
-                          e.target.value,
-                          "orderAdvanceDate"
-                        );
-                      }}
-                    />
-                  </div>
-                  <div className="w-full md:max-w-96">
+                <div className="w-full flex space-x-3 items-end">
+                  <div className="w-full md:max-w-80">
                     <Select
-                      options={[
-                        {
-                          value: PaymentStatus.Pending,
-                          label: "Pending",
-                        },
-                        {
-                          value: PaymentStatus.Paid,
-                          label: "Paid",
-                        },
-                        {
-                          value: PaymentStatus.PartiallyPaid,
-                          label: "Partially Paid",
-                        },
-                      ]}
-                      label="Advance Status"
+                      options={productData}
+                      label="Product"
                       onChange={(value) => {
-                        handleOrderAdvanceDetailsInput(
-                          value,
-                          "orderAdvanceStatus"
-                        );
+                        selectProductChange(value, "productId");
                       }}
                     />
                   </div>
-                  <div className="w-full h-full md:max-w-96">
+                  <div className="w-fit">
                     <Input
-                      name="orderAdvancePaymentDetails"
-                      type="text"
-                      label="Payment Reference #"
-                      onChange={(e) => {
-                        handleOrderAdvanceDetailsInput(
-                          e.target.value,
-                          "orderAdvancePaymentDetails"
-                        );
-                      }}
+                      name="quantity"
+                      type="number"
+                      label="Quantity"
+                      onChange={handleInputChange}
                     />
                   </div>
-                  <div className="w-full h-full md:max-w-96">
-                    <Input
-                      name="orderAdvanceComments"
-                      type="text"
-                      label="Comments"
-                      onChange={(e) => {
-                        handleOrderAdvanceDetailsInput(
-                          e.target.value,
-                          "orderAdvanceComments"
-                        );
-                      }}
-                    />
+                  <div>
+                    <Button onClick={addProductToTable}>
+                      <Plus className="w-5 h-5" />
+                      Add
+                    </Button>
                   </div>
                 </div>
-                <div>
-                  <Button onClick={addOrderAdvanceDetailsToTable}>
-                    <Plus className="w-5 h-5" />
-                    Add Advance Details
-                  </Button>
-                </div>
               </div>
+              <PaginatedTable columns={columns} loadingState={loading}>
+                {formData?.orderItems?.map((row, index) => (
+                  <tr
+                    key={index}
+                    className="hover:bg-foreground duration-500 cursor-pointer border-b border-b-border"
+                  >
+                    {columns.map((column) => (
+                      <td key={column} className="px-4 py-2">
+                        {column === "GST Code" ? (
+                          row.product?.gstCode?.code ?? "N/A"
+                        ) : column === "GST %" ? (
+                          row.product?.gstCode?.gst?.taxPercentage ?? "N/A"
+                        ) : column === "Amount" ? (
+                          formatIndianCurrency(row.unitPrice! * (row.quantity ?? 1))
+                        ) : column === "Unit Price" ? (
+                          formatIndianCurrency(row.unitPrice!)
+                        ) : column === "GST Amount" ? (
+                          formatIndianCurrency(
+                            Number(
+                              (
+                                Math.floor(
+                                  ((row.unitPrice! *
+                                    (row.quantity ?? 1) *
+                                    (row.product?.gstCode?.gst?.taxPercentage ?? 0)) /
+                                    100) *
+                                  100
+                                ) / 100
+                              ).toFixed(2)
+                            )
+                          )
+                        ) : column === "Total Amount" ? (
+                          formatIndianCurrency(
+                            Number(
+                              (
+                                Math.floor(
+                                  (row.unitPrice! * (row.quantity ?? 1) +
+                                    (row.unitPrice! *
+                                      (row.quantity ?? 1) *
+                                      (row.product?.gstCode?.gst?.taxPercentage ?? 0)) /
+                                    100) *
+                                  100
+                                ) / 100
+                              ).toFixed(2)
+                            )
+                          )
+                        ) : column === "" ? (
+                          <Trash2
+                            className="w-5 h-5 text-red-500 cursor-pointer"
+                            onClick={() => removeProductFromTable(row.id!)}
+                          />
+                        ) :
+                          column === "Quantity" ? (
+                            row.quantity
+                          ) :
+                            (
+                              row.product?.name
+                            )}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </PaginatedTable>
             </div>
-            <PaginatedTable
-              columns={orderAdvanceDetailsColumns}
-              loadingState={false}
-            >
-              {formData?.orderAdvanceDetails?.map((row, index) => (
-                <tr
-                  key={index}
-                  className="hover:bg-highlight duration-500 cursor-pointer border-b border-b-border"
-                >
-                  {orderAdvanceDetailsColumns.map((column) => (
-                    <td key={column} className="px-4 py-2">
-                      {column === "Advance Date" ? (
-                        formatDate(
-                          row[
-                          orderAdvanceDetailsColumnMapping[
-                          column
-                          ] as keyof OrderAdvanceDetail
-                          ] as string
-                        )
-                      ) : column === "" ? (
-                        <Trash2
-                          className="w-5 h-5 text-red-500 cursor-pointer"
-                          onClick={() =>
-                            removeOrderAdvanceDetailsFromTable(row.id!)
-                          }
-                        />
-                      ) : (
-                        (row[
-                          orderAdvanceDetailsColumnMapping[
-                          column
-                          ] as keyof OrderAdvanceDetail
-                        ] as string)
-                      )}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </PaginatedTable>
-          </div>
-          <hr className="border border-border" />
-          {/* Order Items */}
-          <div className="flex flex-col space-y-3">
-            <div>
-              <h1 className="text-text font-semibold text-lg">
-                Order Item Details
-              </h1>
-            </div>
-            <div className="w-full flex space-x-3 items-end">
-              <div className="w-full md:max-w-80">
-                <Select
-                  options={productData}
-                  label="Product"
-                  onChange={(value) => {
-                    selectProductChange(value, "productId");
-                  }}
-                />
-              </div>
-              <div className="w-fit">
-                <Input
-                  name="quantity"
-                  type="number"
-                  label="Quantity"
-                  onChange={handleInputChange}
-                />
-              </div>
+            <hr className="border border-border" />
+            {/* Order Advance Details */}
+            <div className="w-full flex flex-col space-y-3">
               <div>
-                <Button onClick={addProductToTable}>
-                  <Plus className="w-5 h-5" />
-                  Add
+                <h1 className="text-text font-semibold text-lg">
+                  Order Advance Details
+                </h1>
+              </div>
+              <div className="w-full flex flex-col space-y-3 md:space-y-0 md:flex md:flex-row">
+                <div className="w-full flex flex-col space-y-3">
+                  <div className="w-full flex flex-col md:flex md:flex-row space-y-3 md:space-y-0 md:space-x-3">
+                    <div className="w-full md:max-w-96">
+                      <Input
+                        name="orderAdvanceAmount"
+                        type="number"
+                        label="Order Amount"
+                        onChange={(e) => {
+                          handleOrderAdvanceDetailsInput(
+                            e.target.value,
+                            "orderAdvanceAmount"
+                          );
+                        }}
+                      />
+                    </div>
+                    <div className="w-full md:max-w-96">
+                      <Input
+                        name="orderAdvanceDate"
+                        type="date"
+                        label="Advance Date"
+                        onChange={(e) => {
+                          handleOrderAdvanceDetailsInput(
+                            e.target.value,
+                            "orderAdvanceDate"
+                          );
+                        }}
+                      />
+                    </div>
+                    <div className="w-full md:max-w-96">
+                      <Select
+                        options={[
+                          {
+                            value: PaymentStatus.Pending,
+                            label: "Pending",
+                          },
+                          {
+                            value: PaymentStatus.Paid,
+                            label: "Paid",
+                          },
+                          {
+                            value: PaymentStatus.PartiallyPaid,
+                            label: "Partially Paid",
+                          },
+                        ]}
+                        label="Advance Status"
+                        onChange={(value) => {
+                          handleOrderAdvanceDetailsInput(
+                            value,
+                            "orderAdvanceStatus"
+                          );
+                        }}
+                      />
+                    </div>
+                    <div className="w-full h-full md:max-w-96">
+                      <Input
+                        name="orderAdvancePaymentDetails"
+                        type="text"
+                        label="Payment Reference #"
+                        onChange={(e) => {
+                          handleOrderAdvanceDetailsInput(
+                            e.target.value,
+                            "orderAdvancePaymentDetails"
+                          );
+                        }}
+                      />
+                    </div>
+                    <div className="w-full h-full md:max-w-96">
+                      <Input
+                        name="orderAdvanceComments"
+                        type="text"
+                        label="Comments"
+                        onChange={(e) => {
+                          handleOrderAdvanceDetailsInput(
+                            e.target.value,
+                            "orderAdvanceComments"
+                          );
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <Button onClick={addOrderAdvanceDetailsToTable}>
+                      <Plus className="w-5 h-5" />
+                      Add Advance Details
+                    </Button>
+                  </div>
+                </div>
+              </div>
+              <PaginatedTable
+                columns={orderAdvanceDetailsColumns}
+                loadingState={false}
+              >
+                {formData?.orderAdvanceDetails?.map((row, index) => (
+                  <tr
+                    key={index}
+                    className="hover:bg-highlight duration-500 cursor-pointer border-b border-b-border"
+                  >
+                    {orderAdvanceDetailsColumns.map((column) => (
+                      <td key={column} className="px-4 py-2">
+                        {column === "Advance Date" ? (
+                          formatDate(
+                            row[
+                            orderAdvanceDetailsColumnMapping[
+                            column
+                            ] as keyof OrderAdvanceDetail
+                            ] as string
+                          )
+                        ) : column === "" ? (
+                          <Trash2
+                            className="w-5 h-5 text-red-500 cursor-pointer"
+                            onClick={() =>
+                              removeOrderAdvanceDetailsFromTable(row.id!)
+                            }
+                          />
+                        ) : (
+                          (row[
+                            orderAdvanceDetailsColumnMapping[
+                            column
+                            ] as keyof OrderAdvanceDetail
+                          ] as string)
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </PaginatedTable>
+            </div>
+            <div className="w-full flex space-x-3 items-center justify-end">
+              <div>
+                <Button onClick={submitOrder}>
+                  <PackagePlus className="w-5 h-5" />
+                  Save Order
                 </Button>
               </div>
             </div>
           </div>
-
-          <PaginatedTable columns={columns} loadingState={loading}>
-            {formData?.orderItems?.map((row, index) => (
-              <tr
-                key={index}
-                className="hover:bg-foreground duration-500 cursor-pointer border-b border-b-border"
-              >
-                {columns.map((column) => (
-                  <td key={column} className="px-4 py-2">
-                    {column === "GST Code" ? (
-                      row.product?.gstCode?.code ?? "N/A"
-                    ) : column === "GST %" ? (
-                      row.product?.gstCode?.gst?.taxPercentage ?? "N/A"
-                    ) : column === "Amount" ? (
-                      formatIndianCurrency(row.unitPrice! * (row.quantity ?? 1))
-                    ) : column === "Unit Price" ? (
-                      formatIndianCurrency(row.unitPrice!)
-                    ) : column === "GST Amount" ? (
-                      formatIndianCurrency(
-                        Number(
-                          (
-                            Math.floor(
-                              ((row.unitPrice! *
-                                (row.quantity ?? 1) *
-                                (row.product?.gstCode?.gst?.taxPercentage ?? 0)) /
-                                100) *
-                              100
-                            ) / 100
-                          ).toFixed(2)
-                        )
-                      )
-                    ) : column === "Total Amount" ? (
-                      formatIndianCurrency(
-                        Number(
-                          (
-                            Math.floor(
-                              (row.unitPrice! * (row.quantity ?? 1) +
-                                (row.unitPrice! *
-                                  (row.quantity ?? 1) *
-                                  (row.product?.gstCode?.gst?.taxPercentage ?? 0)) /
-                                100) *
-                              100
-                            ) / 100
-                          ).toFixed(2)
-                        )
-                      )
-                    ) : column === "" ? (
-                      <Trash2
-                        className="w-5 h-5 text-red-500 cursor-pointer"
-                        onClick={() => removeProductFromTable(row.id!)}
-                      />
-                    ) :
-                      column === "Quantity" ? (
-                        row.quantity
-                      ) :
-                        (
-                          row.product?.name
-                        )}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </PaginatedTable>
         </div>
-      </div>
+      ) : (
+        <div className="w-full h-full flex justify-center items-center">
+          <LoaderCircle className="animate-spin h-5 w-5 mx-auto" />
+        </div>
+      )}
     </Layout>
   );
 };

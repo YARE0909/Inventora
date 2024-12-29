@@ -398,7 +398,7 @@ const Index = () => {
         <div className="w-fit bg-foreground border border-border rounded-md p-4 space-y-3">
           {/* Order Details */}
           <div className="w-full flex flex-col space-y-3">
-            <div className="w-full flex justify-between items-end sticky top-0 z-50 bg-foreground border-b-2 border-b-border pb-3">
+            <div className="w-full flex justify-between items-end z-50 bg-foreground border-b-2 border-b-border pb-3">
               <div className="flex flex-col space-y-3 mt-2">
                 <h1 className="text-text font-semibold text-lg">
                   Order Details
@@ -495,6 +495,101 @@ const Index = () => {
                 />
               </div>
             </div>
+          </div>
+          <hr className="border border-border" />
+
+          {/* Order Items */}
+          <div className="w-full flex flex-col space-y-3">
+            <div className="flex flex-col space-y-3">
+              <div>
+                <h1 className="text-text font-semibold text-lg">
+                  Order Item Details
+                </h1>
+              </div>
+              <div className="w-full flex space-x-3 items-end">
+                <div className="w-full md:max-w-80">
+                  <Select
+                    options={productData}
+                    label="Product"
+                    onChange={(value) => {
+                      selectProductChange(value, "productId");
+                    }}
+                  />
+                </div>
+                <div className="w-fit">
+                  <Input
+                    name="quantity"
+                    type="number"
+                    label="Quantity"
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div>
+                  <Button onClick={addProductToTable}>
+                    <Plus className="w-5 h-5" />
+                    Add
+                  </Button>
+                </div>
+              </div>
+            </div>
+            <PaginatedTable columns={columns} loadingState={loading}>
+              {data.map((row, index) => (
+                <tr
+                  key={index}
+                  className="hover:bg-foreground duration-500 cursor-pointer border-b border-b-border"
+                >
+                  {columns.map((column) => (
+                    <td key={column} className="px-4 py-2">
+                      {column === "GST Code" ? (
+                        row.gstCode?.code ?? "N/A"
+                      ) : column === "GST %" ? (
+                        row.gstCode?.gst?.taxPercentage ?? "N/A"
+                      ) : column === "Amount" ? (
+                        formatIndianCurrency(row.price * (row.quantity ?? 1))
+                      ) : column === "Unit Price" ? (
+                        formatIndianCurrency(row.price)
+                      ) : column === "GST Amount" ? (
+                        formatIndianCurrency(
+                          Number(
+                            (
+                              Math.floor(
+                                ((row.price *
+                                  (row.quantity ?? 1) *
+                                  (row.gstCode?.gst?.taxPercentage ?? 0)) /
+                                  100) *
+                                100
+                              ) / 100
+                            ).toFixed(2)
+                          )
+                        )
+                      ) : column === "Total Amount" ? (
+                        formatIndianCurrency(
+                          Number(
+                            (
+                              Math.floor(
+                                (row.price * (row.quantity ?? 1) +
+                                  (row.price *
+                                    (row.quantity ?? 1) *
+                                    (row.gstCode?.gst?.taxPercentage ?? 0)) /
+                                  100) *
+                                100
+                              ) / 100
+                            ).toFixed(2)
+                          )
+                        )
+                      ) : column === "" ? (
+                        <Trash2
+                          className="w-5 h-5 text-red-500 cursor-pointer"
+                          onClick={() => removeProductFromTable(row.id!)}
+                        />
+                      ) : (
+                        (row[columnMapping[column] as keyof Product] as string)
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </PaginatedTable>
           </div>
           <hr className="border border-border" />
           {/* Order Advance Details */}
@@ -632,99 +727,14 @@ const Index = () => {
               ))}
             </PaginatedTable>
           </div>
-          <hr className="border border-border" />
-          {/* Order Items */}
-          <div className="flex flex-col space-y-3">
+          <div className="w-full flex space-x-3 items-center justify-end">
             <div>
-              <h1 className="text-text font-semibold text-lg">
-                Order Item Details
-              </h1>
-            </div>
-            <div className="w-full flex space-x-3 items-end">
-              <div className="w-full md:max-w-80">
-                <Select
-                  options={productData}
-                  label="Product"
-                  onChange={(value) => {
-                    selectProductChange(value, "productId");
-                  }}
-                />
-              </div>
-              <div className="w-fit">
-                <Input
-                  name="quantity"
-                  type="number"
-                  label="Quantity"
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div>
-                <Button onClick={addProductToTable}>
-                  <Plus className="w-5 h-5" />
-                  Add
-                </Button>
-              </div>
+              <Button onClick={submitOrder}>
+                <PackagePlus className="w-5 h-5" />
+                Save Order
+              </Button>
             </div>
           </div>
-
-          <PaginatedTable columns={columns} loadingState={loading}>
-            {data.map((row, index) => (
-              <tr
-                key={index}
-                className="hover:bg-foreground duration-500 cursor-pointer border-b border-b-border"
-              >
-                {columns.map((column) => (
-                  <td key={column} className="px-4 py-2">
-                    {column === "GST Code" ? (
-                      row.gstCode?.code ?? "N/A"
-                    ) : column === "GST %" ? (
-                      row.gstCode?.gst?.taxPercentage ?? "N/A"
-                    ) : column === "Amount" ? (
-                      formatIndianCurrency(row.price * (row.quantity ?? 1))
-                    ) : column === "Unit Price" ? (
-                      formatIndianCurrency(row.price)
-                    ) : column === "GST Amount" ? (
-                      formatIndianCurrency(
-                        Number(
-                          (
-                            Math.floor(
-                              ((row.price *
-                                (row.quantity ?? 1) *
-                                (row.gstCode?.gst?.taxPercentage ?? 0)) /
-                                100) *
-                              100
-                            ) / 100
-                          ).toFixed(2)
-                        )
-                      )
-                    ) : column === "Total Amount" ? (
-                      formatIndianCurrency(
-                        Number(
-                          (
-                            Math.floor(
-                              (row.price * (row.quantity ?? 1) +
-                                (row.price *
-                                  (row.quantity ?? 1) *
-                                  (row.gstCode?.gst?.taxPercentage ?? 0)) /
-                                100) *
-                              100
-                            ) / 100
-                          ).toFixed(2)
-                        )
-                      )
-                    ) : column === "" ? (
-                      <Trash2
-                        className="w-5 h-5 text-red-500 cursor-pointer"
-                        onClick={() => removeProductFromTable(row.id!)}
-                      />
-                    ) : (
-                      (row[columnMapping[column] as keyof Product] as string)
-                    )}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </PaginatedTable>
         </div>
       </div>
     </Layout>
