@@ -6,6 +6,7 @@ export interface Customer {
   phone: string;
   billingAddress: string;
   shippingAddress: string;
+  customerGST?: string;
   createdOn?: Date | undefined;
   orders?: Order[];
   invoices?: Invoice[];
@@ -99,8 +100,7 @@ export interface Invoice {
   invoiceAmount: number;
   adjustedInvoiceAmount: number;
   reconciledInvoiceAmount: number;
-  packagingChargesAmount: number;
-  shippingChargesAmount: number;
+  reconcileComments: string;
   discountAmount: number;
   customerGst: string;
   invoiceComments?: string;
@@ -114,16 +114,28 @@ export interface Invoice {
 export interface InvoiceItem {
   id: string;
   invoiceId: string;
-  productId: string;
-  itemCode: string;
+  serviceId?: string;
+  productId?: string;
   itemQuantity: number;
   itemRate: number;
   invoiceAmount: number;
   gstCodeId: string;
-  gstCode: GstCode;
   createdOn: Date | undefined;
+  gstCode: GstCode;
   invoice: Invoice;
   product: Product;
+}
+
+export interface Service {
+  id: string;
+  name: string;
+  gstCodeId: string;
+  effectiveStartDate: Date | string | undefined;
+  effectiveEndDate?: Date | string | undefined;
+  isActive: boolean;
+  createdOn: Date | undefined;
+  gstCode: GstCode;
+  InvoiceItems: InvoiceItem[];
 }
 
 export interface Payment {

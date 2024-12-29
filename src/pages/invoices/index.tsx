@@ -4,17 +4,17 @@ import PaginatedTable from "@/components/ui/PaginatedTable";
 import SearchBar from "@/components/ui/SearchBar";
 import Tabs from "@/components/ui/Tabs";
 import axios from "axios";
-import { format } from "date-fns";
 import { FileSpreadsheet, FilterX, Plus } from "lucide-react";
 import { exportToCSV } from "@/utils/jsonToCsv";
 import Button from "@/components/ui/Button";
 import Tooltip from "@/components/ui/ToolTip";
 import { useToast } from "@/components/ui/Toast/ToastProvider";
-import { Order } from "@/utils/types/types";
+import { Invoice } from "@/utils/types/types";
 import Drawer, { DrawerHandle } from "@/components/ui/Drawer";
 import InvoiceDetailDrawer from "./_components/InvoiceDetailDrawer";
 import formatIndianCurrency from "@/utils/formatIndianCurrency";
 import { useRouter } from "next/router";
+import { formatDate } from "@/utils/dateFormatting";
 
 const InvoiceTable = ({
   header,
@@ -25,17 +25,17 @@ const InvoiceTable = ({
   setLoading,
 }: {
   header: React.ReactNode;
-  data: Order[];
+  data: Invoice[];
   activeTab: "Paid" | "Pending" | "PartiallyPaid";
-  setData: React.Dispatch<React.SetStateAction<Order[]>>;
+  setData: React.Dispatch<React.SetStateAction<Invoice[]>>;
   loading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   // TODO: Implement filter by date
   const { toast } = useToast();
   const drawerRef = useRef<DrawerHandle>(null);
-  const [selectedOrderDetails, setSelectedOrderDetails] =
-    useState<Order | null>(null);
+  const [selectedInvoiceDetails, setSelectedOrderDetails] =
+    useState<Invoice | null>(null);
 
   const handleSearch = async (value: string) => {
     try {
@@ -74,9 +74,9 @@ const InvoiceTable = ({
   };
 
   const handleDrawerOpen = (id: string) => {
-    console.log("Open Drawer for Order ID:", id);
+    console.log("Open Drawer for Invoice ID:", id);
     drawerRef.current?.openDrawer();
-    setSelectedOrderDetails(data.find((order) => order.id === id) || null);
+    setSelectedOrderDetails(data.find((invoice) => invoice.id === id) || null);
   };
 
   const handleExportToCSV = (
@@ -94,26 +94,19 @@ const InvoiceTable = ({
   };
 
   const columns = [
-    "Order #",
-    "Order Date",
-    "Order Amount",
+    "Invoice #",
+    "Invoice Date",
+    "Invoice Amount",
     "Customer",
-    "Delivery Date",
-    "Comments",
+    "Comments"
   ];
 
-  const columnMappings: { [key: string]: keyof Order } = {
-    "Order #": "orderNumber",
-    "Order Date": "orderDate",
-    "Order Amount": "orderValue",
+  const columnMappings: { [key: string]: keyof Invoice } = {
+    "Invoice #": "invoiceNumber",
+    "Invoice Date": "invoiceDate",
+    "Invoice Amount": "invoiceAmount",
     Customer: "customer",
-    "Delivery Date": "orderDeliveryDate",
-    Comments: "orderComments",
-  };
-
-  // Helper function to format the delivery date
-  const formatDate = (date: string) => {
-    return format(new Date(date), "dd-MMM-yyyy"); // Format to "01-Jan-2024"
+    Comments: "invoiceComments",
   };
 
   return (
@@ -154,17 +147,18 @@ const InvoiceTable = ({
           >
             {columns.map((column) => (
               <td key={column} className="px-4 py-2">
-                {column === "Delivery Date" || column === "Order Date"
+                {column === "Invoice Date"
                   ? formatDate(
-                    row[columnMappings[column] as keyof Order] as string
+                    row[columnMappings[column] as keyof Invoice] as string
                   )
-                  : column === "Customer"
+                  :
+                  column === "Customer"
                     ? row?.customer?.name
                     : column === "Total Amount"
                       ? formatIndianCurrency(
-                        row[columnMappings[column] as keyof Order] as number
+                        row[columnMappings[column] as keyof Invoice] as number
                       )
-                      : row[columnMappings[column] as keyof Order]?.toString()}{" "}
+                      : row[columnMappings[column] as keyof Invoice]?.toString()}{" "}
               </td>
             ))}
           </tr>
@@ -172,17 +166,17 @@ const InvoiceTable = ({
       </PaginatedTable>
       <Drawer
         ref={drawerRef}
-        header={`Order #${selectedOrderDetails?.orderNumber}`}
+        header={`Invoice #${selectedInvoiceDetails?.invoiceNumber}`}
         size="w-full md:w-fit"
       >
-        <InvoiceDetailDrawer selectedOrderDetails={selectedOrderDetails!} />
+        <InvoiceDetailDrawer selectedInvoiceDetails={selectedInvoiceDetails!} />
       </Drawer>
     </div>
   );
 };
 
 export default function Home() {
-  const [data, setData] = useState<Order[]>([]);
+  const [data, setData] = useState<Invoice[]>([]);
   const [activeTab, setActiveTab] = useState<
     "Paid" | "Pending" | "PartiallyPaid"
   >("Paid");
@@ -195,7 +189,7 @@ export default function Home() {
       try {
         setLoading(true);
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/api/invoices?status=${activeTab}`
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/invoices?paymentStatus=${activeTab}`
         );
         setData(response.data);
         setLoading(false);
@@ -220,7 +214,7 @@ export default function Home() {
                     Total Invoice Amount{" "}
                   </span>
                   {formatIndianCurrency(
-                    data.reduce((acc, curr) => acc + curr.orderValue, 0) || 0
+                    data.reduce((acc, curr) => acc + curr.invoiceAmount, 0) || 0
                   )}
                 </h1>
               </div>
@@ -256,7 +250,7 @@ export default function Home() {
                     Total Invoice Amount{" "}
                   </span>
                   {formatIndianCurrency(
-                    data.reduce((acc, curr) => acc + curr.orderValue, 0) || 0
+                    data.reduce((acc, curr) => acc + curr.invoiceAmount, 0) || 0
                   )}
                 </h1>
               </div>
@@ -292,7 +286,7 @@ export default function Home() {
                     Total Invoice Amount{" "}
                   </span>
                   {formatIndianCurrency(
-                    data.reduce((acc, curr) => acc + curr.orderValue, 0) || 0
+                    data.reduce((acc, curr) => acc + curr.invoiceAmount, 0) || 0
                   )}
                 </h1>
               </div>

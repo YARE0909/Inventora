@@ -140,7 +140,26 @@ const OrderDetailDrawer = ({
                     <h1 className="font-semibold text-textAlt flex items-center gap-2">
                       Order Status:
                       <span className="text-text font-bold">
-                        {selectedOrderDetails.orderStatus}
+                        {selectedOrderDetails.orderStatus === "Active" ? (
+                          <span className="text-violet-500">
+                            {selectedOrderDetails.orderStatus}
+                          </span>
+                        ) :
+                          selectedOrderDetails.orderStatus === "Completed" ? (
+                            <span className="text-green-500">
+                              {selectedOrderDetails.orderStatus}
+                            </span>
+                          ) :
+                            selectedOrderDetails.orderStatus === "OnHold" ? (
+                              <span className="text-blue-500">
+                                {selectedOrderDetails.orderStatus}
+                              </span>
+                            ) :
+                              (
+                                <span className="text-red-500">
+                                  {selectedOrderDetails.orderStatus}
+                                </span>
+                              )}
                       </span>
                     </h1>
                   </div>
@@ -186,11 +205,35 @@ const OrderDetailDrawer = ({
                               ] as keyof OrderAdvanceDetail
                               ] as string
                             )
-                            : (row[
+                            :
+                            column === "Advance Amount" ? formatIndianCurrency(
+                              row[
                               orderAdvanceDetailsColumnMapping[
                               column
                               ] as keyof OrderAdvanceDetail
-                            ] as string)}
+                              ] as number) :
+                              column === "Advance Status" ? (
+                                row.orderAdvanceStatus === "Paid" ? (
+                                  <span className="text-green-500">
+                                    {row.orderAdvanceStatus}
+                                  </span>
+                                ) :
+                                  row.orderAdvanceStatus === "Pending" ? (
+                                    <span className="text-red-500">
+                                      {row.orderAdvanceStatus}
+                                    </span>
+                                  ) :
+                                    (
+                                      <span className="text-blue-500">
+                                        {row.orderAdvanceStatus}
+                                      </span>
+                                    )
+                              ) :
+                                (row[
+                                  orderAdvanceDetailsColumnMapping[
+                                  column
+                                  ] as keyof OrderAdvanceDetail
+                                ] as string)}
                         </td>
                       ))}
                     </tr>
@@ -202,72 +245,6 @@ const OrderDetailDrawer = ({
                 <h1 className="text-center text-textAlt font-bold">No advance paid</h1>
               </div>
             )}
-          </div>
-          {/* Customer Details */}
-          <div className="w-full flex flex-col space-y-3">
-            <div>
-              <h1 className="font-bold text-text text-lg">Customer Details</h1>
-            </div>
-            <div className="w-full rounded-md bg-background p-4 border border-border flex flex-col space-y-3">
-              <div className="flex flex-col space-y-3">
-                <div className="flex flex-col md:flex md:flex-row md:justify-between border-b border-b-border pb-2">
-                  <div>
-                    <h1 className="font-semibold text-textAlt flex items-center gap-2">
-                      Name:
-                      <span className="text-text font-bold">
-                        {selectedOrderDetails?.customer?.name}
-                      </span>
-                    </h1>
-                  </div>
-                  <div>
-                    <h1 className="font-semibold text-textAlt flex items-center gap-2">
-                      Contact Person:
-                      <span className="text-text font-bold">
-                        {selectedOrderDetails?.customer?.contactPerson}
-                      </span>
-                    </h1>
-                  </div>
-                </div>
-                <div className="flex flex-col md:flex md:flex-row md:justify-between border-b border-b-border pb-2">
-                  <div>
-                    <h1 className="font-semibold text-textAlt flex items-center gap-2">
-                      Email:
-                      <span className="text-text font-bold">
-                        {selectedOrderDetails?.customer?.email}
-                      </span>
-                    </h1>
-                  </div>
-                  <div>
-                    <h1 className="font-semibold text-textAlt flex items-center gap-2">
-                      Phone:
-                      <span className="text-text font-bold">
-                        {selectedOrderDetails?.customer?.phone}
-                      </span>
-                    </h1>
-                  </div>
-                </div>
-                <div className="flex flex-col border-b border-b-border pb-2">
-                  <div>
-                    <h1 className="font-semibold text-textAlt flex items-center gap-2">
-                      Billing Address:
-                      <span className="text-text font-bold">
-                        {selectedOrderDetails?.customer?.billingAddress}
-                      </span>
-                    </h1>
-                  </div>
-                </div>
-                <div className="flex flex-col border-b border-b-border pb-2">
-                  <div>
-                    <h1 className="font-semibold text-textAlt flex items-center gap-2">
-                      Shipping Address:
-                      <span className="text-text font-bold">
-                        {selectedOrderDetails?.customer?.shippingAddress}
-                      </span>
-                    </h1>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
           {/* Order Items */}
           <div className="w-full flex flex-col space-y-3">
@@ -324,6 +301,72 @@ const OrderDetailDrawer = ({
                   </tr>
                 ))}
               </PaginatedTable>
+            </div>
+          </div>
+          {/* Customer Details */}
+          <div className="w-full flex flex-col space-y-3">
+            <div>
+              <h1 className="font-bold text-text text-lg">Customer Details</h1>
+            </div>
+            <div className="w-full rounded-md bg-background p-4 border border-border flex flex-col space-y-3">
+              <div className="flex flex-col space-y-3">
+                <div className="flex flex-col md:flex md:flex-row md:justify-between border-b border-b-border pb-2">
+                  <div>
+                    <h1 className="font-semibold text-textAlt flex items-center gap-2">
+                      Name:
+                      <span className="text-text font-bold">
+                        {selectedOrderDetails?.customer?.name}
+                      </span>
+                    </h1>
+                  </div>
+                  <div>
+                    <h1 className="font-semibold text-textAlt flex items-center gap-2">
+                      Contact Person:
+                      <span className="text-text font-bold">
+                        {selectedOrderDetails?.customer?.contactPerson}
+                      </span>
+                    </h1>
+                  </div>
+                </div>
+                <div className="flex flex-col md:flex md:flex-row md:justify-between border-b border-b-border pb-2">
+                  <div>
+                    <h1 className="font-semibold text-textAlt flex items-center gap-2">
+                      Email:
+                      <span className="text-text font-bold">
+                        {selectedOrderDetails?.customer?.email}
+                      </span>
+                    </h1>
+                  </div>
+                  <div>
+                    <h1 className="font-semibold text-textAlt flex items-center gap-2">
+                      Phone:
+                      <span className="text-text font-bold">
+                        {selectedOrderDetails?.customer?.phone}
+                      </span>
+                    </h1>
+                  </div>
+                </div>
+                <div className="flex flex-col border-b border-b-border pb-2">
+                  <div>
+                    <h1 className="font-semibold text-textAlt flex items-center gap-2">
+                      Billing Address:
+                      <span className="text-text font-bold">
+                        {selectedOrderDetails?.customer?.billingAddress}
+                      </span>
+                    </h1>
+                  </div>
+                </div>
+                <div className="flex flex-col pb-2">
+                  <div>
+                    <h1 className="font-semibold text-textAlt flex items-center gap-2">
+                      Shipping Address:
+                      <span className="text-text font-bold">
+                        {selectedOrderDetails?.customer?.shippingAddress}
+                      </span>
+                    </h1>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

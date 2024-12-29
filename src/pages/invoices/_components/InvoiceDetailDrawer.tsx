@@ -1,4 +1,4 @@
-import { Order, OrderAdvanceDetail } from "@/utils/types/types";
+import { Invoice, Payment } from "@/utils/types/types";
 import React, { useEffect } from "react";
 import { format } from "date-fns";
 import PaginatedTable from "@/components/ui/PaginatedTable";
@@ -7,38 +7,39 @@ import { Pencil } from "lucide-react";
 import Tooltip from "@/components/ui/ToolTip";
 import { useRouter } from "next/router";
 
-const columns = [
+const invoiceItemsColumns = [
   "Product",
   "Quantity",
-  "Unit Price",
-  "Total Price",
-  "GST %",
+  "Item Rate",
+  "GST Code",
   "GST Amount",
-  "Total Amount",
+  "Invoice Amount",
 ];
 
-const orderAdvanceDetailsColumns = [
-  "Advance Amount",
-  "Advance Date",
-  "Advance Status",
-  "Payment Reference #",
+const paymentDetailsColumns = [
+  "Payment Amount",
+  "Status",
+  "Payment Date",
+  "Payment Mode",
+  "Payment Reference #",
   "Comments",
 ];
 
-const orderAdvanceDetailsColumnMapping: {
-  [key: string]: keyof OrderAdvanceDetail;
+const paymentDetailsColumnMapping: {
+  [key: string]: keyof Payment;
 } = {
-  "Advance Amount": "orderAdvanceAmount",
-  "Advance Date": "orderAdvanceDate",
-  "Advance Status": "orderAdvanceStatus",
-  "Payment Reference #": "orderAdvancePaymentDetails",
-  Comments: "orderAdvanceComments",
+  "Payment Amount": "paymentAmount",
+  "Status": "paymentStatus",
+  "Payment Date": "paymentDate",
+  "Payment Mode": "paymentMode",
+  "Payment Reference #": "paymentReferenceId",
+  Comments: "paymentComments",
 };
 
-const OrderDetailDrawer = ({
-  selectedOrderDetails,
+const InvoiceDetailDrawer = ({
+  selectedInvoiceDetails,
 }: {
-  selectedOrderDetails: Order;
+  selectedInvoiceDetails: Invoice;
 }) => {
   const formatDate = (date: string) => {
     return format(new Date(date), "dd-MMM-yyyy"); // Format to "01-Jan-2024"
@@ -47,23 +48,23 @@ const OrderDetailDrawer = ({
   const router = useRouter();
 
   const handleOnEdit = () => {
-    router.push(`/edit-order/${selectedOrderDetails.id}`);
+    router.push(`invoices/edit-invoice/${selectedInvoiceDetails.id}`);
   }
 
   useEffect(() => {
-    console.log("Selected Order Details:", selectedOrderDetails);
-  }, [selectedOrderDetails]);
+    console.log("Selected Order Details:", selectedInvoiceDetails);
+  }, [selectedInvoiceDetails]);
 
   return (
     <div className="w-full h-full">
       {/* Show order details from selectedOrder */}
-      {selectedOrderDetails ? (
+      {selectedInvoiceDetails ? (
         <div className="w-full flex flex-col space-y-3">
           {/* Order Details */}
           <div className="w-full flex flex-col space-y-3">
             <div className="w-full flex justify-between items-center">
               <div>
-                <h1 className="font-bold text-text text-lg">Order Details</h1>
+                <h1 className="font-bold text-text text-lg">Invoice Details</h1>
               </div>
               <div>
                 <Tooltip tooltip="Edit Order" position="left">
@@ -76,21 +77,20 @@ const OrderDetailDrawer = ({
                 <div className="flex flex-col md:flex md:flex-row md:justify-between border-b border-b-border pb-2">
                   <div>
                     <h1 className="font-semibold text-textAlt flex items-center gap-2">
-                      Order Date:
+                      Invoice Date:
                       <span className="text-text font-bold">
                         {formatDate(
-                          selectedOrderDetails.orderDate?.toString() || ""
+                          selectedInvoiceDetails.invoiceDate?.toString() || ""
                         )}
                       </span>
                     </h1>
                   </div>
                   <div>
                     <h1 className="font-semibold text-textAlt flex items-center gap-2">
-                      Delivery Date:
+                      Invoice Amount:
                       <span className="text-text font-bold">
-                        {formatDate(
-                          selectedOrderDetails.orderDeliveryDate?.toString() ||
-                          ""
+                        {formatIndianCurrency(
+                          Number(selectedInvoiceDetails?.invoiceAmount?.toString())
                         )}
                       </span>
                     </h1>
@@ -99,20 +99,21 @@ const OrderDetailDrawer = ({
                 <div className="flex flex-col md:flex md:flex-row md:justify-between border-b border-b-border pb-2">
                   <div>
                     <h1 className="font-semibold text-textAlt flex items-center gap-2">
-                      Performa Invoice Date:
+                      Adjusted Invoice Amount:
                       <span className="text-text font-bold">
-                        {formatDate(
-                          selectedOrderDetails.proformaInvoiceDate?.toString() ||
-                          ""
+                        {formatIndianCurrency(
+                          Number(selectedInvoiceDetails?.adjustedInvoiceAmount?.toString())
                         )}
                       </span>
                     </h1>
                   </div>
                   <div>
                     <h1 className="font-semibold text-textAlt flex items-center gap-2">
-                      Performa Invoice:
+                      Reconciled Invoice Amount:
                       <span className="text-text font-bold">
-                        {selectedOrderDetails.proformaInvoice}
+                        {formatIndianCurrency(
+                          Number(selectedInvoiceDetails?.reconciledInvoiceAmount?.toString())
+                        )}
                       </span>
                     </h1>
                   </div>
@@ -120,17 +121,11 @@ const OrderDetailDrawer = ({
                 <div className="flex flex-col md:flex md:flex-row md:justify-between border-b border-b-border pb-2">
                   <div>
                     <h1 className="font-semibold text-textAlt flex items-center gap-2">
-                      Order Count:
+                      Discount Amount:
                       <span className="text-text font-bold">
-                        {selectedOrderDetails.orderCount}
-                      </span>
-                    </h1>
-                  </div>
-                  <div>
-                    <h1 className="font-semibold text-textAlt flex items-center gap-2">
-                      Order Value:
-                      <span className="text-text font-bold">
-                        {formatIndianCurrency(selectedOrderDetails.orderValue)}
+                        {formatIndianCurrency(
+                          Number(selectedInvoiceDetails?.discountAmount?.toString())
+                        )}
                       </span>
                     </h1>
                   </div>
@@ -138,9 +133,9 @@ const OrderDetailDrawer = ({
                 <div className="flex flex-col border-b border-b-border pb-2">
                   <div>
                     <h1 className="font-semibold text-textAlt flex items-center gap-2">
-                      Order Status:
+                      Reconcile Comments:
                       <span className="text-text font-bold">
-                        {selectedOrderDetails.orderStatus}
+                        {selectedInvoiceDetails.reconcileComments}
                       </span>
                     </h1>
                   </div>
@@ -150,7 +145,7 @@ const OrderDetailDrawer = ({
                     <h1 className="font-semibold text-textAlt flex items-center gap-2">
                       Comments:
                       <span className="text-text font-bold">
-                        {selectedOrderDetails.orderComments}
+                        {selectedInvoiceDetails.invoiceComments}
                       </span>
                     </h1>
                   </div>
@@ -158,39 +153,85 @@ const OrderDetailDrawer = ({
               </div>
             </div>
           </div>
-          {/* Order Advance Details */}
+          {/* Invoice Item Details */}
+          <div className="w-full flex flex-col space-y-3">
+            <div>
+              <h1 className="font-bold text-text text-lg">Order Items</h1>
+            </div>
+            <div className="w-full rounded-md flex flex-col space-y-3">
+              <PaginatedTable columns={invoiceItemsColumns} loadingState={false}>
+                {selectedInvoiceDetails?.invoiceItems!.map((item, index) => (
+                  <tr
+                    key={index}
+                    className="hover:bg-foreground duration-500 cursor-pointer border-b border-b-border"
+                  >
+                    {invoiceItemsColumns.map((column) => (
+                      <td key={column} className="px-4 py-2">
+                        {
+                          column === "Product" ? (
+                            item?.product?.name
+                          ) : column === "Quantity" ? (
+                            item?.itemQuantity
+                          ) : column === "Item Rate" ? (
+                            formatIndianCurrency(item?.itemRate)
+                          ) : column === "Invoice Amount" ? (
+                            formatIndianCurrency(item?.invoiceAmount)
+                          ) : column === "GST Code" ? (
+                            item?.gstCode?.code
+                          ) : column === "GST Amount" ? (
+                            formatIndianCurrency(item?.gstCode?.gst?.taxPercentage)
+                          ) : null
+                        }
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </PaginatedTable>
+            </div>
+          </div>
+          {/* Payment Details */}
           <div className="w-full flex flex-col space-y-3">
             <div>
               <h1 className="font-bold text-text text-lg">
-                Order Advance Details
+                Payments
               </h1>
             </div>
-            {selectedOrderDetails?.orderAdvanceDetails!.length > 0 ? (
+            {selectedInvoiceDetails?.invoiceItems!.length > 0 ? (
               <PaginatedTable
-                columns={orderAdvanceDetailsColumns}
+                columns={paymentDetailsColumns}
                 loadingState={false}
               >
-                {selectedOrderDetails?.orderAdvanceDetails?.map(
+                {selectedInvoiceDetails?.payments?.map(
                   (row, index) => (
                     <tr
                       key={index}
                       className="hover:bg-highlight duration-500 cursor-pointer border-b border-b-border"
                     >
-                      {orderAdvanceDetailsColumns.map((column) => (
+                      {paymentDetailsColumns.map((column) => (
                         <td key={column} className="px-4 py-2">
-                          {column === "Advance Date"
-                            ? formatDate(
-                              row[
-                              orderAdvanceDetailsColumnMapping[
-                              column
-                              ] as keyof OrderAdvanceDetail
-                              ] as string
-                            )
-                            : (row[
-                              orderAdvanceDetailsColumnMapping[
-                              column
-                              ] as keyof OrderAdvanceDetail
-                            ] as string)}
+                          {column === "Payment Date" ? (
+                            formatDate(
+                              row[paymentDetailsColumnMapping[column] as keyof Payment] as string)
+                          ) :
+                            column === "Payment Amount" ? (
+                              formatIndianCurrency(row[paymentDetailsColumnMapping[column] as keyof Payment] as number))
+                              :
+                              column === "Status" ? (
+                                row.paymentStatus === "Paid" ? (
+                                  <span className="text-green-500 font-semibold">
+                                    Paid
+                                  </span>
+                                ) : row.paymentStatus === "PartiallyPaid" ? (
+                                  <span className="text-yellow-500 font-semibold">
+                                    Partially Paid
+                                  </span>
+                                ) : (
+                                  <span className="text-red-500 font-semibold">
+                                    Pending
+                                  </span>
+                                )
+                              ) :
+                                (row[paymentDetailsColumnMapping[column] as keyof Payment] as string)}
                         </td>
                       ))}
                     </tr>
@@ -215,7 +256,7 @@ const OrderDetailDrawer = ({
                     <h1 className="font-semibold text-textAlt flex items-center gap-2">
                       Name:
                       <span className="text-text font-bold">
-                        {selectedOrderDetails?.customer?.name}
+                        {selectedInvoiceDetails?.customer?.name}
                       </span>
                     </h1>
                   </div>
@@ -223,7 +264,7 @@ const OrderDetailDrawer = ({
                     <h1 className="font-semibold text-textAlt flex items-center gap-2">
                       Contact Person:
                       <span className="text-text font-bold">
-                        {selectedOrderDetails?.customer?.contactPerson}
+                        {selectedInvoiceDetails?.customer?.contactPerson}
                       </span>
                     </h1>
                   </div>
@@ -233,7 +274,7 @@ const OrderDetailDrawer = ({
                     <h1 className="font-semibold text-textAlt flex items-center gap-2">
                       Email:
                       <span className="text-text font-bold">
-                        {selectedOrderDetails?.customer?.email}
+                        {selectedInvoiceDetails?.customer?.email}
                       </span>
                     </h1>
                   </div>
@@ -241,27 +282,37 @@ const OrderDetailDrawer = ({
                     <h1 className="font-semibold text-textAlt flex items-center gap-2">
                       Phone:
                       <span className="text-text font-bold">
-                        {selectedOrderDetails?.customer?.phone}
+                        {selectedInvoiceDetails?.customer?.phone}
                       </span>
                     </h1>
                   </div>
                 </div>
-                <div className="flex flex-col border-b border-b-border pb-2">
+                <div className="flex flex-col md:flex md:flex-row md:justify-between border-b border-b-border pb-2">
                   <div>
                     <h1 className="font-semibold text-textAlt flex items-center gap-2">
                       Billing Address:
                       <span className="text-text font-bold">
-                        {selectedOrderDetails?.customer?.billingAddress}
+                        {selectedInvoiceDetails?.customer?.billingAddress}
                       </span>
                     </h1>
                   </div>
+                  {selectedInvoiceDetails?.customer?.customerGST && (
+                    <div>
+                      <h1 className="font-semibold text-textAlt flex items-center gap-2">
+                        Customer GST:
+                        <span className="text-text font-bold">
+                          {selectedInvoiceDetails?.customer?.customerGST}
+                        </span>
+                      </h1>
+                    </div>
+                  )}
                 </div>
-                <div className="flex flex-col border-b border-b-border pb-2">
+                <div className="flex flex-col pb-2">
                   <div>
                     <h1 className="font-semibold text-textAlt flex items-center gap-2">
                       Shipping Address:
                       <span className="text-text font-bold">
-                        {selectedOrderDetails?.customer?.shippingAddress}
+                        {selectedInvoiceDetails?.customer?.shippingAddress}
                       </span>
                     </h1>
                   </div>
@@ -269,69 +320,12 @@ const OrderDetailDrawer = ({
               </div>
             </div>
           </div>
-          {/* Order Items */}
-          <div className="w-full flex flex-col space-y-3">
-            <div>
-              <h1 className="font-bold text-text text-lg">Order Items</h1>
-            </div>
-            <div className="w-full rounded-md flex flex-col space-y-3">
-              <PaginatedTable columns={columns} loadingState={false}>
-                {selectedOrderDetails?.orderItems!.map((item, index) => (
-                  <tr
-                    key={index}
-                    className="hover:bg-foreground duration-500 cursor-pointer border-b border-b-border"
-                  >
-                    {columns.map((column) => (
-                      <td key={column} className="px-4 py-2">
-                        {column === "Product"
-                          ? item.product?.name
-                          : column === "Quantity"
-                            ? item.quantity
-                            : column === "Unit Price"
-                              ? formatIndianCurrency(item.unitPrice)
-                              : column === "Total Price"
-                                ? formatIndianCurrency(
-                                  Number(
-                                    (
-                                      Math.floor(
-                                        item.quantity * item.unitPrice * 100
-                                      ) / 100
-                                    ).toFixed(2)
-                                  )
-                                )
-                                : column === "GST %"
-                                  ? item.product?.gstCode?.gst?.taxPercentage
-                                  : column === "GST Amount"
-                                    ? formatIndianCurrency(
-                                      Number(
-                                        (
-                                          Math.floor(
-                                            ((item.quantity *
-                                              item.unitPrice *
-                                              (item.product?.gstCode?.gst
-                                                ?.taxPercentage ?? 0)) /
-                                              100) *
-                                            100
-                                          ) / 100
-                                        ).toFixed(2)
-                                      )
-                                    )
-                                    : column === "Total Amount"
-                                      ? formatIndianCurrency(item.totalAmount)
-                                      : ""}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </PaginatedTable>
-            </div>
-          </div>
         </div>
       ) : (
-        <div className="p-4 text-center">No order selected</div>
+        <div className="p-4 text-center">No Invoice selected</div>
       )}
     </div>
   );
 };
 
-export default OrderDetailDrawer;
+export default InvoiceDetailDrawer;

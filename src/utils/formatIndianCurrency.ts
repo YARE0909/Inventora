@@ -3,7 +3,7 @@ type FormatIndianCurrencyOptions = {
 };
 
 const formatIndianCurrency = (
-  amount: number,
+  amount: number | undefined,
   options: FormatIndianCurrencyOptions = {}
 ): string => {
   const { decimalPlaces = 2 } = options;

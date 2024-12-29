@@ -65,10 +65,16 @@ const OrderTable = ({
   };
 
   const clearFilters = async () => {
+    const filterMapping: Record<string, string> = {
+      Active: "Active",
+      "On Hold": "OnHold",
+      Completed: "Completed",
+      Cancelled: "Cancelled",
+    }
     try {
       setLoading(true);
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/orders?status=${activeTab}`
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/orders?status=${filterMapping[activeTab]}`
       );
       setData(response.data);
       setLoading(false);
@@ -198,10 +204,16 @@ export default function Home() {
 
   useEffect(() => {
     const fetchData = async () => {
+      const filterMapping: Record<string, string> = {
+        Active: "Active",
+        "On Hold": "OnHold",
+        Completed: "Completed",
+        Cancelled: "Cancelled",
+      };
       try {
         setLoading(true);
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/api/orders?status=${activeTab}`
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/orders?status=${filterMapping[activeTab]}`
         );
         setData(response.data);
         setLoading(false);

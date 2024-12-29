@@ -13,6 +13,7 @@ model Customers {
   contactPerson   String
   email           String
   phone           String
+  customerGST     String?
   billingAddress  String
   shippingAddress String
   createdOn       DateTime
@@ -83,6 +84,7 @@ model GstCodes {
   gst                Gst            @relation(fields: [gstId], references: [id])
   products           Products[]
   invoiceItems       InvoiceItems[]
+  service            Service[]
 }
 
 model OrderItems {
@@ -106,8 +108,7 @@ model Invoices {
   invoiceAmount           Float
   adjustedInvoiceAmount   Float
   reconciledInvoiceAmount Float
-  packagingChargesAmount  Float
-  shippingChargesAmount   Float
+  reconcileComments       String
   discountAmount          Float
   customerGst             String
   invoiceComments         String?
@@ -119,18 +120,31 @@ model Invoices {
 }
 
 model InvoiceItems {
-  id            String   @id @default(auto()) @map("_id") @db.ObjectId
-  invoiceId     String   @db.ObjectId
-  productId     String   @db.ObjectId
-  itemCode      String
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  invoiceId     String    @db.ObjectId
+  serviceId     String?   @db.ObjectId
+  productId     String?   @db.ObjectId
   itemQuantity  Int
   itemRate      Float
   invoiceAmount Float
-  gstCodeId     String   @db.ObjectId
-  gstCode       GstCodes @relation(fields: [gstCodeId], references: [id])
+  gstCodeId     String    @db.ObjectId
   createdOn     DateTime
-  invoice       Invoices @relation(fields: [invoiceId], references: [id])
-  product       Products @relation(fields: [productId], references: [id])
+  gstCode       GstCodes  @relation(fields: [gstCodeId], references: [id])
+  invoice       Invoices  @relation(fields: [invoiceId], references: [id])
+  service       Service?  @relation(fields: [serviceId], references: [id])
+  product       Products? @relation(fields: [productId], references: [id])
+}
+
+model Service {
+  id                 String         @id @default(auto()) @map("_id") @db.ObjectId
+  name               String
+  gstCodeId          String         @db.ObjectId
+  effectiveStartDate DateTime
+  effectiveEndDate   DateTime
+  isActive           Boolean
+  createdOn          DateTime
+  gstCode            GstCodes       @relation(fields: [gstCodeId], references: [id])
+  InvoiceItems       InvoiceItems[]
 }
 
 model Payments {

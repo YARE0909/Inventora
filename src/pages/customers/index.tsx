@@ -213,7 +213,6 @@ const Index = () => {
               type="text"
               placeholder="Search here..."
               onEnter={handleSearch}
-              onChange={(value) => console.log("Input Changed:", value)}
             />
             <Tooltip tooltip="Clear Filters">
               <Button onClick={clearFilters}>

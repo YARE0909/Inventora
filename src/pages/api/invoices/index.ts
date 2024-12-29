@@ -13,86 +13,96 @@ export default async function handler(
   try {
     switch (method) {
       case "GET": {
-        const {
-          id,
-          invoiceNumber,
-          customerId,
-          startDate,
-          endDate,
-          paymentStatus,
-        } = req.query;
+        const { id, paymentStatus, invoiceNumber } = req.query;
 
-        const filter: Prisma.InvoicesWhereInput = {};
+        try {
+          if (id && typeof id === "string") {
+            const invoice = await prisma.invoices.findUnique({
+              where: { id },
+              include: {
+                customer: true,
+                order: true,
+                invoiceItems: {
+                  include: {
+                    product: true,
+                    gstCode: {
+                      include: {
+                        gst: true,
+                      },
+                    },
+                  },
+                },
+                payments: true,
+              },
+            });
 
-        if (id && typeof id === "string") {
-          // Fetch a single invoice by id
-          const invoice = await prisma.invoices.findUnique({
-            where: { id },
+            if (!invoice) {
+              return res.status(404).json({ error: "Invoice not found" });
+            }
+
+            return res.status(200).json(invoice);
+          }
+
+          if (invoiceNumber && typeof invoiceNumber === "string") {
+            const invoice = await prisma.invoices.findMany({
+              where: { invoiceNumber },
+              include: {
+                customer: true,
+                order: true,
+                invoiceItems: {
+                  include: {
+                    product: true,
+                    gstCode: {
+                      include: {
+                        gst: true,
+                      },
+                    },
+                  },
+                },
+                payments: true,
+              },
+            });
+
+            if (!invoice) {
+              return res.status(404).json({ error: "Invoice not found" });
+            }
+
+            return res.status(200).json(invoice);
+          }
+
+          const filter: Prisma.InvoicesWhereInput = {};
+          if (paymentStatus && typeof paymentStatus === "string") {
+            filter.payments = {
+              some: {
+                paymentStatus: paymentStatus as PaymentStatus,
+              },
+            };
+          }
+
+          const invoices = await prisma.invoices.findMany({
+            where: filter,
             include: {
               customer: true,
               order: true,
               invoiceItems: {
                 include: {
                   product: true,
-                  gstCode: true,
+                  gstCode: {
+                    include: {
+                      gst: true,
+                    },
+                  },
                 },
               },
               payments: true,
             },
           });
 
-          if (!invoice) {
-            return res.status(404).json({ error: "Invoice not found" });
-          }
-
-          return res.status(200).json(invoice);
+          return res.status(200).json(invoices);
+        } catch (error) {
+          console.error("Error fetching invoices:", error);
+          return res.status(500).json({ error: "Internal Server Error" });
         }
-
-        if (invoiceNumber && typeof invoiceNumber === "string") {
-          filter.invoiceNumber = {
-            contains: invoiceNumber,
-            mode: "insensitive",
-          };
-        }
-
-        if (customerId && typeof customerId === "string") {
-          filter.customerId = customerId;
-        }
-
-        if (startDate || endDate) {
-          filter.invoiceDate = {};
-          if (startDate && typeof startDate === "string") {
-            filter.invoiceDate.gte = new Date(startDate);
-          }
-          if (endDate && typeof endDate === "string") {
-            filter.invoiceDate.lte = new Date(endDate);
-          }
-        }
-
-        if (paymentStatus && typeof paymentStatus === "string") {
-          filter.payments = {
-            some: {
-              paymentStatus: paymentStatus as PaymentStatus,
-            },
-          };
-        }
-
-        const invoices = await prisma.invoices.findMany({
-          where: filter,
-          include: {
-            customer: true,
-            order: true,
-            invoiceItems: {
-              include: {
-                product: true,
-                gstCode: true,
-              },
-            },
-            payments: true,
-          },
-        });
-
-        return res.status(200).json(invoices);
       }
 
       case "POST": {
@@ -103,8 +113,7 @@ export default async function handler(
           invoiceAmount,
           adjustedInvoiceAmount,
           reconciledInvoiceAmount,
-          packagingChargesAmount,
-          shippingChargesAmount,
+          reconcileComments,
           discountAmount,
           customerGst,
           invoiceComments,
@@ -134,8 +143,7 @@ export default async function handler(
             invoiceAmount: parseFloat(invoiceAmount),
             adjustedInvoiceAmount: parseFloat(adjustedInvoiceAmount || 0),
             reconciledInvoiceAmount: parseFloat(reconciledInvoiceAmount || 0),
-            packagingChargesAmount: parseFloat(packagingChargesAmount || 0),
-            shippingChargesAmount: parseFloat(shippingChargesAmount || 0),
+            reconcileComments,
             discountAmount: parseFloat(discountAmount || 0),
             customerGst,
             invoiceComments,
@@ -143,15 +151,16 @@ export default async function handler(
             invoiceItems: {
               create: invoiceItems.map(
                 (item: {
-                  productId: string;
-                  itemCode: string;
+                  productId?: string;
+                  serviceId?: string;
                   itemQuantity: number;
                   itemRate: number;
                   invoiceAmount: number;
                   gstCodeId: string;
                 }) => ({
-                  productId: item.productId,
-                  itemCode: item.itemCode,
+                  ...(item.productId
+                    ? { productId: item.productId }
+                    : { serviceId: item.serviceId }),
                   itemQuantity: item.itemQuantity,
                   itemRate: item.itemRate,
                   invoiceAmount: item.invoiceAmount,
@@ -198,8 +207,7 @@ export default async function handler(
           invoiceAmount,
           adjustedInvoiceAmount,
           reconciledInvoiceAmount,
-          packagingChargesAmount,
-          shippingChargesAmount,
+          reconcileComments,
           discountAmount,
           customerGst,
           invoiceComments,
@@ -223,8 +231,7 @@ export default async function handler(
             invoiceAmount: parseFloat(invoiceAmount),
             adjustedInvoiceAmount: parseFloat(adjustedInvoiceAmount || 0),
             reconciledInvoiceAmount: parseFloat(reconciledInvoiceAmount || 0),
-            packagingChargesAmount: parseFloat(packagingChargesAmount || 0),
-            shippingChargesAmount: parseFloat(shippingChargesAmount || 0),
+            reconcileComments,
             discountAmount: parseFloat(discountAmount || 0),
             customerGst,
             invoiceComments,
