@@ -12,6 +12,8 @@ import {
   CircleUserRound,
   LogOut,
   Settings,
+  ReceiptIndianRupee,
+  FilePlus2,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -41,6 +43,21 @@ const sideBarLinks = [
         name: "New Order",
         icon: <Container className="w-5 h-5" />,
         href: "/create-order",
+      },
+    ],
+  },
+  {
+    category: "INVOICES",
+    links: [
+      {
+        name: "INVOICES",
+        icon: <ReceiptIndianRupee className="w-5 h-5" />,
+        href: "/invoices",
+      },
+      {
+        name: "NEW INVOICE",
+        icon: <FilePlus2 className="w-5 h-5" />,
+        href: "/create-invoice",
       },
     ],
   },
@@ -173,7 +190,6 @@ const Sidebar = ({
             {/* Add More Options Below */}
           </div>
         </AccordionContent>
-
       </Accordion>
     </div>
   );

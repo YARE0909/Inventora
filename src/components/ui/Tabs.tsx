@@ -5,26 +5,18 @@ interface Tab {
   content: ReactNode;
 }
 
-const Tabs = ({
+const Tabs = <T extends string>({
   tabs,
   setActiveTab,
 }: {
   tabs: Tab[];
-  setActiveTab: Dispatch<
-    SetStateAction<"Active" | "OnHold" | "Completed" | "Cancelled">
-  >; // Accept `setActiveTab` as a prop
+  setActiveTab: Dispatch<SetStateAction<T>>;
 }) => {
   const [activeTab, localSetActiveTab] = useState(0);
 
   const handleTabChange = (index: number, label: string) => {
-    // Remove spaces and capitalize the first letter of each word
-    const formattedLabel = label
-      .replace(/\s+/g, "") // Remove all spaces
-      .replace(/(^[a-z])|(\s[a-z])/g, (match) => match.toUpperCase()) as
-      | "Active"
-      | "OnHold"
-      | "Completed"
-      | "Cancelled"; // Capitalize the first letter of each word and cast to allowed types
+    // Format label based on input and cast to generic type T
+    const formattedLabel = label as T;
 
     localSetActiveTab(index);
     setActiveTab(formattedLabel); // Update the active tab in the parent component
@@ -38,11 +30,10 @@ const Tabs = ({
           <button
             key={tab.label}
             onClick={() => handleTabChange(index, tab.label)}
-            className={`px-4 py-1 text-xs md:text-sm font-semibold ${
-              activeTab === index
+            className={`px-4 py-1 text-xs md:text-sm font-semibold ${activeTab === index
                 ? "bg-background rounded-md border border-border"
                 : "text-textAlt hover:text-text"
-            } transition duration-300`}
+              } transition duration-300`}
           >
             {tab.label}
           </button>

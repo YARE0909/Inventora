@@ -120,7 +120,7 @@ export default async function handler(
 
         const newOrder = await prisma.orders.create({
           data: {
-            orderNumber: generateRandomString(6),
+            orderNumber: `ORD-${generateRandomString(6)}`,
             customerId,
             orderDate: new Date(orderDate),
             proformaInvoice,
