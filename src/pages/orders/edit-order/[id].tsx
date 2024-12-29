@@ -52,6 +52,25 @@ const orderAdvanceDetailsColumnMapping: {
   Comments: "orderAdvanceComments",
 };
 
+const statusOptions = [
+  {
+    value: OrderStatus.Active,
+    label: "Active",
+  },
+  {
+    value: OrderStatus.Cancelled,
+    label: "Cancelled",
+  },
+  {
+    value: OrderStatus.Completed,
+    label: "Completed",
+  },
+  {
+    value: OrderStatus.OnHold,
+    label: "On Hold",
+  },
+];
+
 const Index = () => {
   const [productData, setProductData] = useState<
     {
@@ -467,6 +486,17 @@ const Index = () => {
                       value={formData.customerId}
                     />
                   </div>
+                  <Select
+                    options={statusOptions}
+                    label="Status"
+                    onChange={(value) => {
+                      setFormData({
+                        ...formData,
+                        orderStatus: value as OrderStatus,
+                      });
+                    }}
+                    value={formData.orderStatus}
+                  />
                   <div className="w-full md:max-w-52">
                     <Input
                       name="orderDate"
