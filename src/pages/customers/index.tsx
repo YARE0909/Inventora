@@ -9,7 +9,7 @@ import Tooltip from "@/components/ui/ToolTip";
 import { exportToCSV } from "@/utils/jsonToCsv";
 import { Customer } from "@/utils/types/types";
 import axios from "axios";
-import { FileSpreadsheet, FilterX, Plus } from "lucide-react";
+import { FileSpreadsheet, FilterX, LoaderCircle, Pencil, Plus } from "lucide-react";
 import Input from "@/components/ui/Input";
 import ClickToCopy from "@/components/ui/ClickToCopy";
 
@@ -20,6 +20,7 @@ const columns = [
   "Phone",
   "Billing Address",
   "Shipping Address",
+  ""
 ];
 
 const columnMappings: { [key: string]: keyof Customer } = {
@@ -35,6 +36,7 @@ const Index = () => {
   const [data, setData] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const { toast } = useToast();
 
@@ -46,6 +48,29 @@ const Index = () => {
     billingAddress: "",
     shippingAddress: "",
   });
+
+  const [editFormData, setEditFormState] = useState<Customer>({
+    id: "",
+    name: "",
+    contactPerson: "",
+    email: "",
+    phone: "",
+    billingAddress: "",
+    shippingAddress: "",
+  });
+
+  const handleEditCustomer = async (id: string | undefined) => {
+    try {
+      setIsEditModalOpen(true);
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/customers?filter=${id}`
+      );
+      setEditFormState(response.data);
+    } catch {
+      toast("Something went wrong.", "top-right", "error");
+
+    }
+  }
 
   const fetchData = async (filter?: string) => {
     try {
@@ -97,6 +122,19 @@ const Index = () => {
     });
   };
 
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false);
+    setEditFormState({
+      id: "",
+      name: "",
+      contactPerson: "",
+      email: "",
+      phone: "",
+      billingAddress: "",
+      shippingAddress: "",
+    });
+  }
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormState((prev) => ({
@@ -104,6 +142,14 @@ const Index = () => {
       [name]: value,
     }));
   };
+
+  const handleEditInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setEditFormState((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -119,6 +165,21 @@ const Index = () => {
       toast("Failed to create customer.", "top-right", "error");
     }
   };
+
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await axios.put(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/customers`,
+        editFormData
+      );
+      toast("Customer updated successfully!", "top-right", "success");
+      fetchData();
+      handleCloseEditModal();
+    } catch {
+      toast("Failed to update customer.", "top-right", "error");
+    }
+  }
 
   useEffect(() => {
     fetchData();
@@ -174,9 +235,9 @@ const Index = () => {
                 <td
                   key={column}
                   className={`px-4 py-2 ${column === "Billing Address" ||
-                      column === "Shipping Address"
-                      ? "max-w-28"
-                      : ""
+                    column === "Shipping Address"
+                    ? "max-w-28"
+                    : ""
                     }`}
                 >
                   {column === "Billing Address" ||
@@ -185,15 +246,22 @@ const Index = () => {
                     <ClickToCopy toolTipPosition="top">
                       {row[columnMappings[column] as keyof Customer] as string}
                     </ClickToCopy>
-                  ) : (
-                    (row[columnMappings[column] as keyof Customer] as string)
-                  )}
+                  ) :
+                    column === "" ? (
+                      <Tooltip tooltip="Edit">
+                        <Pencil className="w-4 h-4" onClick={() => handleEditCustomer(row.id)} />
+                      </Tooltip>
+                    ) :
+                      (
+                        (row[columnMappings[column] as keyof Customer] as string)
+                      )}
                 </td>
               ))}
             </tr>
           ))}
         </PaginatedTable>
       </div>
+      {/* Create Modal */}
       <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
         <h2 className="text-lg font-semibold mb-4">ADD CUSTOMER</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -257,6 +325,77 @@ const Index = () => {
             <Button onClick={handleCloseModal}>Cancel</Button>
           </div>
         </form>
+      </Modal>
+      {/* Edit Modal */}
+      <Modal isOpen={isEditModalOpen} onClose={handleCloseEditModal}>
+        <h2 className="text-lg font-semibold mb-4">EDIT CUSTOMER</h2>
+        {editFormData.id ? (
+          <form onSubmit={handleEditSubmit} className="space-y-4">
+            <Input
+              type="text"
+              id="name"
+              name="name"
+              value={editFormData.name}
+              onChange={handleEditInputChange}
+              required
+              label="Customer"
+            />
+            <Input
+              type="text"
+              id="contactPerson"
+              name="contactPerson"
+              value={editFormData.contactPerson}
+              onChange={handleEditInputChange}
+              required
+              label="Contact Person"
+            />
+            <Input
+              type="email"
+              id="email"
+              name="email"
+              value={editFormData.email}
+              onChange={handleEditInputChange}
+              required
+              label="Email"
+            />
+            <Input
+              type="tel"
+              id="phone"
+              name="phone"
+              value={editFormData.phone}
+              onChange={handleEditInputChange}
+              required
+              label="Phone"
+            />
+            <Input
+              type="text"
+              id="billingAddress"
+              name="billingAddress"
+              value={editFormData.billingAddress}
+              onChange={handleEditInputChange}
+              required
+              label="Billing Address"
+            />
+            <Input
+              type="text"
+              id="shippingAddress"
+              name="shippingAddress"
+              value={editFormData.shippingAddress}
+              onChange={handleEditInputChange}
+              required
+              label="Shipping Address"
+            />
+            <hr className="border border-border" />
+            <div className="w-full flex space-x-3">
+              <Button type="submit">Save</Button>
+              <Button onClick={handleCloseEditModal}>Cancel</Button>
+            </div>
+          </form>
+        ) : (
+          <div className="w-full h-96 flex items-center justify-center">
+            <LoaderCircle className="animate-spin h-5 w-5 mx-auto" />
+          </div>
+        )}
       </Modal>
     </Layout>
   );

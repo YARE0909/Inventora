@@ -13,19 +13,44 @@ export default async function handler(
       case "GET": {
         const { filter } = req.query;
 
-        const prismaFilter: Prisma.CustomersWhereInput | undefined =
-          filter && typeof filter === "string"
-            ? {
-                OR: [
-                  { name: { contains: filter, mode: "insensitive" } },
-                  { contactPerson: { contains: filter, mode: "insensitive" } },
-                  { email: { contains: filter, mode: "insensitive" } },
-                  { phone: { contains: filter, mode: "insensitive" } },
-                ],
-              }
-            : undefined;
-
         try {
+          // Check if `filter` is a valid customer ID
+          if (
+            filter &&
+            typeof filter === "string" &&
+            filter.match(/^[a-f\d]{24}$/i)
+          ) {
+            const customer = await prisma.customers.findUnique({
+              where: { id: filter },
+              include: {
+                orders: true,
+                invoices: true,
+              },
+            });
+
+            if (!customer) {
+              return res.status(404).json({ message: "Customer not found" });
+            }
+
+            return res.status(200).json(customer);
+          }
+
+          // If `filter` is not a valid ID, perform a search query
+          const prismaFilter: Prisma.CustomersWhereInput | undefined =
+            filter && typeof filter === "string"
+              ? {
+                  OR: [
+                    { id: { contains: filter, mode: "insensitive" } },
+                    { name: { contains: filter, mode: "insensitive" } },
+                    {
+                      contactPerson: { contains: filter, mode: "insensitive" },
+                    },
+                    { email: { contains: filter, mode: "insensitive" } },
+                    { phone: { contains: filter, mode: "insensitive" } },
+                  ],
+                }
+              : undefined;
+
           const customers = await prisma.customers.findMany({
             where: prismaFilter,
             include: {
@@ -36,6 +61,7 @@ export default async function handler(
 
           return res.status(200).json(customers);
         } catch (error) {
+          console.error("Error fetching customers:", error);
           return res
             .status(500)
             .json({ message: "Something went wrong", error });
@@ -85,8 +111,12 @@ export default async function handler(
         const updatedCustomer = await prisma.customers.update({
           where: { id },
           data: {
-            ...updateData,
-            modifiedOn: new Date(),
+            name: updateData.name,
+            contactPerson: updateData.contactPerson,
+            phone: updateData.phone,
+            email: updateData.email,
+            billingAddress: updateData.billingAddress,
+            shippingAddress: updateData.shippingAddress,
           },
         });
 
