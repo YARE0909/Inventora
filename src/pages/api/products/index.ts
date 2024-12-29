@@ -99,14 +99,21 @@ export default async function handler(
             .json({ error: "ID is required for updating a product" });
         }
 
-        const updatedProduct = await prisma.products.update({
-          where: { id },
-          data: {
-            ...updateData,
-          },
-        });
-
-        return res.status(200).json(updatedProduct);
+        try {
+          const updatedProduct = await prisma.products.update({
+            where: { id },
+            data: {
+              name: updateData.name,
+              description: updateData.description,
+              price: Number(updateData.price),
+              gstCodeId: updateData.gstCodeId,
+            },
+          });
+          return res.status(200).json(updatedProduct);
+        } catch (error) {
+          console.error("Error updating product:", error);
+          return res.status(500).json({ error: "Error updating product" });
+        }
       }
 
       // Delete a product
@@ -117,9 +124,16 @@ export default async function handler(
           return res.status(400).json({ error: "ID is required for deletion" });
         }
 
-        await prisma.products.delete({
-          where: { id },
-        });
+        try {
+          await prisma.products.delete({
+            where: { id },
+          });
+        } catch (error) {
+          console.error("Error deleting product:", error);
+          return res
+            .status(500)
+            .json({ error: "Item is linked to other tables" });
+        }
 
         return res.status(204).end();
       }

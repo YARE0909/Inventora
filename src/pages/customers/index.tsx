@@ -190,7 +190,7 @@ const Index = () => {
       fetchData();
       handleCloseEditModal();
     } catch {
-      toast("Failed to delete customer.", "top-right", "error");
+      toast("This customer is linked to orders", "top-right", "error");
     }
   }
 

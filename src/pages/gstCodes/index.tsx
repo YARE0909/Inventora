@@ -98,7 +98,6 @@ const Index = () => {
 
   const fetchGSTData = async (filter?: string) => {
     try {
-      setLoading(true);
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/gst${filter ? `?filter=${filter}` : ""
         }`
@@ -111,7 +110,6 @@ const Index = () => {
 
       console.log("GST Data:", data);
       setGstData(data);
-      setLoading(false);
     } catch {
       toast("Something went wrong.", "top-right", "error");
     }
@@ -204,7 +202,7 @@ const Index = () => {
       fetchData();
       handleCloseEditModal();
     } catch {
-      toast("Failed to delete gstCode.", "top-right", "error");
+      toast("This GST code is linked to products", "top-right", "error");
     }
   };
 

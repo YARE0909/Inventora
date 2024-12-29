@@ -69,7 +69,7 @@ const Index = () => {
       handleCloseEditModal();
       toast("GST deleted successfully!", "top-right", "success");
     } catch {
-      toast("Failed to delete GST.", "top-right", "error");
+      toast("This GST is linked to GST Codes", "top-right", "error");
     }
   }
 

@@ -74,11 +74,18 @@ export default async function handler(
           return res.status(400).json({ error: "ID is required for deletion" });
         }
 
-        await prisma.gst.delete({
-          where: { id },
-        });
+        try {
+          await prisma.gst.delete({
+            where: { id },
+          });
 
-        return res.status(204).end();
+          return res.status(204).end();
+        } catch (error) {
+          console.error("Error deleting GST record:", error);
+          return res
+            .status(500)
+            .json({ error: "Item is linked to other tables" });
+        }
       }
 
       default: {
