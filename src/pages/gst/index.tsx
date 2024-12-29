@@ -9,10 +9,10 @@ import Tooltip from "@/components/ui/ToolTip";
 import { exportToCSV } from "@/utils/jsonToCsv";
 import { Gst } from "@/utils/types/types";
 import axios from "axios";
-import { FileSpreadsheet, FilterX, Plus } from "lucide-react";
+import { FileSpreadsheet, FilterX, Pencil, Plus } from "lucide-react";
 import Input from "@/components/ui/Input";
 
-const columns = ["Tax Percentage", "Status"];
+const columns = ["Tax Percentage", "Status", ""];
 
 const columnMappings: { [key: string]: keyof Gst } = {
   "Tax Percentage": "taxPercentage",
@@ -23,10 +23,16 @@ const Index = () => {
   const [data, setData] = useState<Gst[]>([]);
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const { toast } = useToast();
 
   const [formData, setFormState] = useState<Gst>({
+    taxPercentage: 0,
+    isActive: false,
+  });
+
+  const [editFormData, setEditFormState] = useState<Gst>({
     taxPercentage: 0,
     isActive: false,
   });
@@ -44,6 +50,39 @@ const Index = () => {
       toast("Something went wrong.", "top-right", "error");
     }
   };
+
+  const fetchGstData = async (id: string) => {
+    try {
+      setLoading(true);
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/gst?id=${id}`
+      );
+      setEditFormState(response.data);
+      setLoading(false);
+    } catch {
+      toast("Something went wrong.", "top-right", "error");
+    }
+  }
+
+  const handleDeleteGst = async (id: string) => {
+    try {
+      await axios.delete(`${process.env.NEXT_PUBLIC_BASE_URL}/api/gst?id=${id}`);
+      fetchData();
+      handleCloseEditModal();
+      toast("GST deleted successfully!", "top-right", "success");
+    } catch {
+      toast("Failed to delete GST.", "top-right", "error");
+    }
+  }
+
+  const handleOpenEditModal = (id: string | undefined) => {
+    try {
+      fetchGstData(id!);
+      setIsEditModalOpen(true);
+    } catch {
+      toast("Something went wrong.", "top-right", "error");
+    }
+  }
 
   const handleSearch = async (value: string) => fetchData(value);
 
@@ -77,9 +116,25 @@ const Index = () => {
     });
   };
 
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false);
+    setEditFormState({
+      taxPercentage: 0,
+      isActive: false,
+    });
+  }
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
     setFormState((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
+  const handleEditInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target;
+    setEditFormState((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
@@ -101,6 +156,27 @@ const Index = () => {
       toast("Gst created successfully!", "top-right", "success");
       fetchData();
       handleCloseModal();
+    } catch {
+      toast("Failed to create customer.", "top-right", "error");
+    }
+  };
+
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const { id, isActive, taxPercentage } = editFormData;
+    try {
+      await axios.put(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/gst`,
+
+        {
+          id: id,
+          isActive,
+          taxPercentage: Number(taxPercentage),
+        }
+      );
+      toast("Gst updated successfully!", "top-right", "success");
+      fetchData();
+      handleCloseEditModal();
     } catch {
       toast("Failed to create customer.", "top-right", "error");
     }
@@ -164,13 +240,18 @@ const Index = () => {
                       : "Inactive"
                     : column === "Tax Percentage"
                       ? `${row[columnMappings[column] as keyof Gst]} %`
-                      : (row[columnMappings[column] as keyof Gst] as string)}
+                      : column === "" ? (
+                        <Tooltip tooltip="Edit">
+                          <Pencil className="w-4 h-4" onClick={() => handleOpenEditModal(row.id)} />
+                        </Tooltip>
+                      ) : (row[columnMappings[column] as keyof Gst] as string)}
                 </td>
               ))}
             </tr>
           ))}
         </PaginatedTable>
       </div>
+      {/* Create Modal */}
       <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
         <h2 className="text-lg font-semibold mb-4">ADD GST</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -195,6 +276,34 @@ const Index = () => {
           <div className="w-full flex space-x-3">
             <Button type="submit">Save</Button>
             <Button onClick={handleCloseModal}>Cancel</Button>
+          </div>
+        </form>
+      </Modal>
+      {/* Edit Modal */}
+      <Modal isOpen={isEditModalOpen} onClose={handleCloseEditModal}>
+        <h2 className="text-lg font-semibold mb-4">ADD GST</h2>
+        <form onSubmit={handleEditSubmit} className="space-y-4">
+          <Input
+            type="text"
+            id="taxPercentage"
+            name="taxPercentage"
+            value={editFormData.taxPercentage}
+            onChange={handleEditInputChange}
+            required
+            label="Tax Percentage"
+          />
+          <Input
+            type="checkbox"
+            id="isActive"
+            name="isActive"
+            value={editFormData.isActive}
+            onChange={handleEditInputChange}
+            label="Is Active"
+          />
+          <hr className="border border-border" />
+          <div className="w-full flex space-x-3">
+            <Button type="submit">Save</Button>
+            <Button classname="text-red-500 border-red-500 bg-red-500/20 hover:bg-background" onClick={() => handleDeleteGst(editFormData.id!)}>Delete</Button>
           </div>
         </form>
       </Modal>

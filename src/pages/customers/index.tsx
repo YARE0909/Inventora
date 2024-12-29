@@ -401,7 +401,7 @@ const Index = () => {
             <hr className="border border-border" />
             <div className="w-full flex space-x-3">
               <Button type="submit">Save</Button>
-              <Button onClick={() => handleDeleteCustomer(editFormData.id)} classname="text-red-500 border-red-500 bg-red-500/20 hover:bg-background">Delete</Button>
+              <Button classname="text-red-500 border-red-500 bg-red-500/20 hover:bg-background" onClick={() => handleDeleteCustomer(editFormData.id)}>Delete</Button>
             </div>
           </form>
         ) : (
