@@ -6,4 +6,9 @@ function formatDateToYYYYMMDD(dateString: string): string {
   return `${year}-${month}-${day}`;
 }
 
-export { formatDateToYYYYMMDD };
+function formatDate(date: string){
+  // Convert to Date object and then format to yyyy-mm-dd
+  return new Date(date).toISOString().split('T')[0];
+};
+
+export { formatDateToYYYYMMDD, formatDate };

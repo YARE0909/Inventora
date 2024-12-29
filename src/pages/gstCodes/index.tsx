@@ -9,10 +9,10 @@ import Tooltip from "@/components/ui/ToolTip";
 import { exportToCSV } from "@/utils/jsonToCsv";
 import { Gst, GstCode } from "@/utils/types/types";
 import axios from "axios";
-import { FileSpreadsheet, FilterX, Plus } from "lucide-react";
+import { FileSpreadsheet, FilterX, LoaderCircle, Pencil, Plus } from "lucide-react";
 import Input from "@/components/ui/Input";
-import { format } from "date-fns";
 import Select from "@/components/ui/SelectComponent";
+import { formatDate } from "@/utils/dateFormatting";
 
 const columns = [
   "code",
@@ -21,6 +21,7 @@ const columns = [
   "Status",
   "Effective Start Date",
   "Effective End Date",
+  ""
 ];
 
 const columnMappings: { [key: string]: keyof GstCode } = {
@@ -39,10 +40,21 @@ const Index = () => {
   >([]);
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const { toast } = useToast();
 
   const [formData, setFormState] = useState<GstCode>({
+    code: "",
+    name: "",
+    effectiveStartDate: new Date(),
+    effectiveEndDate: new Date(),
+    gstId: "",
+    isActive: false,
+  });
+
+  const [editFormData, setEditFormState] = useState<GstCode>({
+    id: "",
     code: "",
     name: "",
     effectiveStartDate: new Date(),
@@ -60,6 +72,25 @@ const Index = () => {
       );
       setData(response.data);
       setLoading(false);
+    } catch {
+      toast("Something went wrong.", "top-right", "error");
+    }
+  };
+
+  const fetchGstCodeData = async (id: string) => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/gstCode?id=${id}`
+      );
+      setEditFormState({
+        id: response.data.id,
+        code: response.data.code,
+        name: response.data.name,
+        effectiveStartDate: formatDate(response.data.effectiveStartDate),
+        effectiveEndDate: formatDate(response.data.effectiveEndDate),
+        gstId: response.data.gstId,
+        isActive: response.data.isActive,
+      });
     } catch {
       toast("Something went wrong.", "top-right", "error");
     }
@@ -130,9 +161,51 @@ const Index = () => {
     }));
   };
 
+  const handleEditInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target;
+    setEditFormState((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  }
+
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false);
+    setEditFormState({
+      id: "",
+      code: "",
+      name: "",
+      effectiveStartDate: new Date(),
+      effectiveEndDate: new Date(),
+      gstId: "",
+      isActive: false,
+    });
+  };
+
+  const handleEditGstCode = async (id: string | undefined) => {
+    fetchGstCodeData(id!);
+    setIsEditModalOpen(true);
+  }
+
   const handleChange = (value: string) => {
     console.log("Selected value:", value);
     formData.gstId = value;
+  };
+
+  const handleEditChange = (value: string) => {
+    console.log("Selected value:", value);
+    editFormData.gstId = value;
+  };
+
+  const handleDeleteGstCode = async (id: string | undefined) => {
+    try {
+      await axios.delete(`${process.env.NEXT_PUBLIC_BASE_URL}/api/gstCode?id=${id}`);
+      toast("GstCode deleted successfully!", "top-right", "success");
+      fetchData();
+      handleCloseEditModal();
+    } catch {
+      toast("Failed to delete gstCode.", "top-right", "error");
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -156,9 +229,25 @@ const Index = () => {
     }
   };
 
-  const formatDate = (date: string) => {
-    return format(new Date(date), "dd-MMM-yyyy"); // Format to "01-Jan-2024"
-  };
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (editFormData.gstId === "") {
+      toast("Please select GST%", "top-right", "warning");
+      return;
+    }
+    try {
+      console.log("Edit Form Data:", editFormData);
+      await axios.put(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/gstCode`,
+        editFormData
+      );
+      toast("GstCode updated successfully!", "top-right", "success");
+      fetchData();
+      handleCloseEditModal();
+    } catch {
+      toast("Failed to update gstCode.", "top-right", "error");
+    }
+  }
 
   useEffect(() => {
     fetchData();
@@ -219,18 +308,21 @@ const Index = () => {
                       row[columnMappings[column] as keyof GstCode] as string
                     )
                     : column === "Status"
-                      ? row[columnMappings[column] as keyof GstCode]
-                        ? "Active"
-                        : "Inactive"
+                      ? row.isActive ? "Active" : "Inactive"
                       : column === "GST %"
                         ? row.gst?.taxPercentage ?? "N/A"
-                        : (row[column as keyof GstCode] as string)}
+                        : column === "" ? (
+                          <Tooltip tooltip="Edit">
+                            <Pencil className="w-4 h-4" onClick={() => handleEditGstCode(row.id)} />
+                          </Tooltip>
+                        ) : (row[column as keyof GstCode] as string)}
                 </td>
               ))}
             </tr>
           ))}
         </PaginatedTable>
       </div>
+      {/* Create Modal */}
       <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
         <h2 className="text-lg font-semibold mb-4">ADD GST CODE</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -290,6 +382,75 @@ const Index = () => {
             <Button onClick={handleCloseModal}>Cancel</Button>
           </div>
         </form>
+      </Modal>
+      {/* Edit Modal */}
+      <Modal isOpen={isEditModalOpen} onClose={handleCloseEditModal}>
+        <h2 className="text-lg font-semibold mb-4">ADD GST CODE</h2>
+        {editFormData.id ? (
+
+          <form onSubmit={handleEditSubmit} className="space-y-4">
+            <Input
+              type="text"
+              id="code"
+              name="code"
+              value={editFormData.code}
+              onChange={handleEditInputChange}
+              required
+              label="GST Code"
+            />
+            <Input
+              type="text"
+              id="name"
+              name="name"
+              value={editFormData.name}
+              onChange={handleEditInputChange}
+              required
+              label="Name"
+            />
+            <Input
+              type="date"
+              id="effectiveStartDate"
+              name="effectiveStartDate"
+              value={editFormData.effectiveStartDate}
+              onChange={handleEditInputChange}
+              required
+              label="Effective Start Date"
+            />
+            <Input
+              type="date"
+              id="effectiveEndDate"
+              name="effectiveEndDate"
+              value={editFormData.effectiveEndDate}
+              onChange={handleEditInputChange}
+              required
+              label="Effective End Date"
+            />
+            <Input
+              type="checkbox"
+              id="isActive"
+              name="isActive"
+              value={editFormData.isActive}
+              onChange={handleEditInputChange}
+              label="Is Active"
+            />
+            <Select
+              options={gstData}
+              label="GST%"
+              onChange={handleEditChange}
+              value={editFormData.gstId}
+            />
+
+            <hr className="border border-border" />
+            <div className="w-full flex space-x-3">
+              <Button type="submit">Save</Button>
+              <Button classname="text-red-500 border-red-500 bg-red-500/20 hover:bg-background" onClick={() => handleDeleteGstCode(editFormData.id)}>Delete</Button>
+            </div>
+          </form>
+        ) : (
+          <div className="w-full h-96 flex items-center justify-center">
+            <LoaderCircle className="animate-spin h-5 w-5 mx-auto" />
+          </div>
+        )}
       </Modal>
     </Layout>
   );

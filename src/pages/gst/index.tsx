@@ -9,7 +9,7 @@ import Tooltip from "@/components/ui/ToolTip";
 import { exportToCSV } from "@/utils/jsonToCsv";
 import { Gst } from "@/utils/types/types";
 import axios from "axios";
-import { FileSpreadsheet, FilterX, Pencil, Plus } from "lucide-react";
+import { FileSpreadsheet, FilterX, LoaderCircle, Pencil, Plus } from "lucide-react";
 import Input from "@/components/ui/Input";
 
 const columns = ["Tax Percentage", "Status", ""];
@@ -53,12 +53,10 @@ const Index = () => {
 
   const fetchGstData = async (id: string) => {
     try {
-      setLoading(true);
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/gst?id=${id}`
       );
       setEditFormState(response.data);
-      setLoading(false);
     } catch {
       toast("Something went wrong.", "top-right", "error");
     }
@@ -282,30 +280,37 @@ const Index = () => {
       {/* Edit Modal */}
       <Modal isOpen={isEditModalOpen} onClose={handleCloseEditModal}>
         <h2 className="text-lg font-semibold mb-4">ADD GST</h2>
-        <form onSubmit={handleEditSubmit} className="space-y-4">
-          <Input
-            type="text"
-            id="taxPercentage"
-            name="taxPercentage"
-            value={editFormData.taxPercentage}
-            onChange={handleEditInputChange}
-            required
-            label="Tax Percentage"
-          />
-          <Input
-            type="checkbox"
-            id="isActive"
-            name="isActive"
-            value={editFormData.isActive}
-            onChange={handleEditInputChange}
-            label="Is Active"
-          />
-          <hr className="border border-border" />
-          <div className="w-full flex space-x-3">
-            <Button type="submit">Save</Button>
-            <Button classname="text-red-500 border-red-500 bg-red-500/20 hover:bg-background" onClick={() => handleDeleteGst(editFormData.id!)}>Delete</Button>
+        {editFormData.id ? (
+
+          <form onSubmit={handleEditSubmit} className="space-y-4">
+            <Input
+              type="text"
+              id="taxPercentage"
+              name="taxPercentage"
+              value={editFormData.taxPercentage}
+              onChange={handleEditInputChange}
+              required
+              label="Tax Percentage"
+            />
+            <Input
+              type="checkbox"
+              id="isActive"
+              name="isActive"
+              value={editFormData.isActive}
+              onChange={handleEditInputChange}
+              label="Is Active"
+            />
+            <hr className="border border-border" />
+            <div className="w-full flex space-x-3">
+              <Button type="submit">Save</Button>
+              <Button classname="text-red-500 border-red-500 bg-red-500/20 hover:bg-background" onClick={() => handleDeleteGst(editFormData.id!)}>Delete</Button>
+            </div>
+          </form>
+        ) : (
+          <div className="w-full h-56 flex items-center justify-center">
+            <LoaderCircle className="animate-spin h-5 w-5 mx-auto" />
           </div>
-        </form>
+        )}
       </Modal>
     </Layout>
   );

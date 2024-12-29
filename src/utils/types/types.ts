@@ -68,8 +68,8 @@ export interface GstCode {
   id?: string;
   code: string;
   name: string;
-  effectiveStartDate: Date | undefined;
-  effectiveEndDate?: Date | undefined;
+  effectiveStartDate: Date | string | undefined;
+  effectiveEndDate?: Date | string | undefined;
   isActive: boolean;
   createdOn?: Date | undefined;
   gstId: string;
