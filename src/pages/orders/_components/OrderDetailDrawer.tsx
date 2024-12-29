@@ -47,7 +47,7 @@ const OrderDetailDrawer = ({
   const router = useRouter();
 
   const handleOnEdit = () => {
-    router.push(`/edit-order/${selectedOrderDetails.id}`);
+    router.push(`/orders/edit-order/${selectedOrderDetails.id}`);
   }
 
   useEffect(() => {

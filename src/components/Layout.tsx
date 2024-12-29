@@ -42,7 +42,7 @@ const sideBarLinks = [
       {
         name: "New Order",
         icon: <Container className="w-5 h-5" />,
-        href: "/create-order",
+        href: "/orders/create-order",
       },
     ],
   },
@@ -57,7 +57,7 @@ const sideBarLinks = [
       {
         name: "NEW INVOICE",
         icon: <FilePlus2 className="w-5 h-5" />,
-        href: "/create-invoice",
+        href: "/invoices/create-invoice",
       },
     ],
   },

@@ -227,7 +227,7 @@ export default function Home() {
               <div>
                 <Button
                   onClick={() => {
-                    router.push("/create-invoice");
+                    router.push("/invoices/create-invoice");
                   }}
                 >
                   <Plus className="w-5 h-5" />
@@ -263,7 +263,7 @@ export default function Home() {
               <div>
                 <Button
                   onClick={() => {
-                    router.push("/create-invoice");
+                    router.push("/invoices/create-invoice");
                   }}
                 >
                   <Plus className="w-5 h-5" />
@@ -299,7 +299,7 @@ export default function Home() {
               <div>
                 <Button
                   onClick={() => {
-                    router.push("/create-invoice");
+                    router.push("/invoices/create-invoice");
                   }}
                 >
                   <Plus className="w-5 h-5" />
