@@ -9,9 +9,10 @@ type SelectProps = {
   options: SelectOption[];
   label: string;
   placeholder?: string;
-  onChange: (value: string) => void;
+  onChange?: (value: string) => void;
   value?: string;
   showLabel?: boolean; // Prop to control label visibility
+  disabled?: boolean;
 };
 
 const Select: React.FC<SelectProps> = ({
@@ -21,6 +22,7 @@ const Select: React.FC<SelectProps> = ({
   value = "",
   onChange,
   showLabel = true, // Default to show label
+  disabled = false, // Default to not disabled
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -38,8 +40,9 @@ const Select: React.FC<SelectProps> = ({
   );
 
   const handleOptionSelect = (value: string, label: string) => {
+    if (disabled) return;
     setSelectedValue(label);
-    onChange(value);
+    onChange!(value);
     setIsDropdownOpen(false);
     setSearchTerm("");
   };
@@ -52,12 +55,15 @@ const Select: React.FC<SelectProps> = ({
         </label>
       )}
       <div
-        className="border border-border rounded-md p-2 bg-background cursor-pointer text-sm"
-        onClick={() => setIsDropdownOpen((prev) => !prev)}
+        className={`border border-border rounded-md p-2 bg-background cursor-pointer text-sm ${disabled ? "bg-background cursor-not-allowed" : ""
+          }`}
+        onClick={() => {
+          if (!disabled) setIsDropdownOpen((prev) => !prev);
+        }}
       >
-        {showLabel ? selectedValue || "Select an option" : label}
+        {selectedValue || "Select an option"}
       </div>
-      {isDropdownOpen && (
+      {isDropdownOpen && !disabled && (
         <div className="absolute z-10 bg-background border border-border rounded-md mt-1 w-full">
           <input
             type="text"

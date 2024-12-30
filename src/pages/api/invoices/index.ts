@@ -239,68 +239,74 @@ export default async function handler(
             .json({ error: "ID is required for updating an invoice" });
         }
 
-        const updatedInvoice = await prisma.invoices.update({
-          where: { id },
-          data: {
-            orderId,
-            customerId,
-            invoiceNumber,
-            invoiceDate: new Date(invoiceDate),
-            invoiceAmount: parseFloat(invoiceAmount),
-            adjustedInvoiceAmount: parseFloat(adjustedInvoiceAmount || 0),
-            reconciledInvoiceAmount: parseFloat(reconciledInvoiceAmount || 0),
-            reconcileComments,
-            discountAmount: parseFloat(discountAmount || 0),
-            customerGst,
-            invoiceComments,
-            invoiceItems: {
-              deleteMany: {},
-              create: invoiceItems.map(
-                (item: {
-                  productId: string;
-                  itemCode: string;
-                  itemQuantity: number;
-                  itemRate: number;
-                  invoiceAmount: number;
-                  gstCodeId: string;
-                }) => ({
-                  productId: item.productId,
-                  itemCode: item.itemCode,
-                  itemQuantity: item.itemQuantity,
-                  itemRate: item.itemRate,
-                  invoiceAmount: item.invoiceAmount,
-                  gstCodeId: item.gstCodeId,
-                  createdOn: new Date(),
-                })
-              ),
+        try {
+          const updatedInvoice = await prisma.invoices.update({
+            where: { id },
+            data: {
+              orderId,
+              customerId,
+              invoiceNumber,
+              invoiceDate: new Date(invoiceDate),
+              invoiceAmount: parseFloat(invoiceAmount),
+              adjustedInvoiceAmount: parseFloat(adjustedInvoiceAmount || 0),
+              reconciledInvoiceAmount: parseFloat(reconciledInvoiceAmount || 0),
+              reconcileComments,
+              discountAmount: parseFloat(discountAmount || 0),
+              customerGst,
+              invoiceComments,
+              invoiceItems: {
+                deleteMany: {},
+                create: invoiceItems.map(
+                  (item: {
+                    productId?: string;
+                    serviceId?: string;
+                    itemQuantity: number;
+                    itemRate: number;
+                    invoiceAmount: number;
+                    gstCodeId: string;
+                  }) => ({
+                    ...(item.productId
+                      ? { productId: item.productId }
+                      : { serviceId: item.serviceId }),
+                    itemQuantity: item.itemQuantity,
+                    itemRate: item.itemRate,
+                    invoiceAmount: item.invoiceAmount,
+                    gstCodeId: item.gstCodeId,
+                    createdOn: new Date(),
+                  })
+                ),
+              },
+              payments: {
+                deleteMany: {},
+                create: payments?.map(
+                  (payment: {
+                    paymentMode: string;
+                    paymentDate: string;
+                    paymentAmount: number;
+                    paymentReferenceId: string;
+                    paymentDetails: string;
+                    paymentComments: string;
+                    paymentStatus: string;
+                  }) => ({
+                    paymentMode: payment.paymentMode,
+                    paymentDate: new Date(payment.paymentDate),
+                    paymentAmount: payment.paymentAmount,
+                    paymentReferenceId: payment.paymentReferenceId,
+                    paymentDetails: payment.paymentDetails,
+                    paymentComments: payment.paymentComments,
+                    paymentStatus:
+                      payment.paymentStatus || PaymentStatus.Pending,
+                    createdOn: new Date(),
+                  })
+                ),
+              },
             },
-            payments: {
-              deleteMany: {},
-              create: payments?.map(
-                (payment: {
-                  paymentMode: string;
-                  paymentDate: string;
-                  paymentAmount: number;
-                  paymentReferenceId: string;
-                  paymentDetails: string;
-                  paymentComments: string;
-                  paymentStatus: string;
-                }) => ({
-                  paymentMode: payment.paymentMode,
-                  paymentDate: new Date(payment.paymentDate),
-                  paymentAmount: payment.paymentAmount,
-                  paymentReferenceId: payment.paymentReferenceId,
-                  paymentDetails: payment.paymentDetails,
-                  paymentComments: payment.paymentComments,
-                  paymentStatus: payment.paymentStatus || PaymentStatus.Pending,
-                  createdOn: new Date(),
-                })
-              ),
-            },
-          },
-        });
-
-        return res.status(200).json(updatedInvoice);
+          });
+          return res.status(200).json(updatedInvoice);
+        } catch (error) {
+          console.error("Error updating invoice:", error);
+          return res.status(500).json({ error: "Internal Server Error" });
+        }
       }
 
       case "DELETE": {
