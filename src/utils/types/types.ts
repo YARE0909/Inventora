@@ -92,10 +92,10 @@ export interface OrderItem {
 }
 
 export interface Invoice {
-  id: string;
+  id?: string;
   orderId: string;
   customerId: string;
-  invoiceNumber: string;
+  invoiceNumber?: string;
   invoiceDate: Date | undefined;
   invoiceAmount: number;
   adjustedInvoiceAmount: number;
@@ -104,26 +104,26 @@ export interface Invoice {
   discountAmount: number;
   customerGst: string;
   invoiceComments?: string;
-  createdOn: Date | undefined;
-  order: Order;
-  customer: Customer;
-  invoiceItems: InvoiceItem[];
-  payments: Payment[];
+  createdOn?: Date | undefined;
+  order?: Order;
+  customer?: Customer;
+  invoiceItems?: InvoiceItem[];
+  payments?: Payment[];
 }
 
 export interface InvoiceItem {
-  id: string;
-  invoiceId: string;
+  id?: string;
+  invoiceId?: string;
   serviceId?: string;
   productId?: string;
   itemQuantity: number;
   itemRate: number;
   invoiceAmount: number;
   gstCodeId: string;
-  createdOn: Date | undefined;
-  gstCode: GstCode;
-  invoice: Invoice;
-  product: Product;
+  createdOn?: Date | undefined;
+  gstCode?: GstCode;
+  invoice?: Invoice;
+  product?: Product;
 }
 
 export interface Service {
@@ -139,17 +139,17 @@ export interface Service {
 }
 
 export interface Payment {
-  id: string;
-  invoiceId: string;
+  id?: string;
+  invoiceId?: string;
   paymentMode: string;
   paymentDate: Date | undefined;
   paymentAmount: number;
   paymentReferenceId: string;
   paymentDetails?: string;
   paymentComments?: string;
-  paymentStatus: PaymentStatus;
-  createdOn: Date | undefined;
-  invoice: Invoice;
+  paymentStatus?: PaymentStatus;
+  createdOn?: Date | undefined;
+  invoice?: Invoice;
 }
 
 export enum OrderStatus {
