@@ -3,12 +3,14 @@ type FormatIndianCurrencyOptions = {
 };
 
 const formatIndianCurrency = (
-  amount: number | undefined,
+  amountStr: number | undefined,
   options: FormatIndianCurrencyOptions = {}
 ): string => {
   const { decimalPlaces = 2 } = options;
 
-  if (amount === undefined) return "₹ 0.00";
+  const amount = Number(amountStr);
+
+  if (amount === undefined || amount === null) return "₹ 0.00";
 
   // Ensure the amount has exactly the specified decimal places
   const fixedAmount = amount.toFixed(decimalPlaces);

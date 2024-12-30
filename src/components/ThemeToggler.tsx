@@ -20,7 +20,7 @@ const ThemeToggler: React.FC = () => {
       "--default-text": "#000000",
       "--border-color": "#c4c4c4",
       "--alt-text": "#4c4c54",
-      "--highlight": "#f5f5f5",
+      "--highlight": "#D5D2F6",
     };
 
     const darkTheme = {
@@ -55,7 +55,7 @@ const ThemeToggler: React.FC = () => {
           "--default-text": "#000000",
           "--border-color": "#c4c4c4",
           "--alt-text": "#4c4c54",
-          "--highlight": "#f5f5f5",
+          "--highlight": "#D5D2F6",
         }
         : {
           "--background": "#1a1a1c",
