@@ -20,7 +20,8 @@ const ThemeToggler: React.FC = () => {
       "--default-text": "#000000",
       "--border-color": "#c4c4c4",
       "--alt-text": "#4c4c54",
-      "--highlight": "#D5D2F6",
+      "--highlight": "#f5f5f5",
+      "--button": "#f5f5f5",
     };
 
     const darkTheme = {
@@ -30,6 +31,7 @@ const ThemeToggler: React.FC = () => {
       "--border-color": "#3b3b3b",
       "--alt-text": "#b3b3ab",
       "--highlight": "#262629",
+      "--button": "#262629",
     };
 
     const themeVariables = savedTheme === "light" ? lightTheme : darkTheme;
@@ -55,7 +57,8 @@ const ThemeToggler: React.FC = () => {
           "--default-text": "#000000",
           "--border-color": "#c4c4c4",
           "--alt-text": "#4c4c54",
-          "--highlight": "#D5D2F6",
+          "--highlight": "#f5f5f5",
+          "--button": "#f5f5f5",
         }
         : {
           "--background": "#1a1a1c",
@@ -64,6 +67,7 @@ const ThemeToggler: React.FC = () => {
           "--border-color": "#3b3b3b",
           "--alt-text": "#b3b3ab",
           "--highlight": "#262629",
+          "--button": "#262629",
         };
 
     for (const [key, value] of Object.entries(themeVariables)) {

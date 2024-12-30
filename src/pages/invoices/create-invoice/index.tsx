@@ -302,18 +302,6 @@ const Index = () => {
       return toast("Please select an invoice date", "top-right", "warning");
     }
 
-    if (formData.adjustedInvoiceAmount === 0) {
-      return toast("Please enter adjusted amount", "top-right", "warning");
-    }
-
-    if (formData.reconciledInvoiceAmount === 0) {
-      return toast("Please enter reconciled amount", "top-right", "warning");
-    }
-
-    if (formData.payments?.length === 0) {
-      return toast("Please add payment details", "top-right", "warning");
-    }
-
     console.log({ formData });
 
     const dataToSend: Invoice = {
@@ -344,14 +332,14 @@ const Index = () => {
           100
         )
       })),
-      payments: formData.payments!.map((payment) => ({
+      payments: formData?.payments!.length > 0 ? formData.payments!.map((payment) => ({
         paymentMode: payment.paymentMode,
         paymentDate: payment.paymentDate,
         paymentAmount: Number(payment.paymentAmount),
         paymentReferenceId: payment.paymentReferenceId,
         paymentComments: payment.paymentComments,
         paymentStatus: payment.paymentStatus,
-      })),
+      })) : [],
     };
 
     try {

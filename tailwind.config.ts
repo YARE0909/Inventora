@@ -15,6 +15,7 @@ export default {
         textAlt: "var(--alt-text)",
         highlight: "var(--highlight)",
         text: "var(--default-text)",
+        button: "var(--button)",
       },
       fontFamily: {
         NunitoSans: ["Rubik", "sans-serif"],

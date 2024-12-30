@@ -72,11 +72,29 @@ export default async function handler(
 
           const filter: Prisma.InvoicesWhereInput = {};
           if (paymentStatus && typeof paymentStatus === "string") {
-            filter.payments = {
-              some: {
-                paymentStatus: paymentStatus as PaymentStatus,
-              },
-            };
+            if (paymentStatus === "Pending") {
+              // Include invoices with no payments or pending payments
+              filter.OR = [
+                {
+                  payments: {
+                    some: {
+                      paymentStatus: "Pending" as PaymentStatus,
+                    },
+                  },
+                },
+                {
+                  payments: {
+                    none: {},
+                  },
+                },
+              ];
+            } else {
+              filter.payments = {
+                some: {
+                  paymentStatus: paymentStatus as PaymentStatus,
+                },
+              };
+            }
           }
 
           const invoices = await prisma.invoices.findMany({
