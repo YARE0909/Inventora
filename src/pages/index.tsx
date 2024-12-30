@@ -201,7 +201,7 @@ export default function Home() {
         <div>
           <h1 className="font-extrabold text-2xl uppercase">Dashboard</h1>
         </div>
-        <div className="w-full md:w-fit flex flex-col md:flex md:flex-row md:space-x-3 space-y-3 md:space-y-0 items-end">
+        <div className="w-full md:w-32 flex flex-col md:flex md:flex-row md:space-x-3 space-y-3 md:space-y-0 items-end">
           {/* Year Select Dropdown */}
           <Select
             options={years.reverse()}
