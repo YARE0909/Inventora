@@ -51,6 +51,7 @@ const Index = () => {
       label: string;
     }[]
   >([]);
+
   const [customerData, setCustomerData] = useState<
     {
       value: string;
@@ -321,6 +322,21 @@ const Index = () => {
       value = new Date(value).toISOString();
     }
 
+    if (field === "customerId") {
+      // fetch order details
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/orders`
+      );
+      // filter order by customerId and set it to setOrderData
+      const data = response.data.filter(
+        (order: Order) => order.customerId === value
+      );
+      setOrderData(
+        data.map((order: Order) => ({
+          value: order.id,
+          label: order.orderNumber,
+        })));
+    }
     if (field === "orderId") {
       // fetch order details
       const order = orderData.find((order) => order.value === value);

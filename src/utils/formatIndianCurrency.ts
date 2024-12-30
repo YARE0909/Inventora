@@ -10,11 +10,11 @@ const formatIndianCurrency = (
 
   if (amount === undefined) return "₹ 0.00";
 
-  // Convert the amount to a string
-  const x = amount.toString();
+  // Ensure the amount has exactly the specified decimal places
+  const fixedAmount = amount.toFixed(decimalPlaces);
 
   // Split the number into integer and decimal parts
-  const [integerPart, decimalPart = ""] = x.split(".");
+  const [integerPart, decimalPart] = fixedAmount.split(".");
 
   // Handle the last three digits separately
   let lastThree = integerPart.substring(integerPart.length - 3);
@@ -29,11 +29,8 @@ const formatIndianCurrency = (
   const formattedInteger =
     otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
 
-  // Construct the final result, ensuring that decimal part is included only if it's not empty
-  const result =
-    decimalPlaces > 0 && decimalPart !== ""
-      ? `${formattedInteger}.${decimalPart.padEnd(decimalPlaces, "0")}`
-      : formattedInteger;
+  // Construct the final result with exactly the specified decimal places
+  const result = `${formattedInteger}.${decimalPart}`;
 
   return `₹ ${result}`;
 };
