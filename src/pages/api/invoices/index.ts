@@ -130,7 +130,7 @@ export default async function handler(
         ) {
           return res.status(400).json({
             error:
-              "Missing required fields: orderId, customerId, invoiceNumber, invoiceDate, invoiceAmount, invoiceItems",
+              "Missing required fields: orderId, customerId, invoiceDate, invoiceAmount, invoiceItems",
           });
         }
 

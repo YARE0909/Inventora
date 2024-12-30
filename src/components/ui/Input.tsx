@@ -3,7 +3,7 @@ import React from "react";
 
 type CustomTextInputProps = {
   id?: string;
-  label: string;
+  label?: string;
   name: string;
   type?: "text" | "number" | "checkbox" | "email" | "tel" | "date" | "textArea";
   placeholder?: string;

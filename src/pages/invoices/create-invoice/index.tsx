@@ -62,19 +62,11 @@ const Index = () => {
     value: string;
     label: string;
   }[]>([]);
-  const [gstCodeData, setGstCodeData] = useState<{
+  const [, setGstCodeData] = useState<{
     value: string;
     label: string;
   }[]>([]);
   const [loading, setLoading] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<{
-    serviceId?: string;
-    productId?: string;
-    itemQuantity: number;
-    itemRate: number;
-    invoiceAmount: number;
-    gstCodeId: string;
-  }>();
 
   const [selectedOrderDetails, setSelectedOrderDetails] = useState<Order>();
 
@@ -139,57 +131,6 @@ const Index = () => {
     });
 
     console.log({ formData });
-  };
-
-  const addProductToTable = async () => {
-    if (selectedProduct?.productId === "") {
-      return toast("Please select product", "top-right", "warning");
-    }
-    if (selectedProduct?.itemQuantity === 0) {
-      return toast("Please enter quantity", "top-right", "warning");
-    }
-    if (selectedProduct?.itemRate === 0) {
-      return toast("Please enter rate", "top-right", "warning");
-    }
-    if (selectedProduct?.gstCodeId === "") {
-      return toast("Please select GST code", "top-right", "warning");
-    }
-
-    console.log("Selected Product:", selectedProduct);
-    // find product in productData array
-    try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/gstCode?id=${selectedProduct!.gstCodeId}`
-      );
-
-      const taxPercentage = response?.data?.gst?.taxPercentage;
-
-      setFormData({
-        ...formData,
-        invoiceItems: [
-          ...(formData.invoiceItems || []),
-          {
-            productId: selectedProduct!.productId,
-            itemQuantity: Number(selectedProduct!.itemQuantity),
-            itemRate: selectedProduct!.itemRate,
-            gstCodeId: selectedProduct!.gstCodeId,
-            invoiceAmount: Number(
-              (
-                selectedProduct!.itemRate * selectedProduct!.itemQuantity +
-                (selectedProduct!.itemRate *
-                  selectedProduct!.itemQuantity *
-                  taxPercentage) /
-                100
-              ).toFixed(2)
-            ),
-            gstCode: response.data,
-          },
-        ],
-      });
-    } catch {
-      toast("Something went wrong.", "top-right", "error");
-    }
-
   };
 
   const removeProductFromTable = (id: string) => {
@@ -287,14 +228,6 @@ const Index = () => {
     }
   }
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
-    const { value } = e.target;
-    setSelectedProduct({
-      ...selectedProduct!,
-      [field]: Number(value),
-    });
-  };
-
   const handlePaymentDetailsInput = (
     value: string | number,
     field: string
@@ -355,16 +288,6 @@ const Index = () => {
     });
   };
 
-  const selectProductChange = (
-    value: string,
-    field: string
-  ) => {
-    setSelectedProduct({
-      ...selectedProduct!,
-      [field]: value,
-    });
-  };
-
   const submitOrder = async () => {
     // check if all fields are filled
     if (formData.customerId === "") {
@@ -387,10 +310,6 @@ const Index = () => {
       return toast("Please enter reconciled amount", "top-right", "warning");
     }
 
-    if (formData.invoiceItems?.length === 0) {
-      return toast("Please add invoice items", "top-right", "warning");
-    }
-
     if (formData.payments?.length === 0) {
       return toast("Please add payment details", "top-right", "warning");
     }
@@ -401,15 +320,10 @@ const Index = () => {
       orderId: formData.orderId,
       customerId: formData.customerId,
       invoiceDate: formData.invoiceDate,
-      invoiceAmount: Number(formData.invoiceItems!
-        .map(
-          (item) =>
-            item.itemRate * (item.itemQuantity ?? 1) +
-            (item.itemRate *
-              (item.itemQuantity ?? 1) *
-              (item.gstCode?.gst?.taxPercentage ?? 0)) /
-            100
-        )
+      invoiceAmount: Number(selectedOrderDetails?.orderItems!.map((item) =>
+        item.unitPrice * (item.quantity ?? 1) +
+        (item.unitPrice * (item.quantity ?? 1) * (item.product?.gstCode?.gst?.taxPercentage ?? 0)) / 100
+      )
         .reduce((acc, item) => acc + item, 0)),
       adjustedInvoiceAmount: Number(formData.adjustedInvoiceAmount),
       reconciledInvoiceAmount: Number(formData.reconciledInvoiceAmount),
@@ -417,12 +331,18 @@ const Index = () => {
       discountAmount: formData.discountAmount,
       customerGst: formData.customerGst,
       invoiceComments: formData.invoiceComments,
-      invoiceItems: formData.invoiceItems!.map((item) => ({
+      invoiceItems: selectedOrderDetails?.orderItems!.map((item) => ({
         productId: item.productId,
-        itemQuantity: Number(item.itemQuantity),
-        itemRate: Number(item.itemRate),
-        gstCodeId: item.gstCodeId,
-        invoiceAmount: Number(item.invoiceAmount)
+        itemQuantity: Number(item.quantity),
+        itemRate: Number(item.unitPrice),
+        gstCodeId: item.product?.gstCode?.id as string,
+        invoiceAmount: Number(
+          item.unitPrice * (item.quantity ?? 1) +
+          (item.unitPrice *
+            (item.quantity ?? 1) *
+            (item.product?.gstCode?.gst?.taxPercentage ?? 0)) /
+          100
+        )
       })),
       payments: formData.payments!.map((payment) => ({
         paymentMode: payment.paymentMode,
@@ -457,6 +377,7 @@ const Index = () => {
           invoiceItems: [],
           payments: []
         });
+        setSelectedOrderDetails(undefined);
       }
 
       setTimeout(() => {
@@ -487,7 +408,7 @@ const Index = () => {
       </div>
     )}>
       <div className="w-full flex flex-col items-center">
-        <div className="w-fit bg-foreground border border-border rounded-md p-4 space-y-3">
+        <div className="w-fit bg-foreground border border-border rounded-md p-4 flex flex-col space-y-3">
           {/* Invoice Details */}
           <div className="w-full flex flex-col space-y-3">
             <div className="w-full flex justify-between items-end z-50 bg-foreground border-b-2 border-b-border pb-3">
@@ -501,16 +422,11 @@ const Index = () => {
                       Invoice Value{" "}
                     </span>
                     {formatIndianCurrency(
-                      formData.invoiceItems!
-                        .map(
-                          (item) =>
-                            item.itemRate * (item.itemQuantity ?? 1) +
-                            (item.itemRate *
-                              (item.itemQuantity ?? 1) *
-                              (item.gstCode?.gst?.taxPercentage ?? 0)) /
-                            100
-                        )
-                        .reduce((acc, item) => acc + item, 0)
+                      Number(selectedOrderDetails?.orderItems!.map((item) =>
+                        item.unitPrice * (item.quantity ?? 1) +
+                        (item.unitPrice * (item.quantity ?? 1) * (item.product?.gstCode?.gst?.taxPercentage ?? 0)) / 100
+                      )
+                        .reduce((acc, item) => acc + item, 0)) || 0
                     )}
                   </h1>
                 </div>
@@ -614,59 +530,9 @@ const Index = () => {
                   Invoice Item Details
                 </h1>
               </div>
-              <div className="w-full flex space-x-3 items-end">
-                <div className="w-fit">
-                  <Select
-                    options={productData.filter((product) => {
-                      return selectedOrderDetails?.orderItems?.find((orderItem) => orderItem.productId === product.value);
-                    })}
-                    label="Product"
-                    onChange={(value) => {
-                      selectProductChange(value, "productId");
-                    }}
-                  />
-                </div>
-                <div className="w-fit">
-                  <Input
-                    name="itemQuantity"
-                    type="number"
-                    label="Quantity"
-                    onChange={(e) => {
-                      handleInputChange(e, "itemQuantity");
-                    }
-                    }
-                  />
-                </div>
-                <div className="w-fit">
-                  <Input
-                    name="itemRate"
-                    type="number"
-                    label="Rate"
-                    onChange={(e) => {
-                      handleInputChange(e, "itemRate");
-                    }
-                    }
-                  />
-                </div>
-                <div className="w-fit">
-                  <Select
-                    options={gstCodeData}
-                    label="GST Code"
-                    onChange={(value) => {
-                      selectProductChange(value, "gstCodeId");
-                    }}
-                  />
-                </div>
-                <div>
-                  <Button onClick={addProductToTable}>
-                    <Plus className="w-5 h-5" />
-                    Add Item
-                  </Button>
-                </div>
-              </div>
             </div>
             <PaginatedTable columns={columns} loadingState={loading}>
-              {formData.invoiceItems!.map((row, index) => (
+              {selectedOrderDetails?.orderItems!.map((row, index) => (
                 <tr
                   key={index}
                   className="hover:bg-foreground duration-500 cursor-pointer border-b border-b-border"
@@ -674,21 +540,38 @@ const Index = () => {
                   {columns.map((column) => (
                     <td key={column} className="px-4 py-2">
                       {column === "GST Code" ? (
-                        row.gstCode?.code ?? "N/A"
+                        row.product?.gstCode?.code ?? "N/A"
                       ) : column === "GST %" ? (
-                        row.gstCode?.gst?.taxPercentage ?? "N/A"
+                        row.product?.gstCode?.gst?.taxPercentage ?? "N/A"
                       ) : column === "Amount" ? (
-                        formatIndianCurrency(row.itemRate * (row.itemQuantity ?? 1))
+                        formatIndianCurrency(row?.unitPrice * (row?.quantity ?? 1))
                       ) : column === "Rate" ? (
-                        formatIndianCurrency(row.itemRate)
+                        <div className="w-24">
+                          <Input
+                            name="itemRate"
+                            type="number"
+                            value={row.unitPrice}
+                            onChange={(e) => {
+                              setSelectedOrderDetails({
+                                ...selectedOrderDetails!,
+                                orderItems: selectedOrderDetails?.orderItems?.map((item) => {
+                                  if (item.id === row.id) {
+                                    item.unitPrice = Number(e.target.value);
+                                  }
+                                  return item;
+                                })
+                              });
+                            }}
+                          />
+                        </div>
                       ) : column === "GST Amount" ? (
                         formatIndianCurrency(
                           Number(
                             (
                               Math.floor(
-                                ((row.itemRate *
-                                  (row.itemQuantity ?? 1) *
-                                  (row.gstCode?.gst?.taxPercentage ?? 0)) /
+                                ((row?.unitPrice *
+                                  (row?.quantity ?? 1) *
+                                  (row.product?.gstCode?.gst?.taxPercentage ?? 0)) /
                                   100) *
                                 100
                               ) / 100
@@ -700,10 +583,10 @@ const Index = () => {
                           Number(
                             (
                               Math.floor(
-                                (row.itemRate * (row.itemQuantity ?? 1) +
-                                  (row.itemRate *
-                                    (row.itemQuantity ?? 1) *
-                                    (row.gstCode?.gst?.taxPercentage ?? 0)) /
+                                (row?.unitPrice * (row?.quantity ?? 1) +
+                                  (row?.unitPrice *
+                                    (row?.quantity ?? 1) *
+                                    (row.product?.gstCode?.gst?.taxPercentage ?? 0)) /
                                   100) *
                                 100
                               ) / 100
@@ -717,7 +600,25 @@ const Index = () => {
                         />
                       ) :
                         column === "Quantity" ? (
-                          row.itemQuantity
+                          <div className="w-16">
+
+                            <Input
+                              name="itemQuantity"
+                              type="number"
+                              value={row?.quantity}
+                              onChange={(e) => {
+                                setSelectedOrderDetails({
+                                  ...selectedOrderDetails!,
+                                  orderItems: selectedOrderDetails?.orderItems?.map((item) => {
+                                    if (item.id === row.id) {
+                                      item.quantity = Number(e.target.value);
+                                    }
+                                    return item;
+                                  })
+                                });
+                              }}
+                            />
+                          </div>
                         ) : column === "Product" ? (
                           productData.find((product) => product.value === row.productId)?.label
                         ) : null
