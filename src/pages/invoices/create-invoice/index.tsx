@@ -556,6 +556,16 @@ const Index = () => {
                 </div>
                 <div className="w-full md:max-w-52">
                   <Input
+                    name="discountAmount"
+                    type="number"
+                    label="Discount Amount"
+                    onChange={(e) => {
+                      handleFormInput(e.target.value, "discountAmount");
+                    }}
+                  />
+                </div>
+                <div className="w-full md:max-w-52">
+                  <Input
                     name="adjustedInvoiceAmount"
                     type="number"
                     label="Adjusted Amount"
@@ -574,32 +584,22 @@ const Index = () => {
                     }}
                   />
                 </div>
-                <div className="w-full md:max-w-52">
-                  <Input
-                    name="discountAmount"
-                    type="number"
-                    label="Discount Amount"
-                    onChange={(e) => {
-                      handleFormInput(e.target.value, "discountAmount");
-                    }}
-                  />
-                </div>
               </div>
               <div className="w-full flex gap-2">
-                <Input
-                  name="reconcileComments"
-                  type="textArea"
-                  label="Reconcile Comments"
-                  onChange={(e) => {
-                    handleFormInput(e.target.value, "reconcileComments");
-                  }}
-                />
                 <Input
                   name="invoiceComments"
                   type="textArea"
                   label="Comments"
                   onChange={(e) => {
                     handleFormInput(e.target.value, "invoiceComments");
+                  }}
+                />
+                <Input
+                  name="reconcileComments"
+                  type="textArea"
+                  label="Reconcile Comments"
+                  onChange={(e) => {
+                    handleFormInput(e.target.value, "reconcileComments");
                   }}
                 />
               </div>
@@ -660,7 +660,7 @@ const Index = () => {
                 <div>
                   <Button onClick={addProductToTable}>
                     <Plus className="w-5 h-5" />
-                    Add
+                    Add Item
                   </Button>
                 </div>
               </div>
@@ -739,7 +739,7 @@ const Index = () => {
             <div className="w-full flex flex-col space-y-3 md:space-y-0 md:flex md:flex-row">
               <div className="w-full flex flex-col space-y-3">
                 <div className="w-full flex flex-col space-y-3">
-                  <div className="w-full flex gap-2">
+                  <div className="w-full flex items-end gap-2">
                     <div className="w-full md:max-w-96">
                       <Input
                         name="paymentAmount"
@@ -817,6 +817,12 @@ const Index = () => {
                         }}
                       />
                     </div>
+                    <div>
+                      <Button onClick={addPaymentDetailsToTable}>
+                        <Plus className="w-5 h-5" />
+                        Add Payment
+                      </Button>
+                    </div>
                   </div>
                   <div className="w-full flex gap-2">
                     <div className="w-full h-full">
@@ -846,12 +852,6 @@ const Index = () => {
                       />
                     </div>
                   </div>
-                </div>
-                <div>
-                  <Button onClick={addPaymentDetailsToTable}>
-                    <Plus className="w-5 h-5" />
-                    Add Advance Details
-                  </Button>
                 </div>
               </div>
             </div>

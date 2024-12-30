@@ -457,7 +457,7 @@ const Index = () => {
                   <Input
                     name="proformaInvoice"
                     type="text"
-                    label="Performa Invoice/PO #"
+                    label="Performa Invoice/PO#"
                     onChange={(e) => {
                       handleFormInput(e.target.value, "proformaInvoice");
                     }}
@@ -527,7 +527,7 @@ const Index = () => {
                 <div>
                   <Button onClick={addProductToTable}>
                     <Plus className="w-5 h-5" />
-                    Add
+                    Add Product
                   </Button>
                 </div>
               </div>
@@ -601,7 +601,7 @@ const Index = () => {
             </div>
             <div className="w-full flex flex-col space-y-3 md:space-y-0 md:flex md:flex-row">
               <div className="w-full flex flex-col space-y-3">
-                <div className="w-full flex flex-col md:flex md:flex-row space-y-3 md:space-y-0 md:space-x-3">
+                <div className="w-full flex flex-col md:flex md:flex-row space-y-3 md:space-y-0 md:space-x-3 items-end">
                   <div className="w-full md:max-w-96">
                     <Input
                       name="orderAdvanceAmount"
@@ -666,25 +666,25 @@ const Index = () => {
                       }}
                     />
                   </div>
-                  <div className="w-full h-full md:max-w-96">
-                    <Input
-                      name="orderAdvanceComments"
-                      type="text"
-                      label="Comments"
-                      onChange={(e) => {
-                        handleOrderAdvanceDetailsInput(
-                          e.target.value,
-                          "orderAdvanceComments"
-                        );
-                      }}
-                    />
+                  <div>
+                    <Button onClick={addOrderAdvanceDetailsToTable}>
+                      <Plus className="w-5 h-5" />
+                      Add Advance
+                    </Button>
                   </div>
                 </div>
-                <div>
-                  <Button onClick={addOrderAdvanceDetailsToTable}>
-                    <Plus className="w-5 h-5" />
-                    Add Advance Details
-                  </Button>
+                <div className="w-full h-full md:max-w-96">
+                  <Input
+                    name="orderAdvanceComments"
+                    type="textArea"
+                    label="Comments"
+                    onChange={(e) => {
+                      handleOrderAdvanceDetailsInput(
+                        e.target.value,
+                        "orderAdvanceComments"
+                      );
+                    }}
+                  />
                 </div>
               </div>
             </div>
