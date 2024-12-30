@@ -396,8 +396,8 @@ export default function Home() {
               },
             ]}
             fillColors={[
-              "#3788D8",
-              "#10b981"
+              "#FF4DE4",
+              "#8b5cf6"
             ]}
           />
         </div>

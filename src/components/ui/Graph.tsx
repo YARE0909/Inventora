@@ -41,6 +41,7 @@ const patternFlyColors = [
   "#ef4444", // Red
   "#8b5cf6", // Violet
   "#FFB74D", // Yellow
+  "#FF4DE4", // Pink
 ];
 
 const getVibrantColors = (count: number): string[] => {
