@@ -71,7 +71,7 @@ const CustomTooltip: React.FC<{
             <span className="text-textAlt font-bold">
               {`${entry.name} : `}
             </span>
-            {formatIndianCurrency(entry.value)}
+            {entry.name.includes("Value") ? formatIndianCurrency(entry.value) : entry.value}
           </p>
         ))}
       </div>

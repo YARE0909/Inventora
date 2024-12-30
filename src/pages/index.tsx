@@ -14,7 +14,7 @@ const GraphComponent = ({
   dataKeys,
   fillColors,
   cardsData,
-  selectedYear, // Added the selectedYear prop
+  selectedYear,
 }: {
   data: { label: string;[key: string]: number | string }[];
   header: string;
@@ -22,7 +22,7 @@ const GraphComponent = ({
   dataKeys: { label: string; value: string }[];
   fillColors?: string[];
   cardsData?: { label: React.ReactNode; value: React.ReactNode }[];
-  selectedYear: string; // Added selectedYear prop type
+  selectedYear: string;
 }) => {
   return (
     <div className="w-full border border-border rounded-md bg-foreground">
@@ -67,8 +67,6 @@ const GraphComponent = ({
               data={data}
               graphType="bar"
               dataKeys={dataKeys}
-              // dynamically set the height to available space
-
               height={400}
               fillColors={fillColors}
             />
