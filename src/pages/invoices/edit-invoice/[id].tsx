@@ -590,7 +590,7 @@ const Index = () => {
       </div>
     )}>
       <div className="w-full flex flex-col items-center">
-        <div className="w-fit bg-foreground border border-border rounded-md p-4 flex flex-col space-y-3">
+        <div className="w-fit bg-foreground rounded-md p-4 flex flex-col space-y-3">
           {/* Invoice Details */}
           <div className="w-full flex flex-col space-y-3">
             <div className="w-full flex justify-between items-end z-50 bg-foreground border-b-2 border-b-border pb-3">
