@@ -127,15 +127,15 @@ export interface InvoiceItem {
 }
 
 export interface Service {
-  id: string;
+  id?: string;
   name: string;
   gstCodeId: string;
   effectiveStartDate: Date | string | undefined;
   effectiveEndDate?: Date | string | undefined;
   isActive: boolean;
-  createdOn: Date | undefined;
-  gstCode: GstCode;
-  InvoiceItems: InvoiceItem[];
+  createdOn?: Date | undefined;
+  gstCode?: GstCode;
+  InvoiceItems?: InvoiceItem[];
 }
 
 export interface Payment {

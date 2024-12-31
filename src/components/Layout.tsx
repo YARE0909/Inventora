@@ -96,6 +96,16 @@ const sideBarLinks = [
       },
     ],
   },
+  {
+    category: "SERVICES",
+    links: [
+      {
+        name: "Products",
+        icon: <Package className="w-5 h-5" />,
+        href: "/services",
+      },
+    ],
+  },
 ];
 
 const Sidebar = ({

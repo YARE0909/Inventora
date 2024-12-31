@@ -385,7 +385,6 @@ const Index = () => {
       <Modal isOpen={isEditModalOpen} onClose={handleCloseEditModal}>
         <h2 className="text-lg font-semibold mb-4">ADD GST CODE</h2>
         {editFormData.id ? (
-
           <form onSubmit={handleEditSubmit} className="space-y-4">
             <Input
               type="text"
