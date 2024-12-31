@@ -85,7 +85,7 @@ export interface OrderItem {
   productId?: string;
   quantity: number;
   unitPrice: number;
-  totalAmount: number;
+  totalAmount?: number;
   createdOn?: Date | undefined;
   order?: Order;
   product?: Product;
@@ -118,7 +118,7 @@ export interface InvoiceItem {
   productId?: string;
   itemQuantity: number;
   itemRate: number;
-  invoiceAmount: number;
+  invoiceAmount?: number;
   gstCodeId: string;
   createdOn?: Date | undefined;
   gstCode?: GstCode;

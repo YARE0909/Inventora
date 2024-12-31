@@ -51,7 +51,6 @@ const Index = () => {
       label: string;
     }[]
   >([]);
-
   const [customerData, setCustomerData] = useState<
     {
       value: string;
@@ -62,13 +61,27 @@ const Index = () => {
     value: string;
     label: string;
   }[]>([]);
-  const [, setGstCodeData] = useState<{
+  const [gstCodeData, setGstCodeData] = useState<{
     value: string;
     label: string;
   }[]>([]);
   const [loading, setLoading] = useState(false);
 
   const [selectedOrderDetails, setSelectedOrderDetails] = useState<Order>();
+
+  const [currentProductDetails, setCurrentProductDetails] = useState<{
+    productId: string;
+    itemQuantity: number;
+    itemRate: number;
+    gstCodeId: string;
+    invoiceAmount: number;
+  }>({
+    productId: "",
+    itemQuantity: 0,
+    itemRate: 0,
+    gstCodeId: "",
+    invoiceAmount: 0,
+  });
 
   const { toast } = useToast();
 
@@ -102,6 +115,56 @@ const Index = () => {
 
   const router = useRouter();
 
+  const handleAddProduct = async () => {
+    try {
+      if (currentProductDetails.productId === "") {
+        return toast("Please select a product", "top-right", "warning");
+      }
+
+      if (currentProductDetails.itemQuantity === 0) {
+        return toast("Please enter item quantity", "top-right", "warning");
+      }
+
+      if (currentProductDetails.itemRate === 0) {
+        return toast("Please enter item rate", "top-right", "warning");
+      }
+
+      if (currentProductDetails.gstCodeId === "") {
+        return toast("Please select a GST code", "top-right", "warning");
+      }
+
+      // get GSTCode details
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/products?id=${currentProductDetails.productId}`
+      );
+
+      const product = response.data;
+
+      setSelectedOrderDetails({
+        ...selectedOrderDetails!,
+        orderItems: [
+          ...selectedOrderDetails?.orderItems || [],
+          {
+            productId: currentProductDetails.productId,
+            quantity: currentProductDetails.itemQuantity,
+            unitPrice: currentProductDetails.itemRate,
+            product,
+          },
+        ],
+      });
+
+      setCurrentProductDetails({
+        productId: "",
+        itemQuantity: 0,
+        itemRate: 0,
+        gstCodeId: "",
+        invoiceAmount: 0,
+      });
+    } catch {
+      toast("Something went wrong.", "top-right", "error");
+    }
+  }
+
   const addPaymentDetailsToTable = () => {
     if (currentPaymentDetails?.paymentAmount === 0) {
       return toast("Please enter advance amount", "top-right", "warning");
@@ -134,10 +197,10 @@ const Index = () => {
   };
 
   const removeProductFromTable = (id: string) => {
-    const updatedData = formData.invoiceItems!.filter((item) => item.productId !== id);
-    setFormData({
-      ...formData,
-      invoiceItems: updatedData,
+    const updatedData = selectedOrderDetails?.orderItems!.filter((item) => item.productId !== id);
+    setSelectedOrderDetails({
+      ...selectedOrderDetails!,
+      orderItems: updatedData,
     });
   };
 
@@ -519,6 +582,73 @@ const Index = () => {
                 </h1>
               </div>
             </div>
+            <div className="w-full flex items-end gap-2">
+              <div className="w-full md:max-w-80">
+                <Select
+                  options={productData}
+                  label="Product"
+                  onChange={(value) => {
+                    const product = productData.find((product) => product.value === value);
+                    if (product) {
+                      setCurrentProductDetails({
+                        ...currentProductDetails,
+                        productId: product.value,
+                      });
+                    }
+                  }}
+                  value={currentProductDetails.productId}
+                />
+              </div>
+              <div className="w-full md:max-w-52">
+                <Input
+                  name="itemQuantity"
+                  type="number"
+                  label="Quantity"
+                  onChange={(e) => {
+                    setCurrentProductDetails({
+                      ...currentProductDetails,
+                      itemQuantity: Number(e.target.value),
+                    });
+                  }}
+                  value={currentProductDetails.itemQuantity}
+                />
+              </div>
+              <div className="w-full md:max-w-52">
+                <Input
+                  name="itemRate"
+                  type="number"
+                  label="Rate"
+                  onChange={(e) => {
+                    setCurrentProductDetails({
+                      ...currentProductDetails,
+                      itemRate: Number(e.target.value),
+                    });
+                  }}
+                  value={currentProductDetails.itemRate}
+                />
+              </div>
+              <div className="w-full md:max-w-52">
+                <Select
+                  options={gstCodeData}
+                  label="GST Code"
+                  onChange={(value) => {
+                    setCurrentProductDetails({
+                      ...currentProductDetails,
+                      gstCodeId: value,
+                    });
+                  }}
+                  value={currentProductDetails.gstCodeId}
+                />
+              </div>
+              <div>
+                <Button
+                  onClick={handleAddProduct}
+                >
+                  <Plus className="w-5 h-5" />
+                  Add Product
+                </Button>
+              </div>
+            </div>
             <PaginatedTable columns={columns} loadingState={loading}>
               {selectedOrderDetails?.orderItems!.map((row, index) => (
                 <tr
@@ -589,7 +719,6 @@ const Index = () => {
                       ) :
                         column === "Quantity" ? (
                           <div className="w-16">
-
                             <Input
                               name="itemQuantity"
                               type="number"

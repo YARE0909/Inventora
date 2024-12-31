@@ -155,7 +155,7 @@ const Sidebar = ({
                 <div key={link.name} className="flex flex-col">
                   <Link
                     href={link.href}
-                    className={`text-sm font-semibold uppercase p-1 pl-2 mt-[2px] rounded-md cursor-pointer duration-500 flex items-center gap-1 ${router.pathname === link.href
+                    className={`text-sm font-semibold p-1 pl-2 mt-[2px] rounded-md cursor-pointer duration-500 flex items-center gap-1 ${router.pathname === link.href
                       ? "bg-highlight border border-border"
                       : "hover:bg-highlight border border-transparent hover:border hover:border-border"
                       }`}

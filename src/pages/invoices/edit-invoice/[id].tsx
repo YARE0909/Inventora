@@ -55,7 +55,6 @@ const Index = () => {
       label: string;
     }[]
   >([]);
-
   const [customerData, setCustomerData] = useState<
     {
       value: string;
@@ -66,10 +65,21 @@ const Index = () => {
     value: string;
     label: string;
   }[]>([]);
-  const [, setGstCodeData] = useState<{
+  const [gstCodeData, setGstCodeData] = useState<{
     value: string;
     label: string;
   }[]>([]);
+  const [currentProductDetails, setCurrentProductDetails] = useState<{
+    productId: string;
+    itemQuantity: number;
+    itemRate: number;
+    gstCodeId: string;
+  }>({
+    productId: "",
+    itemQuantity: 0,
+    itemRate: 0,
+    gstCodeId: "",
+  });
   const [loading, setLoading] = useState(false);
 
   const { toast } = useToast();
@@ -101,6 +111,56 @@ const Index = () => {
     paymentReferenceId: "",
     paymentMode: "",
   });
+
+  const handleAddProduct = async () => {
+    try {
+      if (currentProductDetails.productId === "") {
+        return toast("Please select a product", "top-right", "warning");
+      }
+
+      if (currentProductDetails.itemQuantity === 0) {
+        return toast("Please enter item quantity", "top-right", "warning");
+      }
+
+      if (currentProductDetails.itemRate === 0) {
+        return toast("Please enter item rate", "top-right", "warning");
+      }
+
+      if (currentProductDetails.gstCodeId === "") {
+        return toast("Please select a GST code", "top-right", "warning");
+      }
+
+      // get GSTCode details
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/gstCode?id=${currentProductDetails.gstCodeId}`
+      );
+
+      const gstCode = response.data;
+
+      setFormData({
+        ...formData!,
+        invoiceItems: [
+          ...formData?.invoiceItems || [],
+          {
+            productId: currentProductDetails.productId,
+            itemQuantity: currentProductDetails.itemQuantity,
+            itemRate: currentProductDetails.itemRate,
+            gstCodeId: currentProductDetails.gstCodeId,
+            gstCode,
+          },
+        ],
+      });
+
+      setCurrentProductDetails({
+        productId: "",
+        itemQuantity: 0,
+        itemRate: 0,
+        gstCodeId: "",
+      });
+    } catch {
+      toast("Something went wrong.", "top-right", "error");
+    }
+  }
 
   const addPaymentDetailsToTable = () => {
     if (currentPaymentDetails?.paymentAmount === 0) {
@@ -333,7 +393,7 @@ const Index = () => {
         invoiceAmount: Number(
           formData.invoiceItems!.map((item) =>
             item.itemRate * (item.itemQuantity ?? 1) +
-            (item.itemRate * (item.itemQuantity ?? 1) * (item.product?.gstCode?.gst?.taxPercentage ?? 0)) / 100
+            (item.itemRate * (item.itemQuantity ?? 1) * (item?.gstCode?.gst?.taxPercentage ?? 0)) / 100
           )
             .reduce((acc, item) => acc + item, 0)
         )
@@ -531,6 +591,73 @@ const Index = () => {
                 </h1>
               </div>
             </div>
+            <div className="w-full flex items-end gap-2">
+              <div className="w-full md:max-w-80">
+                <Select
+                  options={productData}
+                  label="Product"
+                  onChange={(value) => {
+                    const product = productData.find((product) => product.value === value);
+                    if (product) {
+                      setCurrentProductDetails({
+                        ...currentProductDetails,
+                        productId: product.value,
+                      });
+                    }
+                  }}
+                  value={currentProductDetails.productId}
+                />
+              </div>
+              <div className="w-full md:max-w-52">
+                <Input
+                  name="itemQuantity"
+                  type="number"
+                  label="Quantity"
+                  onChange={(e) => {
+                    setCurrentProductDetails({
+                      ...currentProductDetails,
+                      itemQuantity: Number(e.target.value),
+                    });
+                  }}
+                  value={currentProductDetails.itemQuantity}
+                />
+              </div>
+              <div className="w-full md:max-w-52">
+                <Input
+                  name="itemRate"
+                  type="number"
+                  label="Rate"
+                  onChange={(e) => {
+                    setCurrentProductDetails({
+                      ...currentProductDetails,
+                      itemRate: Number(e.target.value),
+                    });
+                  }}
+                  value={currentProductDetails.itemRate}
+                />
+              </div>
+              <div className="w-full md:max-w-52">
+                <Select
+                  options={gstCodeData}
+                  label="GST Code"
+                  onChange={(value) => {
+                    setCurrentProductDetails({
+                      ...currentProductDetails,
+                      gstCodeId: value,
+                    });
+                  }}
+                  value={currentProductDetails.gstCodeId}
+                />
+              </div>
+              <div>
+                <Button
+                  onClick={handleAddProduct}
+                >
+                  <Plus className="w-5 h-5" />
+                  Add Product
+                </Button>
+              </div>
+            </div>
             <PaginatedTable columns={columns} loadingState={loading}>
               {formData?.invoiceItems!.map((row, index) => (
                 <tr
@@ -571,7 +698,7 @@ const Index = () => {
                               Math.floor(
                                 ((row?.itemRate *
                                   (row?.itemQuantity ?? 1) *
-                                  (row.product?.gstCode?.gst?.taxPercentage ?? 0)) /
+                                  (row.gstCode?.gst?.taxPercentage ?? 0)) /
                                   100) *
                                 100
                               ) / 100
@@ -586,7 +713,7 @@ const Index = () => {
                                 (row?.itemRate * (row?.itemQuantity ?? 1) +
                                   (row?.itemRate *
                                     (row?.itemQuantity ?? 1) *
-                                    (row.product?.gstCode?.gst?.taxPercentage ?? 0)) /
+                                    (row?.gstCode?.gst?.taxPercentage ?? 0)) /
                                   100) *
                                 100
                               ) / 100
