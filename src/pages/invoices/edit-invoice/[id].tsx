@@ -19,6 +19,7 @@ import Select from "@/components/ui/SelectComponent";
 import formatIndianCurrency from "@/utils/formatIndianCurrency";
 import { useRouter } from "next/router";
 import { formatDate } from "@/utils/dateFormatting";
+import { Service } from "@prisma/client";
 
 const columns = [
   "Product",
@@ -31,6 +32,18 @@ const columns = [
   "Total Amount",
   "",
 ];
+
+const servicesColumns = [
+  "Service",
+  "Quantity",
+  "Rate",
+  "Amount",
+  "GST Code",
+  "GST %",
+  "GST Amount",
+  "Total Amount",
+  "",
+]
 
 const paymentDetailColumns = [
   "Amount",
@@ -50,6 +63,12 @@ const Index = () => {
 
   const [data, setData] = useState<Product[]>([]);
   const [productData, setProductData] = useState<
+    {
+      value: string;
+      label: string;
+    }[]
+  >([]);
+  const [serviceData, setServiceData] = useState<
     {
       value: string;
       label: string;
@@ -79,6 +98,19 @@ const Index = () => {
     itemQuantity: 0,
     itemRate: 0,
     gstCodeId: "",
+  });
+  const [currentServiceDetails, setCurrentServiceDetails] = useState<{
+    serviceId: string;
+    itemQuantity: number;
+    itemRate: number;
+    gstCodeId: string;
+    invoiceAmount: number;
+  }>({
+    serviceId: "",
+    itemQuantity: 0,
+    itemRate: 0,
+    gstCodeId: "",
+    invoiceAmount: 0,
   });
   const [loading, setLoading] = useState(false);
 
@@ -162,6 +194,65 @@ const Index = () => {
     }
   }
 
+  const handleAddService = async () => {
+    try {
+      if (currentServiceDetails.serviceId === "") {
+        return toast("Please select a product", "top-right", "warning");
+      }
+
+      if (currentServiceDetails.itemQuantity === 0) {
+        return toast("Please enter item quantity", "top-right", "warning");
+      }
+
+      if (currentServiceDetails.itemRate === 0) {
+        return toast("Please enter item rate", "top-right", "warning");
+      }
+
+      if (currentServiceDetails.gstCodeId === "") {
+        return toast("Please select a GST code", "top-right", "warning");
+      }
+
+      // get GSTCode details
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/services?id=${currentServiceDetails.serviceId}`
+      );
+
+      const gstCodeResponse = await axios.get(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/gstCode?id=${currentServiceDetails.gstCodeId}`
+      );
+
+      const gstCode = gstCodeResponse.data;
+
+      const product = response.data;
+
+      setFormData({
+        ...formData!,
+        invoiceItems: [
+          ...formData?.invoiceItems || [],
+          {
+            serviceId: currentServiceDetails.serviceId,
+            itemQuantity: currentServiceDetails.itemQuantity,
+            itemRate: currentServiceDetails.itemRate,
+            gstCodeId: gstCode.code,
+            gstCode,
+            product,
+          },
+        ],
+      });
+
+      setCurrentServiceDetails({
+        serviceId: "",
+        itemQuantity: 0,
+        itemRate: 0,
+        gstCodeId: "",
+        invoiceAmount: 0,
+      });
+    } catch {
+      toast("Something went wrong.", "top-right", "error");
+    }
+  }
+
+
   const addPaymentDetailsToTable = () => {
     if (currentPaymentDetails?.paymentAmount === 0) {
       return toast("Please enter advance amount", "top-right", "warning");
@@ -197,6 +288,14 @@ const Index = () => {
     const updatedData = formData.invoiceItems!.filter((item) => item.productId !== id);
     setFormData({
       ...formData,
+      invoiceItems: updatedData,
+    });
+  };
+
+  const removeServiceFromTable = (id: string) => {
+    const updatedData = formData?.invoiceItems!.filter((item) => item.serviceId !== id);
+    setFormData({
+      ...formData!,
       invoiceItems: updatedData,
     });
   };
@@ -318,6 +417,26 @@ const Index = () => {
     }
   }
 
+  const fetchServiceData = async (filter?: string) => {
+    try {
+      setLoading(true);
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/services${filter ? `?filter=${filter}` : ""
+        }`
+      );
+      // map over response.data and assign id to value and taxPercentage to label
+      const data = response.data.map((service: Service) => ({
+        value: service.id,
+        label: service.name.toString(),
+      }));
+
+      setServiceData(data);
+      setLoading(false);
+    } catch {
+      toast("Something went wrong.", "top-right", "error");
+    }
+  };
+
   const handlePaymentDetailsInput = (
     value: string | number,
     field: string
@@ -386,7 +505,7 @@ const Index = () => {
       customerGst: formData.customerGst,
       invoiceComments: formData.invoiceComments,
       invoiceItems: formData?.invoiceItems!.map((item) => ({
-        productId: item.productId,
+        ...(item.productId ? { productId: item.productId } : { serviceId: item.serviceId }),
         itemQuantity: Number(item.itemQuantity),
         itemRate: Number(item.itemRate),
         gstCodeId: item?.gstCode?.id as string,
@@ -446,6 +565,7 @@ const Index = () => {
     fetchCustomerData();
     fetchOrderData();
     fetchGstCodeData();
+    fetchServiceData();
     fetchInvoiceData(invoiceId);
   }, [invoiceId]);
 
@@ -659,7 +779,7 @@ const Index = () => {
               </div>
             </div>
             <PaginatedTable columns={columns} loadingState={loading}>
-              {formData?.invoiceItems!.map((row, index) => (
+              {formData?.invoiceItems!.filter(item => item.productId !== "" && !item.serviceId).map((row, index) => (
                 <tr
                   key={index}
                   className="hover:bg-foreground duration-500 cursor-pointer border-b border-b-border"
@@ -757,6 +877,175 @@ const Index = () => {
             </PaginatedTable>
           </div>
           <hr className="border border-border" />
+          {/* Services */}
+          <div className="w-full flex flex-col space-y-3">
+            <div className="flex flex-col space-y-3">
+              <div>
+                <h1 className="text-text font-semibold text-lg">
+                  Services
+                </h1>
+              </div>
+            </div>
+            <div className="w-full flex items-end gap-2">
+              <div className="w-full md:max-w-80">
+                <Select
+                  options={serviceData}
+                  label="Service"
+                  onChange={(value) => {
+                    setCurrentServiceDetails({
+                      ...currentServiceDetails,
+                      serviceId: value,
+                    });
+                  }}
+                  value={currentServiceDetails.serviceId}
+                />
+              </div>
+              <div className="w-full md:max-w-52">
+                <Input
+                  name="itemQuantity"
+                  type="number"
+                  label="Quantity"
+                  onChange={(e) => {
+                    setCurrentServiceDetails({
+                      ...currentServiceDetails,
+                      itemQuantity: Number(e.target.value),
+                    });
+                  }}
+                  value={currentServiceDetails.itemQuantity}
+                />
+              </div>
+              <div className="w-full md:max-w-52">
+                <Input
+                  name="itemRate"
+                  type="number"
+                  label="Rate"
+                  onChange={(e) => {
+                    setCurrentServiceDetails({
+                      ...currentServiceDetails,
+                      itemRate: Number(e.target.value),
+                    });
+                  }}
+                  value={currentServiceDetails.itemRate}
+                />
+              </div>
+              <div className="w-full md:max-w-52">
+                <Select
+                  options={gstCodeData}
+                  label="GST Code"
+                  onChange={(value) => {
+                    setCurrentServiceDetails({
+                      ...currentServiceDetails,
+                      gstCodeId: value,
+                    });
+                  }}
+                  value={currentServiceDetails.gstCodeId}
+                />
+              </div>
+              <div>
+                <Button
+                  onClick={handleAddService}
+                >
+                  <Plus className="w-5 h-5" />
+                  Add Service
+                </Button>
+              </div>
+            </div>
+            <PaginatedTable columns={servicesColumns} loadingState={loading}>
+              {formData?.invoiceItems!.filter(item => item.serviceId !== "" && !item.productId).map((row, index) => (
+                <tr
+                  key={index}
+                  className="hover:bg-foreground duration-500 cursor-pointer border-b border-b-border"
+                >
+                  {columns.map((column) => (
+                    <td key={column} className="px-4 py-2">
+                      {column === "GST Code" ? (
+                        row?.gstCode?.code ?? "N/A"
+                      ) : column === "GST %" ? (
+                        row?.gstCode?.gst?.taxPercentage ?? "N/A"
+                      ) : column === "Amount" ? (
+                        formatIndianCurrency(row?.itemRate * (row?.itemQuantity ?? 1))
+                      ) : column === "Rate" ? (
+                        <div className="w-24">
+                          <Input
+                            name="itemRate"
+                            type="number"
+                            value={row.itemRate}
+                            onChange={(e) => {
+                              setFormData({
+                                ...formData!,
+                                invoiceItems: formData?.invoiceItems?.map((item) => {
+                                  if (item.serviceId === row.serviceId) {
+                                    item.itemRate = Number(e.target.value);
+                                  }
+                                  return item;
+                                })
+                              });
+                            }}
+                          />
+                        </div>
+                      ) : column === "GST Amount" ? (
+                        formatIndianCurrency(
+                          Number(
+                            (
+                              Math.floor(
+                                ((row?.itemRate *
+                                  (row?.itemQuantity ?? 1) *
+                                  (row.product?.gstCode?.gst?.taxPercentage ?? 0)) /
+                                  100) *
+                                100
+                              ) / 100
+                            ).toFixed(2)
+                          )
+                        )
+                      ) : column === "Total Amount" ? (
+                        formatIndianCurrency(
+                          Number(
+                            (
+                              Math.floor(
+                                (row?.itemRate * (row?.itemQuantity ?? 1) +
+                                  (row?.itemRate *
+                                    (row?.itemQuantity ?? 1) *
+                                    (row.product?.gstCode?.gst?.taxPercentage ?? 0)) /
+                                  100) *
+                                100
+                              ) / 100
+                            ).toFixed(2)
+                          )
+                        )
+                      ) : column === "" ? (
+                        <Trash2
+                          className="w-5 h-5 text-red-500 cursor-pointer"
+                          onClick={() => removeServiceFromTable(row.serviceId!)}
+                        />
+                      ) :
+                        column === "Quantity" ? (
+                          <div className="w-16">
+                            <Input
+                              name="itemQuantity"
+                              type="number"
+                              value={row?.itemQuantity}
+                              onChange={(e) => {
+                                setFormData({
+                                  ...formData!,
+                                  invoiceItems: formData?.invoiceItems?.map((item) => {
+                                    if (item.serviceId === row.serviceId) {
+                                      item.itemQuantity = Number(e.target.value);
+                                    }
+                                    return item;
+                                  })
+                                });
+                              }}
+                            />
+                          </div>
+                        ) : serviceData.find((service) => service.value === row.serviceId)?.label
+
+                      }
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </PaginatedTable>
+          </div>
           {/* Payment Details */}
           <div className="w-full flex flex-col space-y-3">
             <div>

@@ -196,6 +196,7 @@ const Index = () => {
       toast("Something went wrong.", "top-right", "error");
     }
   }
+  
   const handleAddService = async () => {
     try {
       if (currentServiceDetails.serviceId === "") {
