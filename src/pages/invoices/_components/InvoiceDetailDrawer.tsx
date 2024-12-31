@@ -16,6 +16,15 @@ const invoiceItemsColumns = [
   "Invoice Amount",
 ];
 
+const serviceItemsColumns = [
+  "Service",
+  "Quantity",
+  "Item Rate",
+  "GST Code",
+  "GST Amount",
+  "Invoice Amount",
+];
+
 const paymentDetailsColumns = [
   "Payment Amount",
   "Status",
@@ -160,7 +169,7 @@ const InvoiceDetailDrawer = ({
             </div>
             <div className="w-full rounded-md flex flex-col space-y-3">
               <PaginatedTable columns={invoiceItemsColumns} loadingState={false}>
-                {selectedInvoiceDetails?.invoiceItems!.map((item, index) => (
+                {selectedInvoiceDetails?.invoiceItems!.filter((item) => item.productId).map((item, index) => (
                   <tr
                     key={index}
                     className="hover:bg-foreground duration-500 cursor-pointer border-b border-b-border"
@@ -181,6 +190,41 @@ const InvoiceDetailDrawer = ({
                           ) : column === "GST Amount" ? (
                             formatIndianCurrency(item?.gstCode?.gst?.taxPercentage)
                           ) : null
+                        }
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </PaginatedTable>
+            </div>
+          </div>
+          {/* Invoice Service Details */}
+          <div className="w-full flex flex-col space-y-3">
+            <div>
+              <h1 className="font-bold text-text text-lg">Services</h1>
+            </div>
+            <div className="w-full rounded-md flex flex-col space-y-3">
+              <PaginatedTable columns={serviceItemsColumns} loadingState={false}>
+                {selectedInvoiceDetails?.invoiceItems!.filter((item) => item.serviceId).map((item, index) => (
+                  <tr
+                    key={index}
+                    className="hover:bg-foreground duration-500 cursor-pointer border-b border-b-border"
+                  >
+                    {invoiceItemsColumns.map((column) => (
+                      <td key={column} className="px-4 py-2">
+                        {
+                          column === "Quantity" ? (
+                            item?.itemQuantity
+                          ) : column === "Item Rate" ? (
+                            formatIndianCurrency(item?.itemRate)
+                          ) : column === "Invoice Amount" ? (
+                            formatIndianCurrency(item?.invoiceAmount)
+                          ) : column === "GST Code" ? (
+                            item?.gstCode?.code
+                          ) : column === "GST Amount" ? (
+                            formatIndianCurrency(item?.gstCode?.gst?.taxPercentage)
+                          ) : item?.service?.name
+
                         }
                       </td>
                     ))}

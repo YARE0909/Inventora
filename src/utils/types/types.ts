@@ -82,6 +82,7 @@ export interface GstCode {
 export interface OrderItem {
   id?: string;
   orderId?: string;
+  serviceId?: string;
   productId?: string;
   quantity: number;
   unitPrice: number;
@@ -89,6 +90,8 @@ export interface OrderItem {
   createdOn?: Date | undefined;
   order?: Order;
   product?: Product;
+  gstCodeId?: string;
+  gstCode?: GstCode;
 }
 
 export interface Invoice {
@@ -124,6 +127,7 @@ export interface InvoiceItem {
   gstCode?: GstCode;
   invoice?: Invoice;
   product?: Product;
+  service?: Service;
 }
 
 export interface Service {

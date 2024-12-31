@@ -24,7 +24,11 @@ export default async function handler(
           const service = await prisma.service.findUnique({
             where: { id },
             include: {
-              gstCode: true, // Include related GST Code details
+              gstCode: {
+                include: {
+                  gst: true,
+                },
+              }, // Include related GST Code details
             },
           });
 

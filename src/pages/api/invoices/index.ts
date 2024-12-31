@@ -25,6 +25,7 @@ export default async function handler(
                 invoiceItems: {
                   include: {
                     product: true,
+                    service: true,
                     gstCode: {
                       include: {
                         gst: true,
@@ -52,6 +53,7 @@ export default async function handler(
                 invoiceItems: {
                   include: {
                     product: true,
+                    service: true,
                     gstCode: {
                       include: {
                         gst: true,
@@ -105,6 +107,7 @@ export default async function handler(
               invoiceItems: {
                 include: {
                   product: true,
+                  service: true,
                   gstCode: {
                     include: {
                       gst: true,

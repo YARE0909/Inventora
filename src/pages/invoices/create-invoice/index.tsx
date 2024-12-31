@@ -11,6 +11,7 @@ import {
   Payment,
   PaymentStatus,
   Product,
+  Service,
 } from "@/utils/types/types";
 import axios from "axios";
 import { FilePlus2, Plus, Trash2 } from "lucide-react";
@@ -32,6 +33,18 @@ const columns = [
   "",
 ];
 
+const servicesColumns = [
+  "Service",
+  "Quantity",
+  "Rate",
+  "Amount",
+  "GST Code",
+  "GST %",
+  "GST Amount",
+  "Total Amount",
+  "",
+]
+
 const paymentDetailColumns = [
   "Amount",
   "Payment Mode",
@@ -44,8 +57,13 @@ const paymentDetailColumns = [
 ]
 
 const Index = () => {
-  const [data, setData] = useState<Product[]>([]);
   const [productData, setProductData] = useState<
+    {
+      value: string;
+      label: string;
+    }[]
+  >([]);
+  const [serviceData, setServiceData] = useState<
     {
       value: string;
       label: string;
@@ -77,6 +95,20 @@ const Index = () => {
     invoiceAmount: number;
   }>({
     productId: "",
+    itemQuantity: 0,
+    itemRate: 0,
+    gstCodeId: "",
+    invoiceAmount: 0,
+  });
+
+  const [currentServiceDetails, setCurrentServiceDetails] = useState<{
+    serviceId: string;
+    itemQuantity: number;
+    itemRate: number;
+    gstCodeId: string;
+    invoiceAmount: number;
+  }>({
+    serviceId: "",
     itemQuantity: 0,
     itemRate: 0,
     gstCodeId: "",
@@ -164,6 +196,63 @@ const Index = () => {
       toast("Something went wrong.", "top-right", "error");
     }
   }
+  const handleAddService = async () => {
+    try {
+      if (currentServiceDetails.serviceId === "") {
+        return toast("Please select a product", "top-right", "warning");
+      }
+
+      if (currentServiceDetails.itemQuantity === 0) {
+        return toast("Please enter item quantity", "top-right", "warning");
+      }
+
+      if (currentServiceDetails.itemRate === 0) {
+        return toast("Please enter item rate", "top-right", "warning");
+      }
+
+      if (currentServiceDetails.gstCodeId === "") {
+        return toast("Please select a GST code", "top-right", "warning");
+      }
+
+      // get GSTCode details
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/services?id=${currentServiceDetails.serviceId}`
+      );
+
+      const gstCodeResponse = await axios.get(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/gstCode?id=${currentServiceDetails.gstCodeId}`
+      );
+
+      const gstCode = gstCodeResponse.data;
+
+      const product = response.data;
+
+      setSelectedOrderDetails({
+        ...selectedOrderDetails!,
+        orderItems: [
+          ...selectedOrderDetails?.orderItems || [],
+          {
+            serviceId: currentServiceDetails.serviceId,
+            quantity: currentServiceDetails.itemQuantity,
+            unitPrice: currentServiceDetails.itemRate,
+            gstCodeId: gstCode.code,
+            gstCode,
+            product,
+          },
+        ],
+      });
+
+      setCurrentServiceDetails({
+        serviceId: "",
+        itemQuantity: 0,
+        itemRate: 0,
+        gstCodeId: "",
+        invoiceAmount: 0,
+      });
+    } catch {
+      toast("Something went wrong.", "top-right", "error");
+    }
+  }
 
   const addPaymentDetailsToTable = () => {
     if (currentPaymentDetails?.paymentAmount === 0) {
@@ -204,6 +293,14 @@ const Index = () => {
     });
   };
 
+  const removeServiceFromTable = (id: string) => {
+    const updatedData = selectedOrderDetails?.orderItems!.filter((item) => item.serviceId !== id);
+    setSelectedOrderDetails({
+      ...selectedOrderDetails!,
+      orderItems: updatedData,
+    });
+  };
+
   const removePaymentDetailsFromTable = (id: string) => {
     setFormData({
       ...formData,
@@ -225,6 +322,26 @@ const Index = () => {
       }));
 
       setProductData(data);
+      setLoading(false);
+    } catch {
+      toast("Something went wrong.", "top-right", "error");
+    }
+  };
+
+  const fetchServiceData = async (filter?: string) => {
+    try {
+      setLoading(true);
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/services${filter ? `?filter=${filter}` : ""
+        }`
+      );
+      // map over response.data and assign id to value and taxPercentage to label
+      const data = response.data.map((service: Service) => ({
+        value: service.id,
+        label: service.name.toString(),
+      }));
+
+      setServiceData(data);
       setLoading(false);
     } catch {
       toast("Something went wrong.", "top-right", "error");
@@ -383,7 +500,7 @@ const Index = () => {
       customerGst: formData.customerGst,
       invoiceComments: formData.invoiceComments,
       invoiceItems: selectedOrderDetails?.orderItems!.map((item) => ({
-        productId: item.productId,
+        ...(item.productId ? { productId: item.productId } : { serviceId: item.serviceId }),
         itemQuantity: Number(item.quantity),
         itemRate: Number(item.unitPrice),
         gstCodeId: item.product?.gstCode?.id as string,
@@ -413,7 +530,6 @@ const Index = () => {
 
       if (response.status === 201) {
         toast("Invoice created successfully", "top-right", "success");
-        setData([]);
         setFormData({
           orderId: "",
           customerId: "",
@@ -441,14 +557,15 @@ const Index = () => {
 
   useEffect(() => {
     fetchProductData();
+    fetchServiceData();
     fetchCustomerData();
     fetchOrderData();
     fetchGstCodeData();
   }, []);
 
   useEffect(() => {
-    console.log({ data });
-  }, [data]);
+    console.log({ selectedOrderDetails });
+  }, [selectedOrderDetails]);
 
   return (
     <Layout header={(
@@ -465,7 +582,7 @@ const Index = () => {
             <div className="w-full flex justify-between items-end z-50 bg-foreground border-b-2 border-b-border pb-3">
               <div className="flex flex-col space-y-3 mt-2">
                 <h1 className="text-text font-semibold text-lg">
-                  Invoice Details
+                  Invoice
                 </h1>
                 <div>
                   <h1 className="text-lg text-text font-semibold">
@@ -578,7 +695,7 @@ const Index = () => {
             <div className="flex flex-col space-y-3">
               <div>
                 <h1 className="text-text font-semibold text-lg">
-                  Invoice Item Details
+                  Invoice Items
                 </h1>
               </div>
             </div>
@@ -650,7 +767,7 @@ const Index = () => {
               </div>
             </div>
             <PaginatedTable columns={columns} loadingState={loading}>
-              {selectedOrderDetails?.orderItems!.map((row, index) => (
+              {selectedOrderDetails?.orderItems!.filter((item) => item.productId).map((row, index) => (
                 <tr
                   key={index}
                   className="hover:bg-foreground duration-500 cursor-pointer border-b border-b-border"
@@ -747,11 +864,181 @@ const Index = () => {
             </PaginatedTable>
           </div>
           <hr className="border border-border" />
+          {/* Services */}
+          <div className="w-full flex flex-col space-y-3">
+            <div className="flex flex-col space-y-3">
+              <div>
+                <h1 className="text-text font-semibold text-lg">
+                  Services
+                </h1>
+              </div>
+            </div>
+            <div className="w-full flex items-end gap-2">
+              <div className="w-full md:max-w-80">
+                <Select
+                  options={serviceData}
+                  label="Service"
+                  onChange={(value) => {
+                    setCurrentServiceDetails({
+                      ...currentServiceDetails,
+                      serviceId: value,
+                    });
+                  }}
+                  value={currentServiceDetails.serviceId}
+                />
+              </div>
+              <div className="w-full md:max-w-52">
+                <Input
+                  name="itemQuantity"
+                  type="number"
+                  label="Quantity"
+                  onChange={(e) => {
+                    setCurrentServiceDetails({
+                      ...currentServiceDetails,
+                      itemQuantity: Number(e.target.value),
+                    });
+                  }}
+                  value={currentServiceDetails.itemQuantity}
+                />
+              </div>
+              <div className="w-full md:max-w-52">
+                <Input
+                  name="itemRate"
+                  type="number"
+                  label="Rate"
+                  onChange={(e) => {
+                    setCurrentServiceDetails({
+                      ...currentServiceDetails,
+                      itemRate: Number(e.target.value),
+                    });
+                  }}
+                  value={currentServiceDetails.itemRate}
+                />
+              </div>
+              <div className="w-full md:max-w-52">
+                <Select
+                  options={gstCodeData}
+                  label="GST Code"
+                  onChange={(value) => {
+                    setCurrentServiceDetails({
+                      ...currentServiceDetails,
+                      gstCodeId: value,
+                    });
+                  }}
+                  value={currentServiceDetails.gstCodeId}
+                />
+              </div>
+              <div>
+                <Button
+                  onClick={handleAddService}
+                >
+                  <Plus className="w-5 h-5" />
+                  Add Service
+                </Button>
+              </div>
+            </div>
+            <PaginatedTable columns={servicesColumns} loadingState={loading}>
+              {selectedOrderDetails?.orderItems!.filter(item => item.serviceId !== "" && !item.productId).map((row, index) => (
+                <tr
+                  key={index}
+                  className="hover:bg-foreground duration-500 cursor-pointer border-b border-b-border"
+                >
+                  {columns.map((column) => (
+                    <td key={column} className="px-4 py-2">
+                      {column === "GST Code" ? (
+                        row?.gstCode?.code ?? "N/A"
+                      ) : column === "GST %" ? (
+                        row?.gstCode?.gst?.taxPercentage ?? "N/A"
+                      ) : column === "Amount" ? (
+                        formatIndianCurrency(row?.unitPrice * (row?.quantity ?? 1))
+                      ) : column === "Rate" ? (
+                        <div className="w-24">
+                          <Input
+                            name="itemRate"
+                            type="number"
+                            value={row.unitPrice}
+                            onChange={(e) => {
+                              setSelectedOrderDetails({
+                                ...selectedOrderDetails!,
+                                orderItems: selectedOrderDetails?.orderItems?.map((item) => {
+                                  if (item.serviceId === row.serviceId) {
+                                    item.unitPrice = Number(e.target.value);
+                                  }
+                                  return item;
+                                })
+                              });
+                            }}
+                          />
+                        </div>
+                      ) : column === "GST Amount" ? (
+                        formatIndianCurrency(
+                          Number(
+                            (
+                              Math.floor(
+                                ((row?.unitPrice *
+                                  (row?.quantity ?? 1) *
+                                  (row.product?.gstCode?.gst?.taxPercentage ?? 0)) /
+                                  100) *
+                                100
+                              ) / 100
+                            ).toFixed(2)
+                          )
+                        )
+                      ) : column === "Total Amount" ? (
+                        formatIndianCurrency(
+                          Number(
+                            (
+                              Math.floor(
+                                (row?.unitPrice * (row?.quantity ?? 1) +
+                                  (row?.unitPrice *
+                                    (row?.quantity ?? 1) *
+                                    (row.product?.gstCode?.gst?.taxPercentage ?? 0)) /
+                                  100) *
+                                100
+                              ) / 100
+                            ).toFixed(2)
+                          )
+                        )
+                      ) : column === "" ? (
+                        <Trash2
+                          className="w-5 h-5 text-red-500 cursor-pointer"
+                          onClick={() => removeServiceFromTable(row.serviceId!)}
+                        />
+                      ) :
+                        column === "Quantity" ? (
+                          <div className="w-16">
+                            <Input
+                              name="itemQuantity"
+                              type="number"
+                              value={row?.quantity}
+                              onChange={(e) => {
+                                setSelectedOrderDetails({
+                                  ...selectedOrderDetails!,
+                                  orderItems: selectedOrderDetails?.orderItems?.map((item) => {
+                                    if (item.serviceId === row.serviceId) {
+                                      item.quantity = Number(e.target.value);
+                                    }
+                                    return item;
+                                  })
+                                });
+                              }}
+                            />
+                          </div>
+                        ) : serviceData.find((service) => service.value === row.serviceId)?.label
+
+                      }
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </PaginatedTable>
+          </div>
+          <hr className="border border-border" />
           {/* Payment Details */}
           <div className="w-full flex flex-col space-y-3">
             <div>
               <h1 className="text-text font-semibold text-lg">
-                Payment Details
+                Payments
               </h1>
             </div>
             <div className="w-full flex flex-col space-y-3 md:space-y-0 md:flex md:flex-row">
