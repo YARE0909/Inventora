@@ -34,7 +34,7 @@ const Input: React.FC<CustomTextInputProps> = ({
             name={name}
             checked={!!value}
             onChange={onChange}
-            className="h-5 w-5 border border-border rounded-md bg-background cursor-pointer"
+            className="h-5 w-5 border-2 border-border rounded-md bg-background cursor-pointer"
           />
         );
       case "number":
@@ -47,7 +47,7 @@ const Input: React.FC<CustomTextInputProps> = ({
             onChange={onChange}
             placeholder={placeholder}
             required={required}
-            className="w-full p-2 bg-background rounded-md border border-border outline-none focus:outline-none text-sm"
+            className="w-full p-2 bg-background rounded-md border-2 border-border outline-none focus:outline-none text-sm"
           />
         );
       case "email":
@@ -60,7 +60,7 @@ const Input: React.FC<CustomTextInputProps> = ({
             onChange={onChange}
             placeholder={placeholder}
             required={required}
-            className="w-full p-2 bg-background rounded-md border border-border outline-none focus:outline-none text-sm"
+            className="w-full p-2 bg-background rounded-md border-2 border-border outline-none focus:outline-none text-sm"
           />
         );
       case "tel":
@@ -73,7 +73,7 @@ const Input: React.FC<CustomTextInputProps> = ({
             onChange={onChange}
             placeholder={placeholder}
             required={required}
-            className="w-full p-2 bg-background rounded-md border border-border outline-none focus:outline-none text-sm"
+            className="w-full p-2 bg-background rounded-md border-2 border-border outline-none focus:outline-none text-sm"
           />
         );
       case "date":
@@ -86,7 +86,7 @@ const Input: React.FC<CustomTextInputProps> = ({
             onChange={onChange}
             placeholder={placeholder}
             required={required}
-            className="w-full p-[0.44rem] bg-background rounded-md border border-border outline-none focus:outline-none text-sm"
+            className="w-full p-[0.44rem] bg-background rounded-md border-2 border-border outline-none focus:outline-none text-sm"
           />
         );
       case "textArea":
@@ -99,7 +99,7 @@ const Input: React.FC<CustomTextInputProps> = ({
             onChange={onChange}
             placeholder={placeholder}
             required={required}
-            className="w-full p-2 bg-background rounded-md border border-border outline-none focus:outline-none text-sm"
+            className="w-full p-2 bg-background rounded-md border-2 border-border outline-none focus:outline-none text-sm"
           />
         );
       default:
@@ -112,7 +112,7 @@ const Input: React.FC<CustomTextInputProps> = ({
             onChange={onChange}
             placeholder={placeholder}
             required={required}
-            className="w-full p-2 bg-background rounded-md border border-border outline-none focus:outline-none text-sm"
+            className="w-full p-2 bg-background rounded-md border-2 border-border outline-none focus:outline-none text-sm"
           />
         );
     }

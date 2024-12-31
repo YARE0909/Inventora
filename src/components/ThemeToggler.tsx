@@ -88,7 +88,7 @@ const ThemeToggler: React.FC = () => {
   return (
     <div
       onClick={toggleTheme}
-      className={`flex items-center justify-between w-fit h-fit p-1 rounded-full cursor-pointer ${theme === "light" ? "bg-sky-600/10" : "bg-yellow-100/10"}`}>
+      className={`flex items-center justify-between w-fit h-fit p-1 rounded-full cursor-pointer border-2 border-transparent duration-300 ${theme === "light" ? "bg-sky-600/10 hover:border-sky-700 hover:bg-transparent" : "bg-yellow-100/10 hover:border-yellow-400 hover:bg-transparent"}`}>
       {theme !== "light" ? (
         <Tooltip tooltip="Light Mode" position="left">
           <Sun className="w-6 h-6 text-yellow-400" />

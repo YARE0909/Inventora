@@ -55,7 +55,7 @@ const Select: React.FC<SelectProps> = ({
         </label>
       )}
       <div
-        className={`border border-border rounded-md p-2 bg-background cursor-pointer text-sm ${disabled ? "bg-background cursor-not-allowed" : ""
+        className={`border-2 border-border rounded-md p-2 bg-background cursor-pointer text-sm ${disabled ? "bg-background cursor-not-allowed" : ""
           }`}
         onClick={() => {
           if (!disabled) setIsDropdownOpen((prev) => !prev);
