@@ -16,6 +16,7 @@ model Customers {
   customerGST     String?
   billingAddress  String
   shippingAddress String
+  isActive        Boolean
   createdOn       DateTime
   orders          Orders[]
   invoices        Invoices[]
@@ -58,6 +59,7 @@ model Products {
   description  String
   price        Float
   gstCodeId    String         @db.ObjectId
+  isActive     Boolean
   createdOn    DateTime
   gstCode      GstCodes       @relation(fields: [gstCodeId], references: [id])
   orderItems   OrderItems[]

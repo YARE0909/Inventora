@@ -315,7 +315,7 @@ const Index = () => {
         }`
       );
       // map over response.data and assign id to value and taxPercentage to label
-      const data = response.data.map((product: Product) => ({
+      const data = response.data.filter((item: Product) => item.isActive).map((product: Product) => ({
         value: product.id,
         label: product.name.toString(),
       }));
@@ -335,7 +335,7 @@ const Index = () => {
         }`
       );
       // map over response.data and assign id to value and taxPercentage to label
-      const data = response.data.map((customer: Customer) => ({
+      const data = response.data.filter((item: Customer) => item.isActive).map((customer: Customer) => ({
         value: customer.id,
         label: customer.name,
       }));

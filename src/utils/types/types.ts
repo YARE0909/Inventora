@@ -7,6 +7,7 @@ export interface Customer {
   billingAddress: string;
   shippingAddress: string;
   customerGST?: string;
+  isActive?: boolean;
   createdOn?: Date | undefined;
   orders?: Order[];
   invoices?: Invoice[];
@@ -50,9 +51,10 @@ export interface Product {
   price: number;
   unitPrice?: number;
   gstCodeId: string;
+  isActive?: boolean;
+  quantity?: number;
   createdOn?: Date | undefined;
   gstCode?: GstCode;
-  quantity?: number;
   orderItems?: OrderItem[];
   invoiceItems?: InvoiceItem[];
 }

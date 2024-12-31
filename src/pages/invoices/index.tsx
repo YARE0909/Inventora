@@ -4,7 +4,7 @@ import PaginatedTable from "@/components/ui/PaginatedTable";
 import SearchBar from "@/components/ui/SearchBar";
 import Tabs from "@/components/ui/Tabs";
 import axios from "axios";
-import { FileSpreadsheet, FilterX, Plus } from "lucide-react";
+import { FileSpreadsheet, FilterX, Pencil, Plus } from "lucide-react";
 import { exportToCSV } from "@/utils/jsonToCsv";
 import Button from "@/components/ui/Button";
 import Tooltip from "@/components/ui/ToolTip";
@@ -98,7 +98,8 @@ const InvoiceTable = ({
     "Invoice Date",
     "Invoice Amount",
     "Customer",
-    "Comments"
+    "Comments",
+    ""
   ];
 
   const columnMappings: { [key: string]: keyof Invoice } = {
@@ -108,6 +109,8 @@ const InvoiceTable = ({
     Customer: "customer",
     Comments: "invoiceComments",
   };
+
+  const router = useRouter();
 
   return (
     <div className="w-full flex flex-col gap-3">
@@ -155,7 +158,15 @@ const InvoiceTable = ({
                     : column === "Invoice Amount"
                       ? formatIndianCurrency(
                         row[columnMappings[column] as keyof Invoice] as number)
-                      : row[columnMappings[column] as keyof Invoice]?.toString()}{" "}
+                      : column === "" ? (
+                        <div>
+                          <Tooltip tooltip="Edit Order" position="left">
+                            <Pencil className="w-5 h-5" onClick={() => {
+                              router.push(`/invoices/edit-invoice/${row.id}`);
+                            }} />
+                          </Tooltip>
+                        </div>
+                      ) : row[columnMappings[column] as keyof Invoice]?.toString()}{" "}
               </td>
             ))}
           </tr>

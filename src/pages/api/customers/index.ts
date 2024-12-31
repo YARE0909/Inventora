@@ -75,6 +75,7 @@ export default async function handler(
           email,
           phone,
           customerGST,
+          isActive,
           billingAddress,
           shippingAddress,
         } = req.body;
@@ -92,6 +93,7 @@ export default async function handler(
             email,
             phone,
             customerGST,
+            isActive,
             billingAddress,
             shippingAddress,
             createdOn: new Date(),
@@ -118,6 +120,7 @@ export default async function handler(
             phone: updateData.phone,
             email: updateData.email,
             customerGST: updateData.customerGST,
+            isActive: updateData.isActive,
             billingAddress: updateData.billingAddress,
             shippingAddress: updateData.shippingAddress,
           },

@@ -15,13 +15,66 @@ export default async function handler(
       case "GET": {
         const { id, status, clientName, orderNumber, startDate, endDate } =
           req.query;
+        try {
+          const filter: Prisma.OrdersWhereInput = {};
 
-        const filter: Prisma.OrdersWhereInput = {};
+          if (id && typeof id === "string") {
+            // Fetch a single order by id
+            const order = await prisma.orders.findUnique({
+              where: { id },
+              include: {
+                customer: true,
+                orderItems: {
+                  include: {
+                    product: {
+                      include: {
+                        gstCode: {
+                          include: {
+                            gst: true,
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+                orderAdvanceDetails: true,
+              },
+            });
 
-        if (id && typeof id === "string") {
-          // Fetch a single order by id
-          const order = await prisma.orders.findUnique({
-            where: { id },
+            if (!order) {
+              return res.status(404).json({ error: "Order not found" });
+            }
+
+            return res.status(200).json(order); // Return as an object
+          }
+
+          if (status && typeof status === "string") {
+            filter.orderStatus =
+              OrderStatus[status as keyof typeof OrderStatus];
+          }
+
+          if (clientName && typeof clientName === "string") {
+            filter.customer = {
+              name: { contains: clientName, mode: "insensitive" },
+            };
+          }
+
+          if (orderNumber && typeof orderNumber === "string") {
+            filter.orderNumber = { contains: orderNumber, mode: "insensitive" };
+          }
+
+          if (startDate || endDate) {
+            filter.orderDate = {};
+            if (startDate && typeof startDate === "string") {
+              filter.orderDate.gte = new Date(startDate);
+            }
+            if (endDate && typeof endDate === "string") {
+              filter.orderDate.lte = new Date(endDate);
+            }
+          }
+
+          const orders = await prisma.orders.findMany({
+            where: filter,
             include: {
               customer: true,
               orderItems: {
@@ -41,59 +94,11 @@ export default async function handler(
             },
           });
 
-          if (!order) {
-            return res.status(404).json({ error: "Order not found" });
-          }
-
-          return res.status(200).json(order); // Return as an object
+          return res.status(200).json(orders);
+        } catch (error) {
+          console.error("Error fetching orders:", error);
+          return res.status(500).json({ error: "Internal Server Error" });
         }
-
-        if (status && typeof status === "string") {
-          filter.orderStatus = OrderStatus[status as keyof typeof OrderStatus];
-        }
-
-        if (clientName && typeof clientName === "string") {
-          filter.customer = {
-            name: { contains: clientName, mode: "insensitive" },
-          };
-        }
-
-        if (orderNumber && typeof orderNumber === "string") {
-          filter.orderNumber = { contains: orderNumber, mode: "insensitive" };
-        }
-
-        if (startDate || endDate) {
-          filter.orderDate = {};
-          if (startDate && typeof startDate === "string") {
-            filter.orderDate.gte = new Date(startDate);
-          }
-          if (endDate && typeof endDate === "string") {
-            filter.orderDate.lte = new Date(endDate);
-          }
-        }
-
-        const orders = await prisma.orders.findMany({
-          where: filter,
-          include: {
-            customer: true,
-            orderItems: {
-              include: {
-                product: {
-                  include: {
-                    gstCode: {
-                      include: {
-                        gst: true,
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            orderAdvanceDetails: true,
-          },
-        });
-
-        return res.status(200).json(orders);
       }
 
       case "POST": {

@@ -3,9 +3,6 @@ import React, { useEffect } from "react";
 import { format } from "date-fns";
 import PaginatedTable from "@/components/ui/PaginatedTable";
 import formatIndianCurrency from "@/utils/formatIndianCurrency";
-import { Pencil } from "lucide-react";
-import Tooltip from "@/components/ui/ToolTip";
-import { useRouter } from "next/router";
 
 const invoiceItemsColumns = [
   "Product",
@@ -56,12 +53,6 @@ const InvoiceDetailDrawer = ({
     return format(new Date(date), "dd-MMM-yyyy"); // Format to "01-Jan-2024"
   };
 
-  const router = useRouter();
-
-  const handleOnEdit = () => {
-    router.push(`invoices/edit-invoice/${selectedInvoiceDetails.id}`);
-  }
-
   useEffect(() => {
     console.log("Selected Order Details:", selectedInvoiceDetails);
   }, [selectedInvoiceDetails]);
@@ -76,11 +67,6 @@ const InvoiceDetailDrawer = ({
             <div className="w-full flex justify-between items-center">
               <div>
                 <h1 className="font-bold text-text text-lg">Invoice Details</h1>
-              </div>
-              <div>
-                <Tooltip tooltip="Edit Order" position="left">
-                  <Pencil className="w-5 h-5" onClick={handleOnEdit} />
-                </Tooltip>
               </div>
             </div>
             <div className="w-full rounded-md bg-background p-4 border border-border flex flex-col space-y-3">

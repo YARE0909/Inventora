@@ -5,7 +5,7 @@ import SearchBar from "@/components/ui/SearchBar";
 import Tabs from "@/components/ui/Tabs";
 import axios from "axios";
 import { format } from "date-fns";
-import { FileSpreadsheet, FilterX, Plus } from "lucide-react";
+import { FileSpreadsheet, FilterX, Pencil, Plus } from "lucide-react";
 import { exportToCSV } from "@/utils/jsonToCsv";
 import Button from "@/components/ui/Button";
 import Tooltip from "@/components/ui/ToolTip";
@@ -112,6 +112,7 @@ const OrderTable = ({
     "Customer",
     "Delivery Date",
     "Comments",
+    ""
   ];
 
   const columnMappings: { [key: string]: keyof Order } = {
@@ -127,6 +128,8 @@ const OrderTable = ({
   const formatDate = (date: string) => {
     return format(new Date(date), "dd-MMM-yyyy"); // Format to "01-Jan-2024"
   };
+
+  const router = useRouter();
 
   return (
     <div className="w-full flex flex-col gap-3">
@@ -176,7 +179,17 @@ const OrderTable = ({
                       ? formatIndianCurrency(
                         row[columnMappings[column] as keyof Order] as number
                       )
-                      : row[columnMappings[column] as keyof Order]?.toString()}{" "}
+                      :
+                      column === "" ?
+                        (
+                          <div>
+                            <Tooltip tooltip="Edit Order" position="left">
+                              <Pencil className="w-5 h-5" onClick={() => {
+                                router.push(`/orders/edit-order/${row.id}`);
+                              }} />
+                            </Tooltip>
+                          </div>
+                        ) : row[columnMappings[column] as keyof Order]?.toString()}{" "}
               </td>
             ))}
           </tr>

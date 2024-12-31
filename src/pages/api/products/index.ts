@@ -67,7 +67,7 @@ export default async function handler(
 
       // Create a new product
       case "POST": {
-        const { name, description, price, gstCodeId } = req.body;
+        const { name, description, price, gstCodeId, isActive } = req.body;
 
         if (!name || !description || !price || !gstCodeId) {
           return res.status(400).json({
@@ -82,6 +82,7 @@ export default async function handler(
             description,
             price: parseFloat(price),
             gstCodeId,
+            isActive,
             createdOn: new Date(),
           },
         });
@@ -106,6 +107,7 @@ export default async function handler(
               name: updateData.name,
               description: updateData.description,
               price: Number(updateData.price),
+              isActive: updateData.isActive,
               gstCodeId: updateData.gstCodeId,
             },
           });

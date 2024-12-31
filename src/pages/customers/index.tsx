@@ -21,6 +21,7 @@ const columns = [
   "Billing Address",
   "Shipping Address",
   "GST",
+  "Active",
   ""
 ];
 
@@ -47,6 +48,7 @@ const Index = () => {
     email: "",
     phone: "",
     customerGST: "",
+    isActive: false,
     billingAddress: "",
     shippingAddress: "",
   });
@@ -58,6 +60,7 @@ const Index = () => {
     email: "",
     phone: "",
     customerGST: "",
+    isActive: false,
     billingAddress: "",
     shippingAddress: "",
   });
@@ -121,6 +124,7 @@ const Index = () => {
       email: "",
       phone: "",
       customerGST: "",
+      isActive: false,
       billingAddress: "",
       shippingAddress: "",
     });
@@ -135,26 +139,27 @@ const Index = () => {
       email: "",
       phone: "",
       customerGST: "",
+      isActive: false,
       billingAddress: "",
       shippingAddress: "",
     });
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
     setFormState((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
   const handleEditInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
     setEditFormState((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: type === "checkbox" ? checked : value,
     }));
-  }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -273,9 +278,14 @@ const Index = () => {
                         {row.customerGST ? row.customerGST : "N/A"}
                       </span>
                     ) :
-                      (
-                        (row[columnMappings[column] as keyof Customer] as string)
-                      )}
+                      column === "Active" ? (
+                        <span>
+                          {row.isActive ? "Yes" : "No"}
+                        </span>
+                      ) :
+                        (
+                          (row[columnMappings[column] as keyof Customer] as string)
+                        )}
                 </td>
               ))}
             </tr>
@@ -330,6 +340,15 @@ const Index = () => {
             onChange={handleInputChange}
             required
             label="GST Number"
+          />
+          <Input
+            type="checkbox"
+            id="isActive"
+            name="isActive"
+            value={formData.isActive}
+            onChange={handleInputChange}
+            required
+            label="Is Active"
           />
           <Input
             type="text"
@@ -405,6 +424,14 @@ const Index = () => {
               onChange={handleEditInputChange}
               required
               label="Customer GST"
+            />
+            <Input
+              type="checkbox"
+              id="isActive"
+              name="isActive"
+              value={editFormData.isActive}
+              onChange={handleEditInputChange}
+              label="Is Active"
             />
             <Input
               type="text"

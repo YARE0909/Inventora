@@ -14,7 +14,7 @@ import Input from "@/components/ui/Input";
 import Select from "@/components/ui/SelectComponent";
 import formatIndianCurrency from "@/utils/formatIndianCurrency";
 
-const columns = ["name", "description", "price", "GST Code", "GST %", ""];
+const columns = ["name", "description", "price", "GST Code", "GST %", "Active", ""];
 
 const Index = () => {
   const [data, setData] = useState<Product[]>([]);
@@ -35,6 +35,7 @@ const Index = () => {
     description: "",
     price: 0,
     gstCodeId: "",
+    isActive: false,
   });
   const [editFormData, setEditFormState] = useState<Product>({
     id: "",
@@ -42,6 +43,7 @@ const Index = () => {
     description: "",
     price: 0,
     gstCodeId: "",
+    isActive: false,
   });
 
   const fetchData = async (filter?: string) => {
@@ -68,6 +70,7 @@ const Index = () => {
         name: response.data.name,
         description: response.data.description,
         price: response.data.price,
+        isActive: response.data.isActive,
         gstCodeId: response.data.gstCodeId,
       });
     } catch {
@@ -126,12 +129,13 @@ const Index = () => {
   };
 
   const handleCloseModal = () => {
-    setIsEditModalOpen(false);
+    setIsModalOpen(false);
     setFormState({
       name: "",
       description: "",
       price: 0,
       gstCodeId: "",
+      isActive: false,
     });
   };
 
@@ -143,6 +147,7 @@ const Index = () => {
       description: "",
       price: 0,
       gstCodeId: "",
+      isActive: false,
     });
   };
 
@@ -293,6 +298,8 @@ const Index = () => {
                           <Tooltip tooltip="Edit">
                             <Pencil className="w-4 h-4" onClick={() => handleOpenEditModal(row.id)} />
                           </Tooltip>
+                        ) : column === "Active" ? (
+                          row.isActive ? "Yes" : "No"
                         ) : (row[column as keyof Product] as string)}
                 </td>
               ))}
@@ -331,12 +338,19 @@ const Index = () => {
             required
             label="Price"
           />
+          <Input
+            type="checkbox"
+            id="isActive"
+            name="isActive"
+            value={formData.isActive}
+            onChange={handleInputChange}
+            label="Is Active"
+          />
           <Select
             options={gstCodeData}
             label="GST Code"
             onChange={handleChange}
           />
-
           <hr className="border border-border" />
           <div className="w-full flex space-x-3">
             <Button type="submit">Save</Button>
@@ -375,6 +389,14 @@ const Index = () => {
               onChange={handleEditInputChange}
               required
               label="Price"
+            />
+            <Input
+              type="checkbox"
+              id="isActive"
+              name="isActive"
+              value={editFormData.isActive}
+              onChange={handleEditInputChange}
+              label="Is Active"
             />
             <Select
               options={gstCodeData}

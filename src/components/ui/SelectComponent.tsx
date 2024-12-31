@@ -48,7 +48,7 @@ const Select: React.FC<SelectProps> = ({
   };
 
   return (
-    <div className="relative w-full">
+    <div className={`relative w-full ${disabled && "bg-background cursor-not-allowed"}`}>
       {showLabel && (
         <label className="block text-sm text-textAlt font-semibold mb-1">
           {label}
@@ -63,33 +63,35 @@ const Select: React.FC<SelectProps> = ({
       >
         {selectedValue || "Select an option"}
       </div>
-      {isDropdownOpen && !disabled && (
-        <div className="absolute z-10 bg-background border border-border rounded-md mt-1 w-full">
-          <input
-            type="text"
-            placeholder={placeholder}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-background rounded-md border-b border-border p-2 focus:outline-none"
-          />
-          <ul className="max-h-48 overflow-y-auto">
-            {filteredOptions.length > 0 ? (
-              filteredOptions.map((option) => (
-                <li
-                  key={option.value}
-                  onClick={() => handleOptionSelect(option.value, option.label)}
-                  className="p-2 hover:bg-highlight cursor-pointer"
-                >
-                  {option.label}
-                </li>
-              ))
-            ) : (
-              <li className="p-2 text-gray-500">No options found</li>
-            )}
-          </ul>
-        </div>
-      )}
-    </div>
+      {
+        isDropdownOpen && !disabled && (
+          <div className="absolute z-10 bg-background border border-border rounded-md mt-1 w-full">
+            <input
+              type="text"
+              placeholder={placeholder}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full bg-background rounded-md border-b border-border p-2 focus:outline-none"
+            />
+            <ul className="max-h-48 overflow-y-auto">
+              {filteredOptions.length > 0 ? (
+                filteredOptions.map((option) => (
+                  <li
+                    key={option.value}
+                    onClick={() => handleOptionSelect(option.value, option.label)}
+                    className="p-2 hover:bg-highlight cursor-pointer"
+                  >
+                    {option.label}
+                  </li>
+                ))
+              ) : (
+                <li className="p-2 text-gray-500">No options found</li>
+              )}
+            </ul>
+          </div>
+        )
+      }
+    </div >
   );
 };
 
