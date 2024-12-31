@@ -76,6 +76,7 @@ const Index = () => {
     {
       value: string;
       label: string;
+      status: boolean;
     }[]
   >([]);
   const [customerData, setCustomerData] = useState<
@@ -237,9 +238,10 @@ const Index = () => {
         }`
       );
       // map over response.data and assign id to value and taxPercentage to label
-      const data = response.data.filter((item: Product) => item.isActive).map((product: Product) => ({
+      const data = response.data.map((product: Product) => ({
         value: product.id,
         label: product.name.toString(),
+        status: product.isActive,
       }));
 
       setProductData(data);
@@ -566,7 +568,7 @@ const Index = () => {
                 <div className="w-full flex space-x-3 items-end">
                   <div className="w-full md:max-w-80">
                     <Select
-                      options={productData}
+                      options={productData.filter((product) => product.status)}
                       label="Product"
                       onChange={(value) => {
                         selectProductChange(value, "productId");
