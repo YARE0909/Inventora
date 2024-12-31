@@ -73,6 +73,7 @@ const Index = () => {
     {
       value: string;
       label: string;
+      status: boolean;
     }[]
   >([]);
   const [customerData, setCustomerData] = useState<
@@ -430,6 +431,7 @@ const Index = () => {
       const data = response.data.map((service: Service) => ({
         value: service.id,
         label: service.name.toString(),
+        status: service.isActive,
       }));
 
       setServiceData(data);
@@ -895,7 +897,7 @@ const Index = () => {
             <div className="w-full flex items-end gap-2">
               <div className="w-full md:max-w-80">
                 <Select
-                  options={serviceData}
+                  options={serviceData.filter((service) => service.status)}
                   label="Service"
                   onChange={(value) => {
                     setCurrentServiceDetails({
