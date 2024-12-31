@@ -457,7 +457,7 @@ const Index = () => {
                       </span>
                       {
                         formData.orderItems?.reduce(
-                          (acc, item) => acc + item.totalAmount,
+                          (acc, item) => acc + item.totalAmount!,
                           0
                         ) || 0
 
