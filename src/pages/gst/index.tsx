@@ -151,7 +151,7 @@ const Index = () => {
           taxPercentage: Number(taxPercentage),
         }
       );
-      toast("Gst created successfully!", "top-right", "success");
+      toast("GST created successfully!", "top-right", "success");
       fetchData();
       handleCloseModal();
     } catch {
@@ -172,7 +172,7 @@ const Index = () => {
           taxPercentage: Number(taxPercentage),
         }
       );
-      toast("Gst updated successfully!", "top-right", "success");
+      toast("GST updated successfully!", "top-right", "success");
       fetchData();
       handleCloseEditModal();
     } catch {
@@ -303,7 +303,7 @@ const Index = () => {
             <hr className="border border-border" />
             <div className="w-full flex space-x-3">
               <Button type="submit">Save</Button>
-              <Button classname="text-red-500 border-red-500 bg-red-500/20 hover:bg-background" onClick={() => handleDeleteGst(editFormData.id!)}>Delete</Button>
+              <Button classname="text-red-500 border-transparent bg-red-500/20 hover:bg-background" onClick={() => handleDeleteGst(editFormData.id!)}>Delete</Button>
             </div>
           </form>
         ) : (

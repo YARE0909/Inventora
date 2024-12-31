@@ -75,18 +75,36 @@ export default async function handler(
           const filter: Prisma.InvoicesWhereInput = {};
           if (paymentStatus && typeof paymentStatus === "string") {
             if (paymentStatus === "Pending") {
-              // Include invoices with no payments or pending payments
+              // Include invoices with no payments, pending payments, or partially paid
               filter.OR = [
                 {
                   payments: {
                     some: {
-                      paymentStatus: "Pending" as PaymentStatus,
+                      paymentStatus: {
+                        in: ["Pending", "PartiallyPaid"] as PaymentStatus[],
+                      },
                     },
                   },
                 },
                 {
                   payments: {
                     none: {},
+                  },
+                },
+              ];
+            } else if (paymentStatus === "Paid") {
+              // Include invoices where all payments have the status "Paid"
+              filter.AND = [
+                {
+                  payments: {
+                    some: {},
+                  },
+                },
+                {
+                  payments: {
+                    every: {
+                      paymentStatus: "Paid" as PaymentStatus,
+                    },
                   },
                 },
               ];

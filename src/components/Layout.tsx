@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Menu,
   ArrowLeft,
@@ -9,9 +9,6 @@ import {
   ArrowDownAZ,
   Package,
   Container,
-  CircleUserRound,
-  LogOut,
-  Settings,
   ReceiptIndianRupee,
   FilePlus2,
   Forklift,
@@ -19,7 +16,6 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/router";
 import ThemeToggler from "./ThemeToggler";
-import { Accordion, AccordionContent, AccordionHeader } from "./ui/Accordian";
 
 const sideBarLinks = [
   {
@@ -118,17 +114,7 @@ const Sidebar = ({
   onClose: () => void;
   businessName: string;
 }) => {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
-
   const router = useRouter();
-
-  const toggleAccordion = (index: number) => {
-    setOpenIndex(openIndex === index ? null : index);
-  };
-
-  const handleUserLogout = () => {
-    // TODO: Implement user logout
-  };
 
   return (
     <div
@@ -167,8 +153,8 @@ const Sidebar = ({
                   <Link
                     href={link.href}
                     className={`text-sm font-semibold p-1 pl-2 mt-[2px] rounded-md cursor-pointer duration-500 flex items-center gap-1 ${router.pathname === link.href
-                      ? "bg-highlight border border-border"
-                      : "hover:bg-highlight border border-transparent hover:border hover:border-border"
+                      ? "bg-highlight border-2 border-transparent"
+                      : "border-2 border-transparent hover:border-highlight"
                       }`}
                   >
                     {link.icon}
@@ -180,28 +166,6 @@ const Sidebar = ({
           ))}
         </div>
       </div>
-      <Accordion>
-        <AccordionHeader onClick={() => toggleAccordion(0)}
-          isOpen={openIndex === 0}>
-          <div className="w-full flex items-center gap-1">
-            <CircleUserRound className="w-6 h-6" />
-            <h1 className="font-bold text-xl">John Doe</h1>
-          </div>
-        </AccordionHeader>
-        <AccordionContent isOpen={openIndex === 0}>
-          <div className="w-full flex flex-col gap-2">
-            <button className="w-full flex gap-1 items-center hover:bg-highlight border border-transparent hover:border hover:border-border duration-500 text-textAlt hover:text-text cursor-pointer px-2 py-1 rounded-md" onClick={handleUserLogout}>
-              <Settings className="w-5 h-5" />
-              <h1 className="font-semibold">Settings</h1>
-            </button>
-            <button className="w-full flex gap-1 items-center hover:bg-highlight border border-transparent hover:border hover:border-border duration-500 text-red-700 hover:text-red-600 cursor-pointer px-2 py-1 rounded-md" onClick={handleUserLogout}>
-              <LogOut className="w-5 h-5" />
-              <h1 className="font-semibold">Logout</h1>
-            </button>
-            {/* Add More Options Below */}
-          </div>
-        </AccordionContent>
-      </Accordion>
     </div>
   );
 };

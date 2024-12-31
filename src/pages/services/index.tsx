@@ -349,7 +349,7 @@ const ServicesPage = () => {
           <div className="flex justify-between mt-4 gap-2">
             <Button type="submit">Save</Button>
             <Button
-              classname="text-red-500 border-red-500 bg-red-500/20 hover:bg-background"
+              classname="text-red-500 border-transparent bg-red-500/20 hover:bg-background"
               onClick={() =>
                 handleDeleteService(editFormData.id!)
               }>Delete</Button>

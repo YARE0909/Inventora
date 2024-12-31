@@ -228,7 +228,7 @@ export default function Home() {
         const response = await axios.get(
           `${process.env.NEXT_PUBLIC_BASE_URL}/api/orders?status=${filterMapping[activeTab]}`
         );
-        setData(response.data);
+        setData(response.data.reverse());
         setLoading(false);
       } catch {
         toast("Something went wrong.", "top-right", "error");
@@ -248,7 +248,7 @@ export default function Home() {
               <div>
                 <h1 className="text-text flex items-center gap-2">
                   <span className="text-sm text-textAlt">
-                    Total Orders Amount{" "}
+                    Total Orders{" "}
                   </span>
                   {formatIndianCurrency(
                     data.reduce((acc, curr) => acc + curr.orderValue, 0) || 0
@@ -284,7 +284,7 @@ export default function Home() {
               <div>
                 <h1 className="text-text flex items-center gap-2">
                   <span className="text-sm text-textAlt">
-                    Total Orders Amount{" "}
+                    Total Orders{" "}
                   </span>
                   {formatIndianCurrency(
                     data.reduce((acc, curr) => acc + curr.orderValue, 0) || 0
@@ -320,7 +320,7 @@ export default function Home() {
               <div>
                 <h1 className="text-text flex items-center gap-2">
                   <span className="text-sm text-textAlt">
-                    Total Orders Amount{" "}
+                    Total Orders{" "}
                   </span>
                   {formatIndianCurrency(
                     data.reduce((acc, curr) => acc + curr.orderValue, 0) || 0
@@ -356,7 +356,7 @@ export default function Home() {
               <div>
                 <h1 className="text-text flex items-center gap-2">
                   <span className="text-sm text-textAlt">
-                    Total Orders Amount{" "}
+                    Total Orders{" "}
                   </span>
                   {formatIndianCurrency(
                     data.reduce((acc, curr) => acc + curr.orderValue, 0) || 0

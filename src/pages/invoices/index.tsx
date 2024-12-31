@@ -199,7 +199,7 @@ export default function Home() {
         const response = await axios.get(
           `${process.env.NEXT_PUBLIC_BASE_URL}/api/invoices?paymentStatus=${activeTab}`
         );
-        setData(response.data);
+        setData(response.data.reverse());
         setLoading(false);
       } catch {
         toast("Something went wrong.", "top-right", "error");
@@ -219,7 +219,7 @@ export default function Home() {
               <div>
                 <h1 className="text-text flex items-center gap-2">
                   <span className="text-sm text-textAlt">
-                    Total Invoice Amount{" "}
+                    Total Invoice{" "}
                   </span>
                   {formatIndianCurrency(
                     data.reduce((acc, curr) => acc + curr.invoiceAmount, 0) || 0
@@ -255,43 +255,7 @@ export default function Home() {
               <div>
                 <h1 className="text-text flex items-center gap-2">
                   <span className="text-sm text-textAlt">
-                    Total Invoice Amount{" "}
-                  </span>
-                  {formatIndianCurrency(
-                    data.reduce((acc, curr) => acc + curr.invoiceAmount, 0) || 0
-                  )}
-                </h1>
-              </div>
-              <div>
-                <Button
-                  onClick={() => {
-                    router.push("/invoices/create-invoice");
-                  }}
-                >
-                  <Plus className="w-5 h-5" />
-                  New Invoice
-                </Button>
-              </div>
-            </div>
-          }
-          data={data}
-          activeTab={activeTab}
-          setData={setData}
-          loading={loading}
-          setLoading={setLoading}
-        />
-      ),
-    },
-    {
-      label: "PartiallyPaid",
-      content: (
-        <InvoiceTable
-          header={
-            <div className="w-fit flex space-x-3 items-center">
-              <div>
-                <h1 className="text-text flex items-center gap-2">
-                  <span className="text-sm text-textAlt">
-                    Total Invoice Amount{" "}
+                    Total Invoice{" "}
                   </span>
                   {formatIndianCurrency(
                     data.reduce((acc, curr) => acc + curr.invoiceAmount, 0) || 0

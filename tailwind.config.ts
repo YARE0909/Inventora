@@ -10,6 +10,7 @@ export default {
     extend: {
       colors: {
         background: "var(--background)",
+        backgroundAlt: "var(--backgroundAlt)",
         foreground: "var(--foreground)",
         border: "var(--border-color)",
         textAlt: "var(--alt-text)",

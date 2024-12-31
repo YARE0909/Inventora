@@ -1,5 +1,6 @@
 import { Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
+import Tooltip from "./ui/ToolTip";
 
 const ThemeToggler: React.FC = () => {
   const [theme, setTheme] = useState<"light" | "dark">("dark"); // Default to dark during SSR
@@ -15,17 +16,19 @@ const ThemeToggler: React.FC = () => {
     const root = document.documentElement;
 
     const lightTheme = {
-      "--background": "#e5e5e3",
-      "--foreground": "#eaeae8",
+      "--background": "#ffffff",
+      "--backgroundAlt": "#f2f0ff",
+      "--foreground": "#E3DFFD30",
       "--default-text": "#000000",
-      "--border-color": "#c4c4c4",
+      "--border-color": "#d7d1fd",
       "--alt-text": "#4c4c54",
-      "--highlight": "#f5f5f5",
-      "--button": "#f5f5f5",
+      "--highlight": "#d7d1fd",
+      "--button": "#d7d1fd",
     };
 
     const darkTheme = {
       "--background": "#1a1a1c",
+      "--backgroundAlt": "#151517",
       "--foreground": "#151517",
       "--default-text": "#ffffff",
       "--border-color": "#3b3b3b",
@@ -52,16 +55,18 @@ const ThemeToggler: React.FC = () => {
     const themeVariables =
       newTheme === "light"
         ? {
-          "--background": "#e5e5e3",
-          "--foreground": "#eaeae8",
+          "--background": "#ffffff",
+          "--backgroundAlt": "#f2f0ff",
+          "--foreground": "#E3DFFD30",
           "--default-text": "#000000",
-          "--border-color": "#c4c4c4",
+          "--border-color": "#d7d1fd",
           "--alt-text": "#4c4c54",
-          "--highlight": "#f5f5f5",
-          "--button": "#f5f5f5",
+          "--highlight": "#d7d1fd",
+          "--button": "#d7d1fd",
         }
         : {
           "--background": "#1a1a1c",
+          "--backgroundAlt": "#151517",
           "--foreground": "#151517",
           "--default-text": "#ffffff",
           "--border-color": "#3b3b3b",
@@ -83,16 +88,15 @@ const ThemeToggler: React.FC = () => {
   return (
     <div
       onClick={toggleTheme}
-      className="flex items-center justify-between w-fit h-fit p-1 rounded-full cursor-pointer bg-foreground"
-      style={{
-        boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
-        transition: "background-color 0.5s",
-      }}
-    >
-      {theme === "light" ? (
-        <Sun className="w-6 h-6 text-textAlt" />
+      className={`flex items-center justify-between w-fit h-fit p-1 rounded-full cursor-pointer ${theme === "light" ? "bg-sky-600/10" : "bg-yellow-100/10"}`}>
+      {theme !== "light" ? (
+        <Tooltip tooltip="Light Mode" position="left">
+          <Sun className="w-6 h-6 text-yellow-400" />
+        </Tooltip>
       ) : (
-        <Moon className="w-6 h-6 text-textAlt" />
+        <Tooltip tooltip="Dark Mode" position="left">
+          <Moon className="w-6 h-6 text-sky-700" />
+        </Tooltip>
       )}
     </div>
   );
