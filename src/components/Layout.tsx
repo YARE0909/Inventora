@@ -14,6 +14,7 @@ import {
   Settings,
   ReceiptIndianRupee,
   FilePlus2,
+  Forklift,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -50,12 +51,12 @@ const sideBarLinks = [
     category: "INVOICES",
     links: [
       {
-        name: "INVOICES",
+        name: "Invoices",
         icon: <ReceiptIndianRupee className="w-5 h-5" />,
         href: "/invoices",
       },
       {
-        name: "NEW INVOICE",
+        name: "New Invoice",
         icon: <FilePlus2 className="w-5 h-5" />,
         href: "/invoices/create-invoice",
       },
@@ -100,8 +101,8 @@ const sideBarLinks = [
     category: "SERVICES",
     links: [
       {
-        name: "Products",
-        icon: <Package className="w-5 h-5" />,
+        name: "Services",
+        icon: <Forklift className="w-5 h-5" />,
         href: "/services",
       },
     ],

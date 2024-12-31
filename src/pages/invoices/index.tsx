@@ -150,14 +150,11 @@ const InvoiceTable = ({
                 {column === "Invoice Date"
                   ? formatDate(
                     row[columnMappings[column] as keyof Invoice] as string
-                  )
-                  :
-                  column === "Customer"
+                  ) : column === "Customer"
                     ? row?.customer?.name
-                    : column === "Total Amount"
+                    : column === "Invoice Amount"
                       ? formatIndianCurrency(
-                        row[columnMappings[column] as keyof Invoice] as number
-                      )
+                        row[columnMappings[column] as keyof Invoice] as number)
                       : row[columnMappings[column] as keyof Invoice]?.toString()}{" "}
               </td>
             ))}

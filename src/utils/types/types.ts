@@ -105,7 +105,7 @@ export interface Invoice {
   reconciledInvoiceAmount: number;
   reconcileComments: string;
   discountAmount: number;
-  customerGst: string;
+  customerGst?: string | null;
   invoiceComments?: string;
   createdOn?: Date | undefined;
   order?: Order;

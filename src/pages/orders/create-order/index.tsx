@@ -543,7 +543,9 @@ const Index = () => {
                       {column === "GST Code" ? (
                         row.gstCode?.code ?? "N/A"
                       ) : column === "GST %" ? (
-                        row.gstCode?.gst?.taxPercentage ?? "N/A"
+                        row.gstCode?.gst?.taxPercentage ?
+                          `${row.gstCode?.gst?.taxPercentage} %` :
+                          "N/A"
                       ) : column === "Amount" ? (
                         formatIndianCurrency(row.price * (row.quantity ?? 1))
                       ) : column === "Unit Price" ? (

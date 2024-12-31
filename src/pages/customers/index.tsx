@@ -20,6 +20,7 @@ const columns = [
   "Phone",
   "Billing Address",
   "Shipping Address",
+  "GST",
   ""
 ];
 
@@ -45,6 +46,7 @@ const Index = () => {
     contactPerson: "",
     email: "",
     phone: "",
+    customerGST: "",
     billingAddress: "",
     shippingAddress: "",
   });
@@ -55,6 +57,7 @@ const Index = () => {
     contactPerson: "",
     email: "",
     phone: "",
+    customerGST: "",
     billingAddress: "",
     shippingAddress: "",
   });
@@ -117,6 +120,7 @@ const Index = () => {
       contactPerson: "",
       email: "",
       phone: "",
+      customerGST: "",
       billingAddress: "",
       shippingAddress: "",
     });
@@ -130,6 +134,7 @@ const Index = () => {
       contactPerson: "",
       email: "",
       phone: "",
+      customerGST: "",
       billingAddress: "",
       shippingAddress: "",
     });
@@ -263,6 +268,10 @@ const Index = () => {
                       <Tooltip tooltip="Edit">
                         <Pencil className="w-4 h-4" onClick={() => handleEditCustomer(row.id)} />
                       </Tooltip>
+                    ) : column === "GST" ? (
+                      <span>
+                        {row.customerGST ? row.customerGST : "N/A"}
+                      </span>
                     ) :
                       (
                         (row[columnMappings[column] as keyof Customer] as string)
@@ -312,6 +321,15 @@ const Index = () => {
             onChange={handleInputChange}
             required
             label="Phone"
+          />
+          <Input
+            type="text"
+            id="customerGST"
+            name="customerGST"
+            value={formData.customerGST}
+            onChange={handleInputChange}
+            required
+            label="GST Number"
           />
           <Input
             type="text"
@@ -378,6 +396,15 @@ const Index = () => {
               onChange={handleEditInputChange}
               required
               label="Phone"
+            />
+            <Input
+              type="text"
+              id="customerGST"
+              name="customerGST"
+              value={editFormData.customerGST}
+              onChange={handleEditInputChange}
+              required
+              label="Customer GST"
             />
             <Input
               type="text"

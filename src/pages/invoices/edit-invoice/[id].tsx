@@ -484,7 +484,11 @@ const Index = () => {
       return toast("Please select an invoice date", "top-right", "warning");
     }
 
-    console.log({ formData });
+    const customerData = await axios.get(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/customers?id=${formData.customerId}`
+    );
+
+    const customer: Customer = customerData.data;
 
     const dataToSend: Invoice = {
       id: invoiceId,
@@ -502,7 +506,7 @@ const Index = () => {
       reconciledInvoiceAmount: Number(formData.reconciledInvoiceAmount),
       reconcileComments: formData.reconcileComments,
       discountAmount: formData.discountAmount,
-      customerGst: formData.customerGst,
+      customerGst: customer.customerGST,
       invoiceComments: formData.invoiceComments,
       invoiceItems: formData?.invoiceItems!.map((item) => ({
         ...(item.productId ? { productId: item.productId } : { serviceId: item.serviceId }),

@@ -277,7 +277,7 @@ const OrderDetailDrawer = ({
                                   )
                                 )
                                 : column === "GST %"
-                                  ? item.product?.gstCode?.gst?.taxPercentage
+                                  ? `${item.product?.gstCode?.gst?.taxPercentage || 'N/A'} %`
                                   : column === "GST Amount"
                                     ? formatIndianCurrency(
                                       Number(

@@ -103,7 +103,7 @@ const Index = () => {
         }`
       );
       // map over response.data and assign id to value and taxPercentage to label
-      const data = response.data.map((gst: Gst) => ({
+      const data = response.data.filter((item: Gst) => item.isActive).map((gst: Gst) => ({
         value: gst.id,
         label: gst.taxPercentage.toString(),
       }));
@@ -308,7 +308,9 @@ const Index = () => {
                     : column === "Status"
                       ? row.isActive ? "Active" : "Inactive"
                       : column === "GST %"
-                        ? row.gst?.taxPercentage ?? "N/A"
+                        ? row.gst?.taxPercentage ?
+                          `${row.gst?.taxPercentage} %` :
+                          "N/A"
                         : column === "" ? (
                           <Tooltip tooltip="Edit">
                             <Pencil className="w-4 h-4" onClick={() => handleEditGstCode(row.id)} />

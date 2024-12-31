@@ -196,7 +196,7 @@ const Index = () => {
       toast("Something went wrong.", "top-right", "error");
     }
   }
-  
+
   const handleAddService = async () => {
     try {
       if (currentServiceDetails.serviceId === "") {
@@ -337,7 +337,7 @@ const Index = () => {
         }`
       );
       // map over response.data and assign id to value and taxPercentage to label
-      const data = response.data.map((service: Service) => ({
+      const data = response.data.filter((item: Service) => item.isActive).map((service: Service) => ({
         value: service.id,
         label: service.name.toString(),
       }));
@@ -397,7 +397,7 @@ const Index = () => {
         }`
       );
       // map over response.data and assign id to value and taxPercentage to label
-      const data = response.data.map((gstCode: GstCode) => ({
+      const data = response.data.filter((item: GstCode) => item.isActive).map((gstCode: GstCode) => ({
         value: gstCode.id,
         label: gstCode.code,
       }));
@@ -483,7 +483,11 @@ const Index = () => {
       return toast("Please select an invoice date", "top-right", "warning");
     }
 
-    console.log({ formData });
+    const customerData = await axios.get(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/customers?id=${formData.customerId}`
+    );
+
+    const customer: Customer = customerData.data;
 
     const dataToSend: Invoice = {
       orderId: formData.orderId,
@@ -498,7 +502,7 @@ const Index = () => {
       reconciledInvoiceAmount: Number(formData.reconciledInvoiceAmount),
       reconcileComments: formData.reconcileComments,
       discountAmount: formData.discountAmount,
-      customerGst: formData.customerGst,
+      customerGst: customer.customerGST,
       invoiceComments: formData.invoiceComments,
       invoiceItems: selectedOrderDetails?.orderItems!.map((item) => ({
         ...(item.productId ? { productId: item.productId } : { serviceId: item.serviceId }),
@@ -778,7 +782,9 @@ const Index = () => {
                       {column === "GST Code" ? (
                         row.product?.gstCode?.code ?? "N/A"
                       ) : column === "GST %" ? (
-                        row.product?.gstCode?.gst?.taxPercentage ?? "N/A"
+                        row.product?.gstCode?.gst?.taxPercentage ?
+                          `${row.product?.gstCode?.gst?.taxPercentage} %` :
+                          "N/A"
                       ) : column === "Amount" ? (
                         formatIndianCurrency(row?.unitPrice * (row?.quantity ?? 1))
                       ) : column === "Rate" ? (
@@ -949,7 +955,9 @@ const Index = () => {
                       {column === "GST Code" ? (
                         row?.gstCode?.code ?? "N/A"
                       ) : column === "GST %" ? (
-                        row?.gstCode?.gst?.taxPercentage ?? "N/A"
+                        row?.gstCode?.gst?.taxPercentage ?
+                          `${row?.gstCode?.gst?.taxPercentage} %` :
+                          "N/A"
                       ) : column === "Amount" ? (
                         formatIndianCurrency(row?.unitPrice * (row?.quantity ?? 1))
                       ) : column === "Rate" ? (

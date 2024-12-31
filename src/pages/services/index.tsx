@@ -274,7 +274,7 @@ const ServicesPage = () => {
       {/* Create Modal */}
       <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
         <h2 className="text-lg font-semibold">Add Service</h2>
-        <form onSubmit={handleSubmit}>
+        <form className="flex flex-col gap-2" onSubmit={handleSubmit}>
           <Input name="name" label="Name" value={formData.name} onChange={handleInputChange} required />
           <Input
             name="effectiveStartDate"
@@ -313,7 +313,7 @@ const ServicesPage = () => {
       {/* Edit Modal */}
       <Modal isOpen={isEditModalOpen} onClose={handleCloseEditModal}>
         <h2 className="text-lg font-semibold">Edit Service</h2>
-        <form onSubmit={handleEditSubmit}>
+        <form className="flex flex-col gap-2" onSubmit={handleEditSubmit}>
           <Input
             name="name"
             label="Name"
@@ -346,11 +346,13 @@ const ServicesPage = () => {
             value={editFormData.isActive}
             onChange={handleEditInputChange}
           />
-          <div className="flex justify-between mt-4">
+          <div className="flex justify-between mt-4 gap-2">
             <Button type="submit">Save</Button>
-            <Button onClick={() =>
-              handleDeleteService(editFormData.id!)
-            }>Delete</Button>
+            <Button
+              classname="text-red-500 border-red-500 bg-red-500/20 hover:bg-background"
+              onClick={() =>
+                handleDeleteService(editFormData.id!)
+              }>Delete</Button>
           </div>
         </form>
       </Modal>

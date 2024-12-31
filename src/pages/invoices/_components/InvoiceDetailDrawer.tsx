@@ -12,6 +12,7 @@ const invoiceItemsColumns = [
   "Quantity",
   "Item Rate",
   "GST Code",
+  "GST %",
   "GST Amount",
   "Invoice Amount",
 ];
@@ -20,6 +21,7 @@ const serviceItemsColumns = [
   "Service",
   "Quantity",
   "Item Rate",
+  "GST %",
   "GST Code",
   "GST Amount",
   "Invoice Amount",
@@ -187,6 +189,8 @@ const InvoiceDetailDrawer = ({
                             formatIndianCurrency(item?.invoiceAmount)
                           ) : column === "GST Code" ? (
                             item?.gstCode?.code
+                          ) : column === "GST %" ? (
+                            `${item?.gstCode?.gst?.taxPercentage} %`
                           ) : column === "GST Amount" ? (
                             formatIndianCurrency(item?.gstCode?.gst?.taxPercentage)
                           ) : null
@@ -221,6 +225,8 @@ const InvoiceDetailDrawer = ({
                             formatIndianCurrency(item?.invoiceAmount)
                           ) : column === "GST Code" ? (
                             item?.gstCode?.code
+                          ) : column === "GST %" ? (
+                            `${item?.gstCode?.gst?.taxPercentage} %`
                           ) : column === "GST Amount" ? (
                             formatIndianCurrency(item?.gstCode?.gst?.taxPercentage)
                           ) : item?.service?.name
