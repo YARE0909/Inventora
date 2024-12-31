@@ -16,14 +16,14 @@ const ThemeToggler: React.FC = () => {
     const root = document.documentElement;
 
     const lightTheme = {
-      "--background": "#ffffff",
+      "--background": "#EAEBEB",
       "--backgroundAlt": "#f2f0ff",
-      "--foreground": "#E3DFFD30",
+      "--foreground": "#DEDEDF",
       "--default-text": "#000000",
-      "--border-color": "#d7d1fd",
+      "--border-color": "#636363",
       "--alt-text": "#4c4c54",
-      "--highlight": "#d7d1fd",
-      "--button": "#d7d1fd",
+      "--highlight": "#E6E7E7",
+      "--button": "#659BF8",
     };
 
     const darkTheme = {
@@ -31,10 +31,10 @@ const ThemeToggler: React.FC = () => {
       "--backgroundAlt": "#151517",
       "--foreground": "#151517",
       "--default-text": "#ffffff",
-      "--border-color": "#3b3b3b",
-      "--alt-text": "#b3b3ab",
+      "--border-color": "#6e6e6e",
+      "--alt-text": "#DEDEDF",
       "--highlight": "#262629",
-      "--button": "#262629",
+      "--button": "#4b51fa",
     };
 
     const themeVariables = savedTheme === "light" ? lightTheme : darkTheme;
@@ -55,24 +55,24 @@ const ThemeToggler: React.FC = () => {
     const themeVariables =
       newTheme === "light"
         ? {
-          "--background": "#ffffff",
+          "--background": "#EAEBEB",
           "--backgroundAlt": "#f2f0ff",
-          "--foreground": "#E3DFFD30",
+          "--foreground": "#DEDEDF",
           "--default-text": "#000000",
-          "--border-color": "#d7d1fd",
+          "--border-color": "#4c4c54",
           "--alt-text": "#4c4c54",
-          "--highlight": "#d7d1fd",
-          "--button": "#d7d1fd",
+          "--highlight": "#E6E7E7",
+          "--button": "#659BF8",
         }
         : {
           "--background": "#1a1a1c",
           "--backgroundAlt": "#151517",
           "--foreground": "#151517",
           "--default-text": "#ffffff",
-          "--border-color": "#3b3b3b",
-          "--alt-text": "#b3b3ab",
+          "--border-color": "#636363",
+          "--alt-text": "#DEDEDF",
           "--highlight": "#262629",
-          "--button": "#262629",
+          "--button": "#4b51fa",
         };
 
     for (const [key, value] of Object.entries(themeVariables)) {

@@ -371,7 +371,7 @@ const Index = () => {
           <hr className="border border-border" />
           <div className="w-full flex space-x-3">
             <Button type="submit">Save</Button>
-            <Button onClick={handleCloseModal}>Cancel</Button>
+            <Button classname="bg-foreground border-border hover:bg-transparent" onClick={handleCloseModal}>Cancel</Button>
           </div>
         </form>
       </Modal>
@@ -454,7 +454,7 @@ const Index = () => {
             <hr className="border border-border" />
             <div className="w-full flex space-x-3">
               <Button type="submit">Save</Button>
-              <Button classname="text-red-500 border-transparent bg-red-500/20 hover:bg-background" onClick={() => handleDeleteCustomer(editFormData.id)}>Delete</Button>
+              <Button classname="bg-red-500 border-red-500 border-red-500 hover:bg-background" onClick={() => handleDeleteCustomer(editFormData.id)}>Delete</Button>
             </div>
           </form>
         ) : (

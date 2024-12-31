@@ -304,8 +304,13 @@ const ServicesPage = () => {
             label="GST%"
             onChange={(value) => setFormState((prev) => ({ ...prev, gstCodeId: value }))}
           />
-          <div className="flex justify-end mt-4">
-            <Button type="submit">Save</Button>
+          <div className="w-full flex gap-2">
+            <div className="w-full flex justify-end mt-4">
+              <Button type="submit">Save</Button>
+            </div>
+            <div className="w-full flex justify-end mt-4">
+              <Button classname="bg-foreground border-border hover:bg-transparent" type="submit">Cancel</Button>
+            </div>
           </div>
         </form>
       </Modal>
@@ -349,7 +354,7 @@ const ServicesPage = () => {
           <div className="flex justify-between mt-4 gap-2">
             <Button type="submit">Save</Button>
             <Button
-              classname="text-red-500 border-transparent bg-red-500/20 hover:bg-background"
+              classname="bg-red-500 border-red-500 hover:border-red-500 hover:bg-background"
               onClick={() =>
                 handleDeleteService(editFormData.id!)
               }>Delete</Button>

@@ -49,7 +49,7 @@ const Drawer = forwardRef<DrawerHandle, DrawerProps>(
 
         {/* Drawer */}
         <div
-          className={`fixed top-0 right-0 h-full bg-backgroundAlt shadow-lg z-50 transform transition-transform duration-300 ${isOpen ? "translate-x-0" : "translate-x-full"
+          className={`fixed top-0 right-0 h-full bg-foreground shadow-lg z-50 transform transition-transform duration-300 ${isOpen ? "translate-x-0" : "translate-x-full"
             } ${getWidth()}`}
         >
           <div className="w-full h-14 border-b border-b-border p-4 z-10 bg-background flex justify-between items-center gap-5 lg:gap-0">

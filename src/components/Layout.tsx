@@ -118,12 +118,12 @@ const Sidebar = ({
 
   return (
     <div
-      className={`w-3/4 md:w-1/4 lg:w-1/6 h-screen bg-foreground p-4 flex flex-col justify-between gap-4 fixed top-0 bottom-0 border-r border-border transition-transform duration-300 z-10 lg:z-0 
+      className={`w-3/4 md:w-1/4 lg:w-1/6 h-screen bg-foreground p-4 flex flex-col justify-between gap-4 fixed top-0 bottom-0 border-r-2 border-border transition-transform duration-300 z-10 lg:z-0 
       ${isOpen ? "translate-x-0" : "-translate-x-full"} 
       lg:translate-x-0`}
     >
       <div className="flex flex-col space-y-3">
-        <div className="w-full flex flex-col border-b border-b-border pb-2">
+        <div className="w-full flex flex-col border-b-2 border-b-border pb-2">
           <div className="w-full flex gap-2 items-center justify-between">
             <div className="flex items-center gap-2">
               <h1 className="text-3xl font-black">IN</h1>
@@ -153,8 +153,8 @@ const Sidebar = ({
                   <Link
                     href={link.href}
                     className={`text-sm font-semibold p-1 pl-2 mt-[2px] rounded-md cursor-pointer duration-500 flex items-center gap-1 ${router.pathname === link.href
-                      ? "bg-highlight border-2 border-transparent"
-                      : "border-2 border-transparent hover:border-highlight"
+                      ? "bg-highlight border-2 border-border"
+                      : "border-2 border-transparent hover:bg-highlight hover:border-highlight"
                       }`}
                   >
                     {link.icon}
@@ -178,7 +178,7 @@ const Header = ({
   children: React.ReactNode;
 }) => {
   return (
-    <div className="w-full h-14 border-b border-b-border p-4 z-10 bg-foreground flex justify-between items-center gap-5 lg:gap-4">
+    <div className="w-full h-14 border-b-2 border-b-border p-4 z-10 bg-foreground flex justify-between items-center gap-5 lg:gap-4">
       <div className="w-full flex items-center gap-1">
         <button
           className="lg:hidden"
