@@ -16,6 +16,7 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/router";
 import ThemeToggler from "./ThemeToggler";
+import Image from "next/image";
 
 const sideBarLinks = [
   {
@@ -108,7 +109,6 @@ const sideBarLinks = [
 const Sidebar = ({
   isOpen,
   onClose,
-  businessName
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -125,9 +125,14 @@ const Sidebar = ({
       <div className="flex flex-col space-y-3">
         <div className="w-full flex flex-col border-b-2 border-b-border pb-2">
           <div className="w-full flex gap-2 items-center justify-between">
-            <div className="flex items-center gap-2">
-              <h1 className="text-3xl font-black">IN</h1>
-              <h1 className="text-xl font-extrabold">INVENTORA</h1>
+            <div className="flex items-center justify-center gap-2 p-1">
+              <Image
+                src="/logo.svg"
+                alt="Logo"
+                width={40}
+                height={40}
+                className="w-full h-full"
+              />
             </div>
             <button
               className="lg:hidden"
@@ -136,9 +141,6 @@ const Sidebar = ({
             >
               <ArrowLeft className="h-6 w-6" />
             </button>
-          </div>
-          <div>
-            <h1 className="font-bold uppercase text-textAlt">{businessName}</h1>
           </div>
         </div>
         {/* Sidebar Content */}

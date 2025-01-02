@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-title-in-document-head */
 import { Html, Head, Main, NextScript } from "next/document";
 
 export default function Document() {
@@ -14,6 +15,7 @@ export default function Document() {
           href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap"
           rel="stylesheet"
         />
+        <title>Zarava Internal Portal</title>
       </Head>
       <body className="antialiased">
         <Main />
