@@ -16,11 +16,11 @@ const ThemeToggler: React.FC = () => {
     const root = document.documentElement;
 
     const lightTheme = {
-      "--background": "#EAEBEB",
+      "--background": "#ffffff",
       "--backgroundAlt": "#f2f0ff",
-      "--foreground": "#DEDEDF",
+      "--foreground": "#f5f5f5",
       "--default-text": "#000000",
-      "--border-color": "#636363",
+      "--border-color": "#dbdbdb",
       "--alt-text": "#4c4c54",
       "--highlight": "#E6E7E7",
       "--button": "#659BF8",
@@ -55,11 +55,11 @@ const ThemeToggler: React.FC = () => {
     const themeVariables =
       newTheme === "light"
         ? {
-          "--background": "#EAEBEB",
+          "--background": "#ffffff",
           "--backgroundAlt": "#f2f0ff",
-          "--foreground": "#DEDEDF",
+          "--foreground": "#f5f5f5",
           "--default-text": "#000000",
-          "--border-color": "#4d4c4c",
+          "--border-color": "#dbdbdb",
           "--alt-text": "#4c4c54",
           "--highlight": "#E6E7E7",
           "--button": "#659BF8",
