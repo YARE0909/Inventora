@@ -562,7 +562,7 @@ const Index = () => {
               <div className="flex flex-col space-y-3">
                 <div>
                   <h1 className="text-text font-semibold text-lg">
-                    Order Item Details
+                    Order Items
                   </h1>
                 </div>
                 <div className="w-full flex space-x-3 items-end">
@@ -659,7 +659,7 @@ const Index = () => {
             <div className="w-full flex flex-col space-y-3">
               <div>
                 <h1 className="text-text font-semibold text-lg">
-                  Order Advance Details
+                  Order Advances
                 </h1>
               </div>
               <div className="w-full flex flex-col space-y-3 md:space-y-0 md:flex md:flex-row">
@@ -746,7 +746,7 @@ const Index = () => {
                   <div>
                     <Button onClick={addOrderAdvanceDetailsToTable}>
                       <Plus className="w-5 h-5" />
-                      Add Advance Details
+                      Add Advance
                     </Button>
                   </div>
                 </div>

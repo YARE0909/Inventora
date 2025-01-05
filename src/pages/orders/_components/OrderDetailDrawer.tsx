@@ -3,6 +3,9 @@ import React, { useEffect } from "react";
 import { format } from "date-fns";
 import PaginatedTable from "@/components/ui/PaginatedTable";
 import formatIndianCurrency from "@/utils/formatIndianCurrency";
+import { Pencil } from "lucide-react";
+import Tooltip from "@/components/ui/ToolTip";
+import { useRouter } from "next/router";
 
 const columns = [
   "Product",
@@ -45,6 +48,8 @@ const OrderDetailDrawer = ({
     console.log("Selected Order Details:", selectedOrderDetails);
   }, [selectedOrderDetails]);
 
+  const router = useRouter();
+
   return (
     <div className="w-full h-full">
       {/* Show order details from selectedOrder */}
@@ -53,8 +58,17 @@ const OrderDetailDrawer = ({
           {/* Order Details */}
           <div className="w-full flex flex-col space-y-3">
             <div className="w-full flex justify-between items-center">
-              <div>
-                <h1 className="font-bold text-text text-lg">Order Details</h1>
+              <div className="w-full flex items-center justify-between">
+                <div>
+                  <h1 className="font-bold text-text text-lg">Order</h1>
+                </div>
+                <div>
+                  <Tooltip tooltip="Edit Order" position="left">
+                    <Pencil className="w-5 h-5" onClick={() => {
+                      router.push(`/orders/edit-order/${selectedOrderDetails.id}`);
+                    }} />
+                  </Tooltip>
+                </div>
               </div>
             </div>
             <div className="w-full rounded-md bg-background p-4 border border-border flex flex-col space-y-3">
@@ -292,7 +306,7 @@ const OrderDetailDrawer = ({
           {/* Customer Details */}
           <div className="w-full flex flex-col space-y-3">
             <div>
-              <h1 className="font-bold text-text text-lg">Customer Details</h1>
+              <h1 className="font-bold text-text text-lg">Customer</h1>
             </div>
             <div className="w-full rounded-md bg-background p-4 border border-border flex flex-col space-y-3">
               <div className="flex flex-col space-y-3">

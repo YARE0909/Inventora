@@ -24,7 +24,7 @@ const sideBarLinks = [
     links: [
       {
         name: "Dashboard",
-        icon: <LayoutDashboard className="w-5 h-5" />,
+        icon: <LayoutDashboard className="w-4 h-4" />,
         href: "/",
       },
     ],
@@ -34,12 +34,12 @@ const sideBarLinks = [
     links: [
       {
         name: "Orders",
-        icon: <ShoppingCart className="w-5 h-5" />,
+        icon: <ShoppingCart className="w-4 h-4" />,
         href: "/orders",
       },
       {
         name: "New Order",
-        icon: <Container className="w-5 h-5" />,
+        icon: <Container className="w-4 h-4" />,
         href: "/orders/create-order",
       },
     ],
@@ -49,12 +49,12 @@ const sideBarLinks = [
     links: [
       {
         name: "Invoices",
-        icon: <ReceiptIndianRupee className="w-5 h-5" />,
+        icon: <ReceiptIndianRupee className="w-4 h-4" />,
         href: "/invoices",
       },
       {
         name: "New Invoice",
-        icon: <FilePlus2 className="w-5 h-5" />,
+        icon: <FilePlus2 className="w-4 h-4" />,
         href: "/invoices/create-invoice",
       },
     ],
@@ -64,7 +64,7 @@ const sideBarLinks = [
     links: [
       {
         name: "Customers",
-        icon: <UsersRound className="w-5 h-5" />,
+        icon: <UsersRound className="w-4 h-4" />,
         href: "/customers",
       },
     ],
@@ -74,12 +74,12 @@ const sideBarLinks = [
     links: [
       {
         name: "GST",
-        icon: <Percent className="w-5 h-5" />,
+        icon: <Percent className="w-4 h-4" />,
         href: "/gst",
       },
       {
         name: "GST Codes",
-        icon: <ArrowDownAZ className="w-5 h-5" />,
+        icon: <ArrowDownAZ className="w-4 h-4" />,
         href: "/gstCodes",
       },
     ],
@@ -89,7 +89,7 @@ const sideBarLinks = [
     links: [
       {
         name: "Products",
-        icon: <Package className="w-5 h-5" />,
+        icon: <Package className="w-4 h-4" />,
         href: "/products",
       },
     ],
@@ -99,7 +99,7 @@ const sideBarLinks = [
     links: [
       {
         name: "Services",
-        icon: <Forklift className="w-5 h-5" />,
+        icon: <Forklift className="w-4 h-4" />,
         href: "/services",
       },
     ],
@@ -144,9 +144,9 @@ const Sidebar = ({
           </div>
         </div>
         {/* Sidebar Content */}
-        <div className="w-full flex flex-col gap-5">
-          {sideBarLinks.map((category) => (
-            <div key={category.category}>
+        <div className="w-full flex flex-col gap-3">
+          {sideBarLinks.map((category, index) => (
+            <div className={index === sideBarLinks.length - 1 ? "pb-2" : "border-b border-b-border pb-2"} key={category.category}>
               <h1 className="text-xs font-extrabold text-textAlt pl-1">
                 {category.category}
               </h1>

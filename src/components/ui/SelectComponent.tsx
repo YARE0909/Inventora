@@ -48,14 +48,14 @@ const Select: React.FC<SelectProps> = ({
   };
 
   return (
-    <div className={`relative w-full ${disabled && "bg-background cursor-not-allowed"}`}>
+    <div className={`relative w-full bg-foreground ${disabled && "bg-background cursor-not-allowed"}`}>
       {showLabel && (
         <label className="block text-sm text-textAlt font-semibold mb-1">
           {label}
         </label>
       )}
       <div
-        className={`border-2 border-border rounded-md p-2 bg-background cursor-pointer text-sm ${disabled ? "bg-background cursor-not-allowed" : ""
+        className={`border-2 border-border rounded-md p-2 bg-background cursor-pointer text-sm ${disabled ? "cursor-not-allowed" : ""
           }`}
         onClick={() => {
           if (!disabled) setIsDropdownOpen((prev) => !prev);
