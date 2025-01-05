@@ -127,7 +127,7 @@ const Sidebar = ({
           <div className="w-full flex gap-2 items-center justify-between">
             <div className="flex items-center justify-center gap-2 p-1">
               <Image
-                src="/logo.svg"
+                src={"/logo.svg"}
                 alt="Logo"
                 width={40}
                 height={40}
